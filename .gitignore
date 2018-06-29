@@ -3,6 +3,16 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+# TypeScript
+
+src/Heuristic.PathfindingLab/Heuristic.PathfindingLab/wwwroot/js/core.js
+src/Heuristic.PathfindingLab/Heuristic.PathfindingLab/wwwroot/js/core.js.map
+
+# Minimized
+
+*.min.css
+*.min.js
+
 # User-specific files
 *.suo
 *.user

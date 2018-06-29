@@ -1,0 +1,145 @@
+﻿@section Styles {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" />
+}
+<div class="row">
+    <div class="col-lg-6">
+        <div style="position: relative; width: 640px; height: 640px; margin: 2px; border-style:solid; border-width:1px; border-color:darkgreen;">
+            <canvas id="worldLayer" width="640" height="640" style="position: absolute; left: 0; top: 0; z-index: 0;" oncontextmenu="return false;"></canvas>
+            <canvas id="middleLayer" width="640" height="640" style="position: absolute; left: 0; top: 0; z-index: 1;" oncontextmenu="return false;"></canvas>
+            <canvas id="cursorLayer" width="640" height="640" style="position: absolute; left: 0; top: 0; z-index: 2;" oncontextmenu="return false;"></canvas>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="row">
+            <h3>Pathfinding Lab <small>powered by <a href="https://github.com/rvhuang/linq-to-astar" target="_blank">LINQ to A*</a></small></h3>
+            <hr />
+        </div>
+        <div class="row">
+            <form id="options">
+                <div class="col-md-4">
+                    <label>Algorithm</label>
+                    <div class="radio">
+                        <label><input type="radio" name="algorithm" value="AStar" checked>A*</label>
+                    </div>
+                    <div class="radio">
+                        <label><input type="radio" name="algorithm" value="BestFirstSearch">Best-first Search</label>
+                    </div>
+                    <div class="radio">
+                        <label><input type="radio" name="algorithm" value="IterativeDeepeningAStar">Iterative Deepening A*</label>
+                    </div>
+                    <div class="radio">
+                        <label><input type="radio" name="algorithm" value="RecursiveBestFirstSearch">Recursive Best-first Search</label>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <label>Heuristic Functions</label>
+                    <a href="#" role="button" class="btn btn-link" data-toggle="popover" data-trigger="focus" data-placement="right" data-container="body" data-content="A heuristic function is used to evaluate the cost of every step. At least one heuristic function needs to be selected. If more than one function are selected, the subsequent one will be used when previous one evaluates two steps as equal.">
+                        <span class="glyphicon glyphicon-question-sign"></span>
+                    </a>
+                    <div class="checkbox">
+                        <label><input type="checkbox" name="heuristic" value="GetChebyshevDistance" required>Chebyshev Distance</label>
+                    </div>
+                    <div class="checkbox">
+                        <label><input type="checkbox" name="heuristic" value="GetEuclideanDistance" required>Euclidean Distance</label>
+                    </div>
+                    <div class="checkbox">
+                        <label><input type="checkbox" name="heuristic" value="GetManhattanDistance" checked required>Manhattan Distance</label>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="row" style="margin-top: 12px">
+            <div class="col-md-12">
+                <label>LINQ Expression</label>
+                <a href="#" role="button" class="btn btn-link" data-toggle="popover" data-trigger="focus" data-placement="right" data-container="body" data-content="Using LINQ to A* to state conditions and fetch the path found by selected algorithm will be displayed here.">
+                    <span class="glyphicon glyphicon-question-sign"></span>
+                </a>
+                <!-- Nav tabs -->
+                <ul class="nav nav-tabs" role="tablist" style="max-width: 640px; margin-top: 12px">
+                    <li role="presentation" class="active"><a href="#exampleSelectMany" aria-controls="exampleSelectMany" role="tab" data-toggle="tab">SelectMany</a></li>
+                    <li role="presentation"><a href="#exampleExcept" aria-controls="exampleExcept" role="tab" data-toggle="tab">Except</a></li>
+                    <li role="presentation"><a href="#exampleWhere" aria-controls="exampleWhere" role="tab" data-toggle="tab">Where only</a></li>
+                </ul>
+                <!-- Tab panes -->
+                <div class="tab-content" style="max-width: 640px">
+                    <div role="tabpanel" class="tab-pane active" id="exampleSelectMany">
+                        <pre><code class="cs" style="font-size: x-small">// Left click on map to place obstacles.
+// Right click to find a path.
+// Equivalent LINQ expression using SelectMany() will be shown here.
+
+
+
+                                    </code></pre>
+                    </div>
+                    <div role="tabpanel" class="tab-pane" id="exampleExcept">
+                        <pre><code class="cs" style="font-size: x-small">// Left click on map to place obstacles.
+// Right click to find a path.
+// Equivalent LINQ expression using Except() will be shown here.
+
+
+
+                                    </code></pre>
+                    </div>
+                    <div role="tabpanel" class="tab-pane" id="exampleWhere">
+                        <pre><code class="cs" style="font-size: x-small">// Left click on map to place obstacles.
+// Right click to find a path.
+// Equivalent LINQ expression using Where() clause will be shown here.
+
+
+
+                                </code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="btn-group" role="group" style="margin-top: 2px;">
+                    <button type="button" class="btn btn-default btn-sm" id="btnClear">
+                        <span class="glyphicon glyphicon-refresh"></span>
+                    </button>
+                    <a class="btn btn-default btn-sm" download="pathfinding-lab.jpg" id="btnDownload">
+                        <span class="glyphicon glyphicon-download-alt"></span>
+                    </a>
+                    <button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#modalInfo">
+                        <span class="glyphicon glyphicon-info-sign"></span>
+                    </button>
+                </div>
+                <div class="btn-group" role="group" style="margin-top: 2px;" id="histories"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal -->
+<div id="modalInfo" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">About</h4>
+            </div>
+            <div class="modal-body">
+                <p>Copyright © <a href="https://rvhuang.github.io/" target="_blank">Robert Vandenberg Huang</a></p>
+                <p>Copyright © <a href="https://kenney.nl/" target="_blank">Kenney Vleugels</a> (assets)</p>
+                <p>The project is licensed under the MIT license. Feel free to copy, modify and use in your computer science homework (grades not guaranteed).</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="historyTemplate" style="display: none">
+    <button type="button" class="btn btn-default btn-sm" data-toggle="button">
+        <span data-field="PathColor">&#9724;</span>
+        <span data-field="AlgorithmShortName"></span>
+        <span data-field="Path"></span>
+    </button>
+</div>
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <script src="js/core.js"></script>
+    <script src="js/site.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+}
