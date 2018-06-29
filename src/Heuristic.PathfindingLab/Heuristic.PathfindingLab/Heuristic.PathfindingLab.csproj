@@ -13,6 +13,7 @@
     <PackageReference Include="linq-to-astar" Version="1.0.0-beta" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.8" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.3" />
+    <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="2.9.2" />
   </ItemGroup>
 
   <ItemGroup>
