@@ -115,9 +115,9 @@ $(document).ready(function () {
 
 function updateOptions(pathfinding) {
     $(':input[name="heuristic"]').each(function (i, element) {
-        $(element).prop("checked", pathfinding.Heuristics.indexOf($(element).val()) >= 0);
+        $(element).prop("checked", pathfinding.heuristics.indexOf($(element).val()) >= 0);
     }); 
-    $(':input[name="algorithm"][value="' + pathfinding.Algorithm + '"]').prop("checked", true);
+    $(':input[name="algorithm"][value="' + pathfinding.algorithm + '"]').prop("checked", true);
 }
 
 function updateExpressions(pathfinding) {
