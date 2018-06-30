@@ -82,6 +82,9 @@ $(document).ready(function () {
     $('#btnDownload').click(function (event) {
         this.href = Layer.mergeIntoDataURL([backgroundLayer, foregroundLayer, cursorLayer]);
     });
+    $('#btnDownloadJson').click(function (event) {
+        this.href = "data:text/json;charset=UTF-8," + encodeURIComponent(JSON.stringify(current));
+    });
     $(':input[name="algorithm"]').change(function (event) {
         current.algorithm = this.value;
         if (current.fromX !== current.goalX && current.FromY !== current.goalY) {
