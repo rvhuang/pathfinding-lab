@@ -1,6 +1,6 @@
 ﻿var tileSize = 32;
 var mapSize = 20;
-var core = new Core(32, 32);
+var core = new Core(mapSize, mapSize);
 var current = new PathfindingRequestBody();
 
 $(document).ready(function () {
