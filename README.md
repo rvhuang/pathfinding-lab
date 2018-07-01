@@ -8,7 +8,7 @@ Visit [https://pathfinding-lab.azurewebsites.net/](https://pathfinding-lab.azure
 
 Read the article at [CodeProject](https://www.codeproject.com/Articles/1250578/A-Simple-Pathfinding-Laboratory) for detailed information.
 
-# License
+## License
 
 Copyright © Robert Vandenberg Huang
 
