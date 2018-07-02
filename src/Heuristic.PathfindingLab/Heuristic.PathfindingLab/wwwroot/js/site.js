@@ -38,7 +38,7 @@ $(document).ready(function () {
                         var history = new PathfindingHistory(path, heuristics, algorithm);
 
                         foregroundLayer.placePath(path, step => "images/tileGrass_road_" + step.getDirectionShortName() + ".png");
-                        if (cursorLayer.paths.length > 7) {
+                        if (cursorLayer.paths.length > 5) {
                             $("#histories button:first-child").fadeOut(500, function () {
                                 $(this).remove();
                                 if (cursorLayer.paths[0].isVisible) {
