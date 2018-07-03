@@ -38,7 +38,7 @@ $(document).ready(function () {
                         var history = new PathfindingHistory(path, heuristics, algorithm);
 
                         foregroundLayer.placePath(path, step => "images/tileGrass_road_" + step.getDirectionShortName() + ".png");
-                        if (cursorLayer.paths.length > 5) {
+                        if (cursorLayer.paths.length > 7) {
                             $("#histories button:first-child").fadeOut(500, function () {
                                 $(this).remove();
                                 if (cursorLayer.paths[0].isVisible) {
@@ -79,6 +79,19 @@ $(document).ready(function () {
         foregroundLayer.clearMap();
         cursorLayer.clearTiles();
     });
+    $('#btnSave').click(function (event) {
+        core.saveMap();
+    });
+    $('#btnLoad').click(function (event) {
+        foregroundLayer.clearMap();
+        core.clearObstacles();
+        core.loadMap(function(x, y) { 
+            foregroundLayer.placeObject(x, y);
+        },
+        function (step) { 
+            foregroundLayer.placeStep(step, "images/tileGrass_road_" + step.getDirectionShortName() + ".png");
+        });
+    });
     $('#btnDownload').click(function (event) {
         this.href = Layer.mergeIntoDataURL([backgroundLayer, foregroundLayer, cursorLayer]);
     });
@@ -114,6 +127,10 @@ $(document).ready(function () {
         return true;
     });
     $('[data-toggle="popover"]').popover();
+    $('[data-toggle="tooltip"]').tooltip({
+        container: "body",
+        placement: "bottom"
+    });
 });
 
 function updateOptions(pathfinding) {

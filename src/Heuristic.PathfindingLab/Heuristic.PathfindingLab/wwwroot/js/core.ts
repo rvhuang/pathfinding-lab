@@ -39,6 +39,33 @@
         }
     }
 
+    public saveMap() {
+        localStorage.setItem("map", JSON.stringify(this.map));
+    }
+
+    public loadMap(placeObstacleCallback: (x: number, y: number) => any, placeStepCallback: (step: Step) => any) {
+        var old = JSON.parse(localStorage.getItem("map")) as Array<Array<Direction>>;
+        
+        try {
+            for (var y = 0; y < this.map.length; y++) {
+                for (var x = 0; x < this.map[y].length; x++) {
+                    var dir = old[y][x];
+
+                    this.map[y][x] = dir;
+                    if (isNaN(dir) || dir === null) {
+                        placeObstacleCallback(x, y);
+                    }
+                    else if (dir != Direction.None) {
+                        placeStepCallback(new Step(x, y, dir));
+                    }
+                }
+            }
+        }
+        catch (e) {
+            console.log(e);
+        }
+    }
+
     public createPathfindingRequestBody(body: PathfindingRequestBody, x: number, y: number): boolean {
         if (isNaN(this.fromX) && isNaN(this.fromY)) {
             this.fromX = x;
@@ -582,14 +609,26 @@ class ForegroundLayer extends Layer {
         var tileWidth = this.tileWidth;
         var tileHeight = this.tileHeight;
 
-        path.forEach(function (step) {
+        for (let step of path) {
             var img = new Image();
 
             img.addEventListener('load', function () {
                 ctx.drawImage(this, step.x * tileWidth, step.y * tileHeight, tileWidth, tileHeight);
             }, false);
             img.src = assetUrlSelector(step);
-        });
+        };
+    }
+
+    public placeStep (step: Step, assetUrl: string) {
+        var ctx = this.canvas.getContext("2d");
+        var img = new Image();
+        var tileWidth = this.tileWidth;
+        var tileHeight = this.tileHeight;
+
+        img.addEventListener('load', function () {
+            ctx.drawImage(this, step.x * tileWidth, step.y * tileHeight, tileWidth, tileHeight);
+        }, false);
+        img.src = assetUrl;
     }
 
     public placeObject(i: number, j: number) {
