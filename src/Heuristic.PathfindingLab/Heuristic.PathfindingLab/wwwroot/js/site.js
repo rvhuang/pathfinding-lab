@@ -4,12 +4,9 @@ var core = new Core(mapSize, mapSize);
 var current = new PathfindingRequestBody();
 
 $(document).ready(function () {
-    var cursorLayer = new CursorLayer(document.getElementById('cursorLayer'), "images/cursor.png", tileSize, tileSize, mapSize, mapSize);
-    var backgroundLayer = new BackgroundLayer(cursorLayer, document.getElementById('worldLayer'), [ 
-        "images/tileGrass1.png", 
-        "images/tileGrass2.png" 
-    ]);
-    var foregroundLayer = new ForegroundLayer(cursorLayer, document.getElementById('middleLayer'), [
+    
+    var cursorLayer = new CursorLayer(document.getElementById('cursor'), document.getElementById('mouse-cursor'), tileSize, tileSize, mapSize, mapSize);
+    var foregroundLayer = new ForegroundLayer(cursorLayer, document.getElementById('foreground'), [
         "images/barricadeMetal.png",
         "images/barricadeWood.png",
         "images/crateMetal.png",
@@ -19,13 +16,14 @@ $(document).ready(function () {
     ]);
     foregroundLayer.objectPracingPredicate = (i, j) => core.placeObstacle(i, j);
     foregroundLayer.pathPlacingCallback = function(i, j) {
-        if (core.isObstacle(i, j) || !cursorLayer.placeTile(i, j, PathfindingHistory.getAlgorithmPathColor(current.algorithm))) {
+        if (core.isObstacle(i, j)) {
             return;
         }
         if (core.createPathfindingRequestBody(current, i, j)) {
             var heuristics = current.heuristics.slice();
             var algorithm = current.algorithm;
 
+            cursorLayer.placeTile(i, j, PathfindingHistory.getAlgorithmPathColor(current.algorithm));
             $.ajax({
                 type: "POST",
                 url: "api/pathfinding/",
@@ -48,11 +46,12 @@ $(document).ready(function () {
                             });
                         }
                         cursorLayer.paths.push(history);
-                        cursorLayer.clearTiles();
+                        cursorLayer.removeTile(path[0].x, path[0].y);
+                        cursorLayer.removeTile(path[path.length - 1].x, path[path.length - 1].y);
 
                         var btn = $("#historyTemplate button:first-child").clone();
                         
-                        btn.children('[data-field="PathColor"]').css("color", history.pathColor);
+                        btn.children('[data-field="PathColor"]').css("color", history.color);
                         btn.children('[data-field="AlgorithmShortName"]').text(history.algorithmShortName);
                         btn.children('[data-field="Path"]').text("(" + history.path.length + ")");
                         btn.appendTo("#histories");
@@ -72,6 +71,9 @@ $(document).ready(function () {
                     updateExpressions(current);
                 }
             });
+        }
+        else {            
+            cursorLayer.placeTile(i, j, PathfindingHistory.getAlgorithmPathColor(current.algorithm));
         }
     };
     $('#btnClear').click(function (event) {
@@ -93,16 +95,17 @@ $(document).ready(function () {
         });
     });
     $('#btnDownload').click(function (event) {
-        this.href = Layer.mergeIntoDataURL([backgroundLayer, foregroundLayer, cursorLayer]);
-    });
+        this.href = "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(document.getElementById("map").outerHTML);
+    }); /*
     $('#btnDownloadJson').click(function (event) {
         this.href = "data:text/json;charset=UTF-8," + encodeURIComponent(JSON.stringify(current));
-    });
+    }); */
     $(':input[name="algorithm"]').change(function (event) {
         current.algorithm = this.value;
         if (current.fromX !== current.goalX && current.FromY !== current.goalY) {
             updateExpressions(current);
         }
+        $("#mouse-cursor").attr("fill", PathfindingHistory.getAlgorithmPathColor(this.value));
     });
     $(':input[name="heuristic"]').change(function (event) {
         if (this.checked) {

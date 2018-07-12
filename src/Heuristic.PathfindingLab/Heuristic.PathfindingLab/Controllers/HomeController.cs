@@ -8,5 +8,10 @@ namespace Heuristic.PathfindingLab.Controllers
         {
             return View();
         }
+
+        public IActionResult Map()
+        {
+            return PartialView();
+        }
     }
 }

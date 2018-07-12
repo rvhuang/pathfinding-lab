@@ -310,7 +310,7 @@ class PathfindingHistory implements Pathfinding {
     public readonly heuristics: string[];
     public readonly algorithm: string;
     public readonly algorithmShortName: string;
-    public readonly pathColor: string;
+    public readonly color: string;
 
     public isVisible: boolean;
 
@@ -319,7 +319,7 @@ class PathfindingHistory implements Pathfinding {
         this.heuristics = heuristics;
         this.algorithm = algorithm;
         this.algorithmShortName = PathfindingHistory.getAlgorithmShortName(algorithm);
-        this.pathColor = PathfindingHistory.getAlgorithmPathColor(algorithm);
+        this.color = PathfindingHistory.getAlgorithmPathColor(algorithm);
         this.isVisible = false;
     }
 
@@ -406,32 +406,18 @@ class PathfindingHistory implements Pathfinding {
 }
 
 abstract class Layer {
-    public readonly canvas: HTMLCanvasElement;
+    public readonly element: SVGGElement;
     public readonly tileWidth: number; // unit: px
     public readonly tileHeight: number; // unit: px
     public readonly mapWidth: number; // unit: tile
     public readonly mapHeight: number; //  unit: tile
 
-    constructor(canvas: HTMLCanvasElement, tileWidth: number, tileHeight: number, mapWidth: number, mapHeight: number) {
-        this.canvas = canvas;
+    constructor(canvas: SVGGElement, tileWidth: number, tileHeight: number, mapWidth: number, mapHeight: number) {
+        this.element = canvas;
         this.mapWidth = mapWidth;
         this.mapHeight = mapHeight;
         this.tileWidth = tileWidth;
         this.tileHeight = tileHeight;
-    }
-
-    public static mergeIntoDataURL(layers: Layer[]): string {
-        var result = document.createElement('canvas');
-
-        result.width = layers[0].canvas.width; // based on bottom layer.
-        result.height = layers[0].canvas.height;
-
-        var ctx = result.getContext("2d");
-
-        for (var layer of layers) {
-            ctx.drawImage(layer.canvas, 0, 0);
-        }
-        return result.toDataURL();
     }
 }
 
@@ -447,143 +433,126 @@ class CursorTile {
     }
 }
 
-class CursorLayer extends Layer {
-    private readonly cursorAsset: HTMLImageElement;
-    private readonly tiles: Array<CursorTile>;
+class CursorLayer extends Layer { 
+    private readonly cursor: SVGRectElement;
 
-    private _i: number;
-    private _j: number;
+    private cursorX: number = 0;
+    private cursorY: number = 0;
 
     public readonly paths: Array<PathfindingHistory>;
 
-    constructor(canvas: HTMLCanvasElement, assetUrl: string, tileWidth: number, tileHeight: number, mapWidth: number, mapHeight: number) {
-        super(canvas, tileWidth, tileHeight, mapWidth, mapHeight);
+    constructor(element: SVGGElement, cursor: SVGRectElement, tileWidth: number, tileHeight: number, mapWidth: number, mapHeight: number) {
+        super(element, tileWidth, tileHeight, mapWidth, mapHeight);
 
-        this.cursorAsset = new Image();
-        this.cursorAsset.addEventListener("load", e => this.onCursorAssetLoaded(e));
-        this.cursorAsset.src = assetUrl;
-        this.tiles = new Array<CursorTile>();
         this.paths = new Array<PathfindingHistory>();
+        this.cursor = cursor;
+        this.element.parentElement.addEventListener("mousemove", e => this.onLayerMouseMove(e));
+    }
 
-        this._i = 0;
-        this._j = 0;
+    private onLayerMouseMove(event: MouseEvent) {
+        var rect = this.element.parentElement.getBoundingClientRect();
+        var mouseX = Math.floor((event.clientX - rect.left) / this.tileWidth);
+        var mouseY = Math.floor((event.clientY - rect.top) / this.tileHeight);
+    
+        if (this.cursorX != mouseX) {
+            this.cursor.x.baseVal.value = mouseX * this.tileWidth;
+            this.cursorX = mouseX;
+        }
+        if (this.cursorY != mouseY) {
+            this.cursor.y.baseVal.value = mouseY * this.tileHeight;
+            this.cursorY = mouseY;
+        }
     }
 
     public togglePath(index: number): boolean {
         var path = this.paths[index];
         if (path == null) return;
 
-        var ctx = this.canvas.getContext("2d");
-
         path.isVisible = !path.isVisible;
-        for (let step of path.path) {
-            this.restoreTile(ctx, step.x, step.y);
+
+        if (path.isVisible) {
+            var begin = 0.3;
+
+            for (let step of path.path) {
+                var rect = document.getElementById("cursor-tile").cloneNode(true) as SVGRectElement; // document.createElementNS("http://www.w3.org/2000/svg", "use");
+    
+                rect.id = "path-index-" + index.toString() + "-" + step.x.toString() + "-" + step.y.toString();
+                rect.x.baseVal.value = step.x * this.tileWidth;
+                rect.y.baseVal.value = step.y * this.tileHeight;
+                rect.classList.add("path-index");
+                rect.classList.add("path-index-" + index.toString());
+                rect.setAttribute("fill", path.color); 
+                rect.querySelector("animate").setAttribute("begin", "DOMNodeInsertedIntoDocument+" + begin.toString() + "s");   
+
+                begin += 0.1;
+                this.element.appendChild(rect);
+            }
+        } 
+        else { 
+            for (let rect of [].slice.call(this.element.getElementsByClassName("path-index-" + index.toString()))) {
+                rect.remove();
+            }
         }
         return path.isVisible;
     }
 
-    public placeTile(i: number, j: number, color: string): boolean {
-        var found = false;
+    public placeTile(x: number, y: number, color: string) {
+        var elementId = "tile-index-" + x.toString() + "-" + y.toString();
+        var rect = this.element.querySelector("#" + elementId);
 
-        for (var index = 0; index < this.tiles.length; index++) {
-            var tile = this.tiles[index];
+        if (rect != null) {
+            rect.setAttribute("fill", color);
+        }
+        else {
+            let tile = document.createElementNS("http://www.w3.org/2000/svg", "use");
 
-            if (tile.x == i && tile.y == j) {
-                if (tile.color == color) {
-                    return false; // Already exists. Do nothing here.
-                }
-                else {
-                    this.tiles[index] = { x: i, y: j, color: color }; // Update color.
-                }
-                found = true;
-                break;
-            }
+            tile.id = elementId;
+            tile.x.baseVal.value = x * this.tileWidth;
+            tile.y.baseVal.value = y * this.tileHeight;
+            tile.width.baseVal.value = this.tileWidth;
+            tile.height.baseVal.value = this.tileHeight;
+            tile.classList.add("tile-index");
+            tile.setAttribute("fill", color);
+            tile.setAttribute("href", "#cursor-tile");
+
+            this.element.appendChild(tile);
         }
-        if (!found) {
-            this.tiles.push({ x: i, y: j, color: color }); // Does not exist. Add new one.
+    }
+
+    public removeTile(x: number, y: number) {
+        var elementId = "tile-index-" + x.toString() + "-" + y.toString();
+        var rect = this.element.querySelector("#" + elementId);
+
+        if (rect != null) {
+            rect.remove();
         }
-        this.restoreTile(this.canvas.getContext("2d"), i, j);
-        return true;
     }
 
     public clearTiles() {
-        var ctx = this.canvas.getContext("2d");
-
-        for (let tile of this.tiles.splice(0, this.tiles.length)) {
-            this.restoreTile(ctx, tile.x, tile.y);
+        for (let rect of [].slice.call(this.element.getElementsByClassName("path-index"))) {
+            rect.remove();
         }
-    }
-
-    private restoreTile(ctx: CanvasRenderingContext2D, i: number, j: number) {
-        var globalAlpha = ctx.globalAlpha;
-        var fillStyle = ctx.fillStyle;
-
-        ctx.clearRect(i * this.tileWidth, j * this.tileWidth, this.tileHeight, this.tileHeight);
-        ctx.globalAlpha = 0.6;
-
-        for (let path of this.paths) {
-            if (path.isVisible && path.path.some(t => t.x == i && t.y == j)) {
-                ctx.fillStyle = path.pathColor;
-                ctx.fillRect(i * this.tileWidth, j * this.tileWidth, this.tileHeight, this.tileHeight);
-            }
+        for (let rect of [].slice.call(this.element.getElementsByClassName("tile-index"))) {
+            rect.remove();
         }
-        for (let tile of this.tiles) {
-            if (tile.x == i && tile.y == j) {
-                ctx.fillStyle = tile.color;
-                ctx.fillRect(i * this.tileWidth, j * this.tileWidth, this.tileHeight, this.tileHeight);
-            }
-        }
-        ctx.fillStyle = fillStyle;
-        ctx.globalAlpha = globalAlpha;
-    }
-
-    private onCursorAssetLoaded(event: Event) {
-        this.canvas.addEventListener("mousemove", e => this.onCursorLayerMouseMove(e)); // #007bff
-        this.canvas.addEventListener("mouseleave", e => this.onCursorLayerMouseLeave(e)); // #007bff
-    }
-
-    private onCursorLayerMouseMove(event: MouseEvent) {
-        var rect = this.canvas.getBoundingClientRect();
-        var i = Math.floor((event.clientX - rect.left) / this.tileWidth);
-        var j = Math.floor((event.clientY - rect.top) / this.tileHeight);
-
-        if (i !== this._i || j !== this._j) {
-            var ctx = this.canvas.getContext("2d");
-
-            ctx.drawImage(this.cursorAsset, i * this.tileWidth, j * this.tileHeight);
-
-            this.restoreTile(ctx, this._i, this._j);
-            this._i = i;
-            this._j = j;
-        }
-    }
-
-    private onCursorLayerMouseLeave(event: MouseEvent) {
-        this.restoreTile(this.canvas.getContext("2d"), this._i, this._j);
     }
 }
 
 class ForegroundLayer extends Layer {
-    private readonly sourceLayer: Layer;
-    private readonly foregroundAssets: ReadonlyArray<HTMLImageElement>;
+    private readonly assetUrls: ReadonlyArray<string>;
 
     public objectPracingPredicate: (i: number, j: number) => boolean;
     public pathPlacingCallback: (i: number, j: number) => boolean;
 
-    constructor(sourceLayer: Layer, canvas: HTMLCanvasElement, assetUrls: ReadonlyArray<string>) {
-        super(canvas, sourceLayer.tileWidth, sourceLayer.tileHeight, sourceLayer.mapWidth, sourceLayer.mapHeight);
-
-        this.sourceLayer = sourceLayer;
-        this.sourceLayer.canvas.addEventListener("mouseup", e => this.onSourceLayerMouseUp(e));
-        this.foregroundAssets = assetUrls.map(function (url) {
-            var img = new Image();
-            img.src = url;
-            return img;
-        });
+    constructor(sourceLayer: Layer, element: SVGGElement, assetUrls: ReadonlyArray<string>) {
+        super(element, sourceLayer.tileWidth, sourceLayer.tileHeight, sourceLayer.mapWidth, sourceLayer.mapHeight);
+        
+        this.element.parentElement.addEventListener("mouseup", e => this.onSourceLayerMouseUp(e));
+        this.assetUrls = assetUrls;
     }
 
     private onSourceLayerMouseUp(event: MouseEvent) {
-        var rect = this.canvas.getBoundingClientRect();
+        var rect = this.element.parentElement.getBoundingClientRect();
         var i = Math.floor((event.clientX - rect.left) / this.tileWidth);
         var j = Math.floor((event.clientY - rect.top) / this.tileHeight);
 
@@ -605,78 +574,42 @@ class ForegroundLayer extends Layer {
     }
 
     public placePath(path: ReadonlyArray<Step>, assetUrlSelector: (step: Step) => string) {
-        var ctx = this.canvas.getContext("2d");
-        var tileWidth = this.tileWidth;
-        var tileHeight = this.tileHeight;
-
         for (let step of path) {
-            var img = new Image();
-
-            img.addEventListener('load', function () {
-                ctx.drawImage(this, step.x * tileWidth, step.y * tileHeight, tileWidth, tileHeight);
-            }, false);
-            img.src = assetUrlSelector(step);
+            this.placeImage(step.x, step.y, assetUrlSelector(step));    
         };
     }
 
     public placeStep (step: Step, assetUrl: string) {
-        var ctx = this.canvas.getContext("2d");
-        var img = new Image();
-        var tileWidth = this.tileWidth;
-        var tileHeight = this.tileHeight;
-
-        img.addEventListener('load', function () {
-            ctx.drawImage(this, step.x * tileWidth, step.y * tileHeight, tileWidth, tileHeight);
-        }, false);
-        img.src = assetUrl;
+        this.placeImage(step.x, step.y, assetUrl);
     }
 
-    public placeObject(i: number, j: number) {
-        var ctx = this.canvas.getContext("2d");
-        var asset = this.foregroundAssets[(i + j) % this.foregroundAssets.length];
-
-        ctx.drawImage(asset, i * this.tileWidth, j * this.tileHeight, Math.min(asset.width, this.tileWidth), Math.min(asset.height, this.tileHeight));
+    private placeImage(x: number, y: number, assetUrl: string): SVGImageElement {
+        var img = document.createElementNS("http://www.w3.org/2000/svg", "image");
+    
+        img.x.baseVal.value = x * this.tileWidth;
+        img.y.baseVal.value = y * this.tileHeight;
+        img.width.baseVal.value = this.tileWidth;
+        img.height.baseVal.value = this.tileHeight;
+        img.setAttribute("href", assetUrl);
+        img.classList.add("image-x-" + x.toString() + "-y-" + y.toString());
+        
+        this.element.appendChild(img);
+        return img;
     }
 
-    public removeObject(i: number, j: number) {
-        var ctx = this.canvas.getContext("2d");
+    public placeObject(x: number, y: number) { 
+        this.placeImage(x, y, this.assetUrls[(x + y) % this.assetUrls.length]);
+    }
 
-        ctx.clearRect(i * this.tileWidth, j * this.tileHeight, this.tileWidth, this.tileHeight);
+    public removeObject(x: number, y: number) {
+        for (let img of [].slice.call(this.element.getElementsByClassName("image-x-" + x.toString() + "-y-" + y.toString()))) {
+            img.remove();
+        }
     }
 
     public clearMap() {
-        var ctx = this.canvas.getContext("2d");
-
-        ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    }
-}
-
-class BackgroundLayer extends Layer {
-    private readonly backgroundAssets: ReadonlyArray<HTMLImageElement>;
-
-    constructor(sourceLayer: Layer, canvas: HTMLCanvasElement, assetUrls: ReadonlyArray<string>) {
-        super(canvas, sourceLayer.tileWidth, sourceLayer.tileHeight, sourceLayer.mapWidth, sourceLayer.mapHeight);
-
-        this.backgroundAssets = assetUrls.map(url => new Image());
-        for (var i = 0; i < this.backgroundAssets.length; i++) {
-            var img = this.backgroundAssets[i];
-
-            img.addEventListener("load", e => this.onAssetLoaded(e));
-            img.tabIndex = i;
-            img.src = assetUrls[i];
-        }
-    }
-
-    private onAssetLoaded(event: Event) {
-        var ctx = this.canvas.getContext("2d");
-        var asset = event.srcElement as HTMLImageElement;
-
-        for (var i = 0; i < this.mapWidth; i++) {
-            for (var j = 0; j < this.mapHeight; j++) {
-                if ((i + j) % this.backgroundAssets.length === asset.tabIndex) {
-                    ctx.drawImage(asset, i * this.tileWidth, j * this.tileWidth, this.tileWidth, this.tileHeight);
-                }
-            }
-        }
+        while (this.element.lastChild != null) {
+            this.element.removeChild(this.element.lastChild);
+        } 
     }
 }

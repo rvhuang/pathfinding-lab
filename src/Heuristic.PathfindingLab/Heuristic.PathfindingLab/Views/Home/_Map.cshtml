@@ -1,0 +1,24 @@
+﻿@{ 
+    var tileSize = 32; // pixel
+    var mapSize = 20;
+}
+<svg version="1.1" width="@(tileSize * mapSize)" height="@(tileSize * mapSize)" id="map" oncontextmenu="return false;">
+    <defs>
+        <pattern id="background-pattern" x="0" y="0" width="@(2f / mapSize)" height="@(1f / mapSize)">
+            <image x="0" y="0" width="@tileSize" height="@tileSize" href="/images/tileGrass1.png" />
+            <image x="@tileSize" y="0" width="@tileSize" height="@tileSize" href="/images/tileGrass1.png" />
+        </pattern>
+        <rect id="cursor-tile" width="@tileSize" height="@tileSize" fill-opacity="0.0">
+            <animate attributeName="fill-opacity" values="0;0.6" dur="0.3s" repeatCount="0" fill="freeze" fill-opacity="freeze" />
+        </rect>
+    </defs>
+    <!--Background--> 
+    <rect fill="url(#background-pattern)" width="@(tileSize * mapSize)" height="@(tileSize * mapSize)" />
+    <!--Foreground-->
+    <g id="foreground"></g>
+    <!--Cursor-->
+    <g id="cursor"></g>
+    <g>
+        <rect id="mouse-cursor" width="@tileSize" height="@tileSize" x="0" y="0" fill="cadetblue" fill-opacity="0.6" />
+    </g>
+</svg>

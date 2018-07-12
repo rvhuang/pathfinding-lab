@@ -4,10 +4,30 @@
 }
 <div class="row">
     <div class="col-lg-6">
-        <div style="position: relative; width: 640px; height: 640px; margin: 2px; border-style:solid; border-width:1px; border-color:darkgreen;">
-            <canvas id="worldLayer" width="640" height="640" style="position: absolute; left: 0; top: 0; z-index: 0;" oncontextmenu="return false;"></canvas>
-            <canvas id="middleLayer" width="640" height="640" style="position: absolute; left: 0; top: 0; z-index: 1;" oncontextmenu="return false;"></canvas>
-            <canvas id="cursorLayer" width="640" height="640" style="position: absolute; left: 0; top: 0; z-index: 2;" oncontextmenu="return false;"></canvas>
+        @await Html.PartialAsync("_Map")
+        <div class="row">
+            <div class="col-md-12">
+                <div class="btn-group" role="group" style="margin-top: 2px;">
+                    <button type="button" class="btn btn-default btn-sm" data-toggle="tooltip" title="Start over" id="btnClear">
+                        <span class="glyphicon glyphicon-refresh"></span>
+                    </button>
+                    <button type="button" class="btn btn-default btn-sm" data-toggle="tooltip" title="Save current state" id="btnSave">
+                        <span class="glyphicon glyphicon-floppy-disk"></span>
+                    </button>
+                    <button type="button" class="btn btn-default btn-sm" data-toggle="tooltip" title="Load saved state" id="btnLoad">
+                        <span class="glyphicon glyphicon-floppy-open"></span>
+                    </button>@*
+                    <a class="btn btn-default btn-sm" download="pathfinding-lab.svg" data-toggle="tooltip" title="Save as SVG image" id="btnDownload">
+                        <span class="glyphicon glyphicon-picture"></span>
+                    </a>*@
+                    <a class="btn btn-default btn-sm" download="data.json" data-toggle="tooltip" title="Download map data in JSON format" id="btnDownloadJson">
+                        <span class="glyphicon glyphicon-download"></span>
+                    </a>
+                    <button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#modalInfo">
+                        <span class="glyphicon glyphicon-info-sign"></span>
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
     <div class="col-lg-6">
@@ -93,32 +113,6 @@
 
                                 </code></pre>
                     </div>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-12">
-                <div class="btn-group" role="group" style="margin-top: 2px;">
-                    <button type="button" class="btn btn-default btn-sm" data-toggle="tooltip" title="Start over" id="btnClear">
-                        <span class="glyphicon glyphicon-refresh"></span>
-                    </button>
-                    <button type="button" class="btn btn-default btn-sm" data-toggle="tooltip" title="Save current state" id="btnSave">
-                        <span class="glyphicon glyphicon-floppy-disk"></span>
-                    </button>
-                    <button type="button" class="btn btn-default btn-sm" data-toggle="tooltip" title="Load saved state" id="btnLoad">
-                        <span class="glyphicon glyphicon-floppy-open"></span>
-                    </button>
-                </div>
-                <div class="btn-group" role="group" style="margin-top: 2px;">
-                    <a class="btn btn-default btn-sm" download="pathfinding-lab.jpg" data-toggle="tooltip" title="Save as image" id="btnDownload">
-                        <span class="glyphicon glyphicon-picture"></span>
-                    </a>
-                    <a class="btn btn-default btn-sm" download="data.json" data-toggle="tooltip" title="Download map data in JSON format" id="btnDownloadJson">
-                        <span class="glyphicon glyphicon-download"></span>
-                    </a>
-                    <button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#modalInfo">
-                        <span class="glyphicon glyphicon-info-sign"></span>
-                    </button>
                 </div>
             </div>
         </div>
