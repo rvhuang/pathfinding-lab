@@ -1,0 +1,6 @@
+{
+    "compileOnSave": true,
+    "files": [
+      "wwwroot/js/core.ts"
+    ]
+  }
