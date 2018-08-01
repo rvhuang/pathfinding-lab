@@ -1,11 +1,11 @@
-﻿using LinqToAStar;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 
 namespace Heuristic.PathfindingLab.Controllers
 {
+    using Linq;
     using Models;
 
     [Produces("application/json")]
