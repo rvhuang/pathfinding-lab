@@ -4,7 +4,7 @@
 
 A playground where you can experiment, run and compare different algorithms and heuristic functions.
 
-Visit [https://pathfinding-lab.azurewebsites.net/](https://pathfinding-lab.azurewebsites.net/) and try it out.
+Visit [the instance](http://pathfinding-lab.australiaeast.azurecontainer.io/) running on Azure Container Instance and try it out.
 
 Read the article at [CodeProject](https://www.codeproject.com/Articles/1250578/A-Simple-Pathfinding-Laboratory) for detailed information.
 
