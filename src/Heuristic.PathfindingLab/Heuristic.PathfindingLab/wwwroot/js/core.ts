@@ -66,15 +66,18 @@
         }
     }
 
-    public createPathfindingRequestBody(body: PathfindingRequestBody, x: number, y: number): boolean {
+    public createPathfindingRequestBody(body: PathfindingRequestBody, x: number, y: number): PathfindingRequestStatus {
         if (isNaN(this.fromX) && isNaN(this.fromY)) {
             this.fromX = x;
             this.fromY = y;
 
-            return false;
+            return PathfindingRequestStatus.Initiated;
         }
         if (this.fromX == x && this.fromY == y) {
-            return false;
+            this.fromX = NaN;
+            this.fromY = NaN;
+
+            return PathfindingRequestStatus.None;
         }
 
         body.fromX = this.fromX;
@@ -86,7 +89,7 @@
         this.fromX = NaN;
         this.fromY = NaN;
 
-        return true; // Ready for sending request.
+        return PathfindingRequestStatus.Ready; // Ready for sending request.
     }
 
     public assignDirection(step: Step) {
@@ -147,26 +150,32 @@ class Step {
         var name = "";
 
         if ((this.direction & Direction.Down) == Direction.Down)
-            name += "D";
+            name += "d";
         if ((this.direction & Direction.Left) == Direction.Left)
-            name += "L";
+            name += "l";
         if ((this.direction & Direction.Right) == Direction.Right)
-            name += "R";
+            name += "r";
         if ((this.direction & Direction.Up) == Direction.Up)
-            name += "U";
+            name += "u";
 
         switch (name) {
-            case "U":
-            case "D":
-                name = "DU";
+            case "u":
+            case "d":
+                name = "du";
                 break;
-            case "L":
-            case "R":
-                name = "LR";
+            case "l":
+            case "r":
+                name = "lr";
                 break;
         }
         return name;
     }
+}
+
+enum PathfindingRequestStatus {
+    None = 0,
+    Initiated = 1, 
+    Ready = 2,
 }
 
 enum Direction {
@@ -216,7 +225,9 @@ class PathfindingRequestBody implements Pathfinding {
         linq.push("var solution = from p in queryable");
         linq.push("               from obstacle in GetMapObstacles()");
         linq.push("               where boundary.Contains(p) && p != obstacle");
-        linq.push("               " + PathfindingRequestBody.getOrderByThenByStatement(this.heuristics));
+        if (this.heuristics.length > 0) {
+            linq.push("               " + PathfindingRequestBody.getOrderByThenByStatement(this.heuristics));
+        }
         linq.push("               select p;");
 
         return linq;
@@ -232,7 +243,9 @@ class PathfindingRequestBody implements Pathfinding {
 
         linq.push("var solution = from p in queryable.Except(GetMapObstacles())");
         linq.push("               where boundary.Contains(p)");
-        linq.push("               " + PathfindingRequestBody.getOrderByThenByStatement(this.heuristics));
+        if (this.heuristics.length > 0) {
+            linq.push("               " + PathfindingRequestBody.getOrderByThenByStatement(this.heuristics));
+        }
         linq.push("               select p;");
 
         return linq;
@@ -249,7 +262,9 @@ class PathfindingRequestBody implements Pathfinding {
         linq.push("var obstacles = GetMapObstacles();");
         linq.push("var solution = from p in queryable");
         linq.push("               where boundary.Contains(p) && !obstacles.Contains(p)");
-        linq.push("               " + PathfindingRequestBody.getOrderByThenByStatement(this.heuristics));
+        if (this.heuristics.length > 0) {
+            linq.push("               " + PathfindingRequestBody.getOrderByThenByStatement(this.heuristics));
+        }
         linq.push("               select p;");
 
         return linq;
@@ -447,6 +462,8 @@ class CursorLayer extends Layer {
         this.paths = new Array<PathfindingHistory>();
         this.cursor = cursor;
         this.element.parentElement.addEventListener("mousemove", e => this.onLayerMouseMove(e));
+        this.element.parentElement.addEventListener("mouseleave", e => this.onLayerMouseLeave(e));
+        this.element.parentElement.addEventListener("mouseenter", e => this.onLayerMouseEnter(e));
     }
 
     private onLayerMouseMove(event: MouseEvent) {
@@ -462,6 +479,14 @@ class CursorLayer extends Layer {
             this.cursor.y.baseVal.value = mouseY * this.tileHeight;
             this.cursorY = mouseY;
         }
+    }
+
+    private onLayerMouseLeave(event: MouseEvent) {
+        this.cursor.style.visibility = "hidden";
+    }
+
+    private onLayerMouseEnter(event: MouseEvent) {
+        this.cursor.style.visibility = "inherit";
     }
 
     public togglePath(index: number): boolean {
@@ -539,16 +564,16 @@ class CursorLayer extends Layer {
 }
 
 class ForegroundLayer extends Layer {
-    private readonly assetUrls: ReadonlyArray<string>;
+    private readonly assetIds: ReadonlyArray<string>;
 
     public objectPracingPredicate: (i: number, j: number) => boolean;
     public pathPlacingCallback: (i: number, j: number) => boolean;
 
-    constructor(sourceLayer: Layer, element: SVGGElement, assetUrls: ReadonlyArray<string>) {
+    constructor(sourceLayer: Layer, element: SVGGElement, assetIds: ReadonlyArray<string>) {
         super(element, sourceLayer.tileWidth, sourceLayer.tileHeight, sourceLayer.mapWidth, sourceLayer.mapHeight);
         
         this.element.parentElement.addEventListener("mouseup", e => this.onSourceLayerMouseUp(e));
-        this.assetUrls = assetUrls;
+        this.assetIds = assetIds;
     }
 
     private onSourceLayerMouseUp(event: MouseEvent) {
@@ -573,32 +598,30 @@ class ForegroundLayer extends Layer {
         }
     }
 
-    public placePath(path: ReadonlyArray<Step>, assetUrlSelector: (step: Step) => string) {
+    public placePath(path: ReadonlyArray<Step>, assetIdSelector: (step: Step) => string) {
         for (let step of path) {
-            this.placeImage(step.x, step.y, assetUrlSelector(step));    
+            this.placeImage(step.x, step.y, assetIdSelector(step));    
         };
     }
 
-    public placeStep (step: Step, assetUrl: string) {
-        this.placeImage(step.x, step.y, assetUrl);
+    public placeStep (step: Step, assertId: string) {
+        this.placeImage(step.x, step.y, assertId);
     }
 
-    private placeImage(x: number, y: number, assetUrl: string): SVGImageElement {
-        var img = document.createElementNS("http://www.w3.org/2000/svg", "image");
+    private placeImage(x: number, y: number, assertId: string): SVGUseElement {
+        var img = document.createElementNS("http://www.w3.org/2000/svg", "use");
     
         img.x.baseVal.value = x * this.tileWidth;
         img.y.baseVal.value = y * this.tileHeight;
-        img.width.baseVal.value = this.tileWidth;
-        img.height.baseVal.value = this.tileHeight;
-        img.setAttribute("href", assetUrl);
+        img.setAttribute("href", "#" + assertId);
         img.classList.add("image-x-" + x.toString() + "-y-" + y.toString());
-        
+
         this.element.appendChild(img);
         return img;
     }
 
     public placeObject(x: number, y: number) { 
-        this.placeImage(x, y, this.assetUrls[(x + y) % this.assetUrls.length]);
+        this.placeImage(x, y, this.assetIds[(x + y) % this.assetIds.length]);
     }
 
     public removeObject(x: number, y: number) {

@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Net;
 
 namespace Heuristic.PathfindingLab.Controllers
 {
@@ -13,7 +15,7 @@ namespace Heuristic.PathfindingLab.Controllers
     public class PathfindingController : ControllerBase
     {
         [HttpPost]
-        public IEnumerable<Point> Find([FromBody]PathfindingRequestBody body)
+        public ResponseBody<Point[]> Find([FromBody]PathfindingRequestBody body)
         {
             var start = new Point(body.FromX, body.FromY);
             var goal = new Point(body.GoalX, body.GoalY);
@@ -24,11 +26,23 @@ namespace Heuristic.PathfindingLab.Controllers
             var solution = from step in queryable.Except(obstacles)
                            where boundary.Contains(step)
                            select step;
-
-            return ApplyHeuristicFunction(solution, body.Heuristics);
+            try
+            {
+                return new ResponseBody<Point[]>() { Data = ApplyHeuristicFunction(solution, body.Heuristics).ToArray() };
+            }
+            catch (InvalidOperationException)
+            {
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return new ResponseBody<Point[]>() { };
+            }
+            catch (Exception)
+            {
+                Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                return new ResponseBody<Point[]>() { };
+            }
         }
 
-        private static HeuristicSearchOrderBy<Point, Point> ApplyHeuristicFunction(HeuristicSearchBase<Point, Point> queryable, string[] heuristicNames)
+        private static HeuristicSearchBase<Point, Point> ApplyHeuristicFunction(HeuristicSearchBase<Point, Point> queryable, string[] heuristicNames)
         {
             var orderBy = default(HeuristicSearchOrderBy<Point, Point>);
             var goal = queryable.To;
@@ -43,9 +57,12 @@ namespace Heuristic.PathfindingLab.Controllers
                     orderBy = queryable.OrderBy(p => p.GetEuclideanDistance(goal));
                     break;
 
-                default:
+                case nameof(PointExtensions.GetManhattanDistance):
                     orderBy = queryable.OrderBy(p => p.GetManhattanDistance(goal));
                     break;
+
+                default:
+                    return queryable;
             }
             foreach (var heuristicName in heuristicNames.Skip(1).Take(2))
             {
@@ -59,9 +76,12 @@ namespace Heuristic.PathfindingLab.Controllers
                         orderBy = orderBy.ThenBy(p => p.GetEuclideanDistance(goal));
                         break;
 
-                    default:
+                    case nameof(PointExtensions.GetManhattanDistance):
                         orderBy = orderBy.ThenBy(p => p.GetManhattanDistance(goal));
                         break;
+
+                    default:
+                        continue;
                 }
             }
             return orderBy;

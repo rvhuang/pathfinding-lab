@@ -28,6 +28,7 @@ namespace Heuristic.PathfindingLab
                     NamingStrategy = new CamelCaseNamingStrategy()
                 };
                 options.SerializerSettings.Converters.Add(new PointJsonConverter());
+                options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
             });
         }
 

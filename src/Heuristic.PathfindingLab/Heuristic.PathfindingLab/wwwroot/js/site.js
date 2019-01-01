@@ -7,73 +7,95 @@ $(document).ready(function () {
     
     var cursorLayer = new CursorLayer(document.getElementById('cursor'), document.getElementById('mouse-cursor'), tileSize, tileSize, mapSize, mapSize);
     var foregroundLayer = new ForegroundLayer(cursorLayer, document.getElementById('foreground'), [
-        "images/barricadeMetal.png",
-        "images/barricadeWood.png",
-        "images/crateMetal.png",
-        "images/crateWood_side.png",
-        "images/crateWood.png",
-        "images/crateMetal_side.png"
+        "obstacle-0",
+        "obstacle-1",
+        "obstacle-2",
+        "obstacle-3",
+        "obstacle-4",
+        "obstacle-5"
     ]);
     foregroundLayer.objectPracingPredicate = (i, j) => core.placeObstacle(i, j);
     foregroundLayer.pathPlacingCallback = function(i, j) {
         if (core.isObstacle(i, j)) {
             return;
         }
-        if (core.createPathfindingRequestBody(current, i, j)) {
-            var heuristics = current.heuristics.slice();
-            var algorithm = current.algorithm;
+        switch (core.createPathfindingRequestBody(current, i, j)) {
+            case PathfindingRequestStatus.Ready:
+                var heuristics = current.heuristics.slice();
+                var algorithm = current.algorithm;
 
-            cursorLayer.placeTile(i, j, PathfindingHistory.getAlgorithmPathColor(current.algorithm));
-            $.ajax({
-                type: "POST",
-                url: "api/pathfinding/",
-                data: JSON.stringify(current),
-                contentType: "application/json",
-                success: function (data) {
-                    var path = core.assignDirections(data);
+                cursorLayer.placeTile(i, j, PathfindingHistory.getAlgorithmPathColor(current.algorithm));
+                $.ajax({
+                    type: "POST",
+                    url: "api/pathfinding/",
+                    data: JSON.stringify(current),
+                    contentType: "application/json",
+                    success: function (response) {
+                        var data = response.data;
+                        var path = core.assignDirections(data);
 
-                    if (path.length > 0) {
-                        var history = new PathfindingHistory(path, heuristics, algorithm);
+                        if (path.length > 0) {
+                            var history = new PathfindingHistory(path, heuristics, algorithm);
 
-                        foregroundLayer.placePath(path, step => "images/tileGrass_road_" + step.getDirectionShortName() + ".png");
-                        if (cursorLayer.paths.length > 7) {
-                            $("#histories button:first-child").fadeOut(500, function () {
-                                $(this).remove();
-                                if (cursorLayer.paths[0].isVisible) {
-                                    cursorLayer.togglePath(0);
+                            foregroundLayer.placePath(path, step => "path-" + step.getDirectionShortName());
+                            if (cursorLayer.paths.length > 7) {
+                                $("#histories button:first-child").fadeOut(500, function () {
+                                    $(this).remove();
+                                    if (cursorLayer.paths[0].isVisible) {
+                                        cursorLayer.togglePath(0);
+                                    }
+                                    cursorLayer.paths.shift();
+                                });
+                            }
+                            cursorLayer.paths.push(history);
+                            cursorLayer.removeTile(path[0].x, path[0].y);
+                            cursorLayer.removeTile(path[path.length - 1].x, path[path.length - 1].y);
+
+                            var btn = $("#historyTemplate button:first-child").clone();
+
+                            btn.children('[data-field="PathColor"]').css("color", history.color);
+                            btn.children('[data-field="AlgorithmShortName"]').text(history.algorithmShortName);
+                            btn.children('[data-field="Path"]').text("(" + history.path.length + ")");
+                            btn.appendTo("#histories");
+                            btn.click(function (e) {
+                                var index = $(this).index();
+
+                                if (cursorLayer.togglePath(index)) {
+                                    updateOptions(cursorLayer.paths[index]);
+                                    updateExpressions(cursorLayer.paths[index]);
                                 }
-                                cursorLayer.paths.shift();
+                                else { // Restore to current state.
+                                    updateOptions(current);
+                                    updateExpressions(current);
+                                }
                             });
                         }
-                        cursorLayer.paths.push(history);
-                        cursorLayer.removeTile(path[0].x, path[0].y);
-                        cursorLayer.removeTile(path[path.length - 1].x, path[path.length - 1].y);
-
-                        var btn = $("#historyTemplate button:first-child").clone();
-                        
-                        btn.children('[data-field="PathColor"]').css("color", history.color);
-                        btn.children('[data-field="AlgorithmShortName"]').text(history.algorithmShortName);
-                        btn.children('[data-field="Path"]').text("(" + history.path.length + ")");
-                        btn.appendTo("#histories");
-                        btn.click(function (e) {
-                            var index = $(this).index();
-
-                            if (cursorLayer.togglePath(index)) {
-                                updateOptions(cursorLayer.paths[index]);
-                                updateExpressions(cursorLayer.paths[index]);
-                            }
-                            else { // Restore to current state.
-                                updateOptions(current);
-                                updateExpressions(current);
-                            }
-                        }); 
+                        updateExpressions(current);
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        var msg = "";
+                        switch (jqXHR.status) {
+                            case 400:
+                                msg = "// The selected algorithm needs at least one Heuristic function.";
+                                $(':input[name="heuristic"]').parent().css("color", "red");
+                                break;
+                            case 500:
+                                msg = "// Something went wrong. Please try again later or report an issue at GitHub.";
+                                break;
+                        }
+                        $("#exampleSelectMany").find("code").text(msg);
+                        $("#exampleExcept").find("code").text(msg);
+                        $("#exampleWhere").find("code").text(msg);
                     }
-                    updateExpressions(current);
-                }
-            });
-        }
-        else {            
-            cursorLayer.placeTile(i, j, PathfindingHistory.getAlgorithmPathColor(current.algorithm));
+                });
+                break;
+            case PathfindingRequestStatus.Initiated:
+                cursorLayer.placeTile(i, j, PathfindingHistory.getAlgorithmPathColor(current.algorithm));
+                break;
+
+            case PathfindingRequestStatus.None:
+                cursorLayer.removeTile(i, j);
+                break;
         }
     };
     $('#btnClear').click(function (event) {
@@ -91,15 +113,15 @@ $(document).ready(function () {
             foregroundLayer.placeObject(x, y);
         },
         function (step) { 
-            foregroundLayer.placeStep(step, "images/tileGrass_road_" + step.getDirectionShortName() + ".png");
+            foregroundLayer.placeStep(step, "path-" + step.getDirectionShortName());
         });
     });
     $('#btnDownload').click(function (event) {
         this.href = "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(document.getElementById("map").outerHTML);
-    }); /*
+    });
     $('#btnDownloadJson').click(function (event) {
         this.href = "data:text/json;charset=UTF-8," + encodeURIComponent(JSON.stringify(current));
-    }); */
+    });
     $(':input[name="algorithm"]').change(function (event) {
         current.algorithm = this.value;
         if (current.fromX !== current.goalX && current.FromY !== current.goalY) {
@@ -120,12 +142,12 @@ $(document).ready(function () {
         if (current.fromX !== current.goalX && current.FromY !== current.goalY) {
             updateExpressions(current);
         }
-    }).click(function (event) {
-        if (!this.checked && current.heuristics.length == 1) {
-            $(this).parent().css("color", "red"); 
-            event.preventDefault(); 
-            return false;
-        }
+    }).click(function (/*event*/) {
+        //if (!this.checked && current.heuristics.length === 1) {
+        //    $(this).parent().css("color", "red"); 
+        //    event.preventDefault(); 
+        //    return false;
+        //}
         $("div.checkbox").children("label").css("color", ""); 
         return true;
     });

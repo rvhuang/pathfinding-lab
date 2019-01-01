@@ -4,10 +4,16 @@
 }
 <div class="row">
     <div class="col-lg-6">
-        @await Html.PartialAsync("_Map")
-        <div class="row">
+        <div class="row"> 
             <div class="col-md-12">
-                <div class="btn-group" role="group" style="margin-top: 2px;">
+                <div class="center-block">
+                    @await Html.PartialAsync("_Map")
+                </div>
+            </div>
+        </div>
+        <div class="row" style="margin-top: 2px;">
+            <div class="col-md-12">
+                <div class="btn-group" role="group">
                     <button type="button" class="btn btn-default btn-sm" data-toggle="tooltip" title="Start over" id="btnClear">
                         <span class="glyphicon glyphicon-refresh"></span>
                     </button>
@@ -16,7 +22,8 @@
                     </button>
                     <button type="button" class="btn btn-default btn-sm" data-toggle="tooltip" title="Load saved state" id="btnLoad">
                         <span class="glyphicon glyphicon-floppy-open"></span>
-                    </button>@*
+                    </button>
+                    @*
                     <a class="btn btn-default btn-sm" download="pathfinding-lab.svg" data-toggle="tooltip" title="Save as SVG image" id="btnDownload">
                         <span class="glyphicon glyphicon-picture"></span>
                     </a>*@
@@ -32,8 +39,10 @@
     </div>
     <div class="col-lg-6">
         <div class="row">
-            <h3>Pathfinding Lab <small>powered by <a href="https://github.com/rvhuang/linq-to-astar" target="_blank">LINQ to A*</a></small></h3>
-            <hr />
+            <div class="col-md-12">
+                <h3>Pathfinding Lab <small>powered by <a href="https://github.com/rvhuang/linq-to-astar" target="_blank">LINQ to A*</a></small></h3>
+                <hr />
+            </div>
         </div>
         <div class="row">
             <form id="options">
@@ -57,17 +66,17 @@
                 </div>
                 <div class="col-md-4">
                     <label>Heuristic Functions</label>
-                    <a href="#" role="button" class="btn btn-link" data-toggle="popover" data-trigger="focus" data-placement="right" data-container="body" data-content="A heuristic function is used to evaluate the cost of every step. At least one heuristic function needs to be selected. If more than one function are selected, the subsequent one will be used when previous one evaluates two steps as equal.">
+                    <a href="#" role="button" class="btn btn-link" data-toggle="popover" data-trigger="focus" data-placement="right" data-container="body" data-content="A heuristic function is used to evaluate the cost of every step. For some of algorithms, at least one heuristic function needs to be selected. If more than one function are selected, the subsequent one will be used when previous one evaluates two steps as equal.">
                         <span class="glyphicon glyphicon-question-sign"></span>
                     </a>
                     <div class="checkbox">
-                        <label><input type="checkbox" name="heuristic" value="GetChebyshevDistance" required>Chebyshev Distance</label>
+                        <label><input type="checkbox" name="heuristic" value="GetChebyshevDistance">Chebyshev Distance</label>
                     </div>
                     <div class="checkbox">
-                        <label><input type="checkbox" name="heuristic" value="GetEuclideanDistance" required>Euclidean Distance</label>
+                        <label><input type="checkbox" name="heuristic" value="GetEuclideanDistance">Euclidean Distance</label>
                     </div>
                     <div class="checkbox">
-                        <label><input type="checkbox" name="heuristic" value="GetManhattanDistance" checked required>Manhattan Distance</label>
+                        <label><input type="checkbox" name="heuristic" value="GetManhattanDistance" checked>Manhattan Distance</label>
                     </div>
                 </div>
             </form>

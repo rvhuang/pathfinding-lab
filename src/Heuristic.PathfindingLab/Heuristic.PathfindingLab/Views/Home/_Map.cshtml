@@ -1,18 +1,81 @@
-﻿@{ 
-    var tileSize = 32; // pixel
-    var mapSize = 20;
+﻿@using Microsoft.AspNetCore.Http
+@using Microsoft.AspNetCore.Http.Extensions
+@{
+    const int tileSize = 32; // pixel
+    const int obstacleSize = 28;
+    const int mapSize = 20;
 }
-<svg version="1.1" width="@(tileSize * mapSize)" height="@(tileSize * mapSize)" id="map" oncontextmenu="return false;">
+<svg version="2.0" width="@(tileSize * mapSize)" height="@(tileSize * mapSize)" id="map" oncontextmenu="return false;">
     <defs>
+        <image id="tile-assets" x="0" y="0" width="@(tileSize * 2 * 3)" height="@(tileSize * 2 * 5)" href="@UriHelper.BuildAbsolute(Context.Request.Scheme, Context.Request.Host, new PathString("/images/tileGrass.png"))" />
+        <!---->
+        <svg id="path-dr" preserveAspectRatio="xMidYMid slice" viewBox="0 0 @(tileSize * 2) @(tileSize * 2)" width="@(tileSize)" height="@(tileSize)">
+            <use href="#tile-assets" />
+        </svg>
+        <svg id="path-dlr" preserveAspectRatio="xMidYMid slice" viewBox="@(tileSize * 2) 0 @(tileSize * 2) @(tileSize * 2)" width="@(tileSize)" height="@(tileSize)">
+            <use href="#tile-assets" />
+        </svg>
+        <svg id="path-dl" preserveAspectRatio="xMidYMid slice" viewBox="@(tileSize * 2 * 2) 0 @(tileSize * 2) @(tileSize * 2)" width="@(tileSize)" height="@(tileSize)">
+            <use href="#tile-assets" />
+        </svg>
+        <svg id="path-dru" preserveAspectRatio="xMidYMid slice" viewBox="0 @(tileSize * 2) @(tileSize * 2) @(tileSize * 2)" width="@(tileSize)" height="@(tileSize)">
+            <use href="#tile-assets" />
+        </svg>
+        <svg id="path-dlru" preserveAspectRatio="xMidYMid slice" viewBox="@(tileSize * 2) @(tileSize * 2) @(tileSize * 2) @(tileSize * 2)" width="@(tileSize)" height="@(tileSize)">
+            <use href="#tile-assets" />
+        </svg>
+        <svg id="path-dlu" preserveAspectRatio="xMidYMid slice" viewBox="@(tileSize * 2 * 2) @(tileSize * 2) @(tileSize * 2) @(tileSize * 2)" width="@(tileSize)" height="@(tileSize)">
+            <use href="#tile-assets" />
+        </svg>
+        <svg id="path-ru" preserveAspectRatio="xMidYMid slice" viewBox="0 @(tileSize * 2 * 2) @(tileSize * 2) @(tileSize * 2)" width="@(tileSize)" height="@(tileSize)">
+            <use href="#tile-assets" />
+        </svg>
+        <svg id="path-lru" preserveAspectRatio="xMidYMid slice" viewBox="@(tileSize * 2) @(tileSize * 2 * 2) @(tileSize * 2) @(tileSize * 2)" width="@(tileSize)" height="@(tileSize)">
+            <use href="#tile-assets" />
+        </svg>
+        <svg id="path-lu" preserveAspectRatio="xMidYMid slice" viewBox="@(tileSize * 2 * 2) @(tileSize * 2 * 2) @(tileSize * 2) @(tileSize * 2)" width="@(tileSize)" height="@(tileSize)">
+            <use href="#tile-assets" />
+        </svg>
+        <svg id="path-du" preserveAspectRatio="xMidYMid slice" viewBox="0 @(tileSize * 2 * 3) @(tileSize * 2) @(tileSize * 2)" width="@(tileSize)" height="@(tileSize)">
+            <use href="#tile-assets" />
+        </svg>
+        <svg id="path-lr" preserveAspectRatio="xMidYMid slice" viewBox="@(tileSize * 2) @(tileSize * 2 * 3) @(tileSize * 2) @(tileSize * 2)" width="@(tileSize)" height="@(tileSize)">
+            <use href="#tile-assets" />
+        </svg>
+        <!---->
         <pattern id="background-pattern" x="0" y="0" width="@(2f / mapSize)" height="@(1f / mapSize)">
-            <image x="0" y="0" width="@tileSize" height="@tileSize" href="/images/tileGrass1.png" />
-            <image x="@tileSize" y="0" width="@tileSize" height="@tileSize" href="/images/tileGrass1.png" />
+            <svg preserveAspectRatio="xMidYMid slice" x="0" y="0" viewBox="@(tileSize * 2 * 2) @(tileSize * 2 * 3) @(tileSize * 2) @(tileSize * 2)" width="@(tileSize)" height="@(tileSize)">
+                <use href="#tile-assets" />
+            </svg>
+            <svg preserveAspectRatio="xMidYMid slice" x="@(tileSize)" y="0" viewBox="0 @(tileSize * 2 * 4) @(tileSize * 2) @(tileSize * 2)" width="@(tileSize)" height="@(tileSize)">
+                <use href="#tile-assets" />
+            </svg>
         </pattern>
+        <!---->
+        <svg id="obstacle-0" preserveAspectRatio="xMidYMid slice" viewBox="@(tileSize * 2) @(tileSize * 2 * 4) @(obstacleSize) @(obstacleSize)" width="@(tileSize)" height="@(tileSize)">
+            <use href="#tile-assets" />
+        </svg>
+        <svg id="obstacle-1" preserveAspectRatio="xMidYMid slice" viewBox="@(tileSize * 2 + obstacleSize) @(tileSize * 2 * 4) @(obstacleSize) @(obstacleSize)" width="@(tileSize)" height="@(tileSize)">
+            <use href="#tile-assets" />
+        </svg>
+        <svg id="obstacle-2" preserveAspectRatio="xMidYMid slice" viewBox="@(tileSize * 2 + obstacleSize * 2) @(tileSize * 2 * 4) @(obstacleSize) @(obstacleSize)" width="@(tileSize)" height="@(tileSize)">
+            <use href="#tile-assets" />
+        </svg>
+        <svg id="obstacle-3" preserveAspectRatio="xMidYMid slice" viewBox="@(tileSize * 2 + obstacleSize * 3) @(tileSize * 2 * 4) @(obstacleSize) @(obstacleSize)" width="@(tileSize)" height="@(tileSize)">
+            <use href="#tile-assets" />
+        </svg>
+        <svg id="obstacle-4" preserveAspectRatio="xMidYMid slice" viewBox="@(tileSize * 2) @(tileSize * 2 * 4 + obstacleSize) @(obstacleSize) @(obstacleSize)" width="@(tileSize)" height="@(tileSize)">
+            <use href="#tile-assets" />
+        </svg>
+        <svg id="obstacle-5" preserveAspectRatio="xMidYMid slice" viewBox="@(tileSize * 2 + obstacleSize) @(tileSize * 2 * 4 + obstacleSize) @(obstacleSize) @(obstacleSize)" width="@(tileSize)" height="@(tileSize)">
+            <use href="#tile-assets" />
+        </svg>
+        <!---->
         <rect id="cursor-tile" width="@tileSize" height="@tileSize" fill-opacity="0.0">
             <animate attributeName="fill-opacity" values="0;0.6" dur="0.3s" repeatCount="0" fill="freeze" fill-opacity="freeze" />
         </rect>
     </defs>
-    <!--Background--> 
+    <!--Background-->
     <rect fill="url(#background-pattern)" width="@(tileSize * mapSize)" height="@(tileSize * mapSize)" />
     <!--Foreground-->
     <g id="foreground"></g>
