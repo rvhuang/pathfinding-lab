@@ -1,12 +1,17 @@
 # Pathfinding Lab
 
-![Build Status](https://rvhuang.visualstudio.com/_apis/public/build/definitions/31750fb1-11f7-41f3-9a90-66f5a70f0bc6/1/badge)
-
 A playground where you can experiment, run and compare different algorithms and heuristic functions.
 
-Visit [the instance](http://pathfinding-lab.australiaeast.azurecontainer.io/) running on Azure Container Instance and try it out.
+Visit [the instance](http://pathfinding-lab.codedwith.fun/) running on DigitalOcean and try it out.
 
 Read the article at [CodeProject](https://www.codeproject.com/Articles/1250578/A-Simple-Pathfinding-Laboratory) for detailed information.
+
+## Run the Dockerized instance
+
+```
+docker pull rvhuang/pathfinding-lab:latest
+docker run -d -p 8080:80 pathfinding-lab:latest --name p-lab
+```
 
 ## License
 
