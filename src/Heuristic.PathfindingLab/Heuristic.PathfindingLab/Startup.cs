@@ -40,7 +40,10 @@ namespace Heuristic.PathfindingLab
                 app.UseBrowserLink();
                 app.UseDeveloperExceptionPage();
             }
-
+#if RELEASE
+            app.UseHsts();
+            app.UseHttpsRedirection();
+#endif
             app.UseStaticFiles();
             app.UseMvc(routes =>
             {
