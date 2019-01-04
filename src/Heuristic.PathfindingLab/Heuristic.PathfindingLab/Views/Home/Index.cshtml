@@ -4,7 +4,7 @@
 }
 <div class="row">
     <div class="col-lg-6">
-        <div class="row"> 
+        <div class="row">
             <div class="col-md-12">
                 <div class="center-block">
                     @await Html.PartialAsync("_Map")
@@ -24,16 +24,17 @@
                         <span class="glyphicon glyphicon-floppy-open"></span>
                     </button>
                     @*
-                    <a class="btn btn-default btn-sm" download="pathfinding-lab.svg" data-toggle="tooltip" title="Save as SVG image" id="btnDownload">
-                        <span class="glyphicon glyphicon-picture"></span>
-                    </a>*@
+            <a class="btn btn-default btn-sm" download="pathfinding-lab.svg" data-toggle="tooltip" title="Save as SVG image" id="btnDownload">
+                <span class="glyphicon glyphicon-picture"></span>
+            </a>*@
                     <a class="btn btn-default btn-sm" download="data.json" data-toggle="tooltip" title="Download map data in JSON format" id="btnDownloadJson">
                         <span class="glyphicon glyphicon-download"></span>
                     </a>
                     <button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#modalInfo">
                         <span class="glyphicon glyphicon-info-sign"></span>
                     </button>
-                </div>
+                </div>&nbsp;
+                <span class="hidden-xs hidden-sm small">Left click to place barriers, right click on two positions to get a path.</span>
             </div>
         </div>
     </div>
