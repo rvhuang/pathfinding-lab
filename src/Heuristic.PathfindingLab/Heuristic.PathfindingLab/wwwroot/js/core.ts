@@ -320,8 +320,14 @@ class PathfindingRequestBody implements Pathfinding {
     }
 }
 
+class Detail {
+    public level: number;
+    public step: Step;
+}
+
 class PathfindingHistory implements Pathfinding {
     public readonly path: ReadonlyArray<Step>;
+    public readonly details: ReadonlyArray<Detail>;
     public readonly heuristics: string[];
     public readonly algorithm: string;
     public readonly algorithmShortName: string;
@@ -329,8 +335,9 @@ class PathfindingHistory implements Pathfinding {
 
     public isVisible: boolean;
 
-    constructor(path: Array<Step>, heuristics: Array<string>, algorithm: string) {
+    constructor(path: Array<Step>, heuristics: Array<string>, algorithm: string, details: ReadonlyArray<Detail>) {
         this.path = path;
+        this.details = details;
         this.heuristics = heuristics;
         this.algorithm = algorithm;
         this.algorithmShortName = PathfindingHistory.getAlgorithmShortName(algorithm);
@@ -454,12 +461,12 @@ class CursorLayer extends Layer {
     private cursorX: number = 0;
     private cursorY: number = 0;
 
-    public readonly paths: Array<PathfindingHistory>;
+    public readonly histories: Array<PathfindingHistory>;
 
     constructor(element: SVGGElement, cursor: SVGRectElement, tileWidth: number, tileHeight: number, mapWidth: number, mapHeight: number) {
         super(element, tileWidth, tileHeight, mapWidth, mapHeight);
 
-        this.paths = new Array<PathfindingHistory>();
+        this.histories = new Array<PathfindingHistory>();
         this.cursor = cursor;
         this.element.parentElement.addEventListener("mousemove", e => this.onLayerMouseMove(e));
         this.element.parentElement.addEventListener("mouseleave", e => this.onLayerMouseLeave(e));
@@ -490,35 +497,50 @@ class CursorLayer extends Layer {
     }
 
     public togglePath(index: number): boolean {
-        var path = this.paths[index];
-        if (path == null) return;
+        var history = this.histories[index];
+        if (history == null) return;
 
-        path.isVisible = !path.isVisible;
+        history.isVisible = !history.isVisible;
 
-        if (path.isVisible) {
+        if (history.isVisible) {
             var begin = 0.3;
+            
+            for (let detail of history.details.filter(d => d.level >= 0 && d.step.x >= 0 && d.step.y >= 0)) {
+                let rect = document.getElementById("detail-tile").cloneNode(true) as SVGElement;
+                let label = rect.querySelector("text") as SVGTextElement;
 
-            for (let step of path.path) {
-                var rect = document.getElementById("cursor-tile").cloneNode(true) as SVGRectElement; // document.createElementNS("http://www.w3.org/2000/svg", "use");
-    
-                rect.id = "path-index-" + index.toString() + "-" + step.x.toString() + "-" + step.y.toString();
-                rect.x.baseVal.value = step.x * this.tileWidth;
-                rect.y.baseVal.value = step.y * this.tileHeight;
-                rect.classList.add("path-index");
-                rect.classList.add("path-index-" + index.toString());
-                rect.setAttribute("fill", path.color); 
-                rect.querySelector("animate").setAttribute("begin", "DOMNodeInsertedIntoDocument+" + begin.toString() + "s");   
+                rect.setAttribute("x", (detail.step.x * this.tileWidth).toString());
+                rect.setAttribute("y", (detail.step.y * this.tileHeight).toString());
+                rect.querySelector("rect").setAttribute("stroke", history.color);
 
-                begin += 0.1;
+                label.textContent = detail.level.toString();
+
+                if (history.path.some(s => s.x === detail.step.x && s.y === detail.step.y)) {
+                    // The step appears in the solution.
+                    rect.classList.add("path-index");
+                    rect.classList.add("path-index-" + index.toString());
+                    rect.querySelector("rect").setAttribute("fill", history.color);
+                    rect.querySelector("rect").querySelector("animate").setAttribute("begin", "DOMNodeInsertedIntoDocument+" + begin.toString() + "s");
+
+                    begin += 0.1;
+                }
+                else {
+                    rect.classList.add("unvisited-index");
+                    rect.classList.add("unvisited-index-" + index.toString());
+                    rect.querySelector("rect").querySelector("animate").remove();
+                }
                 this.element.appendChild(rect);
             }
-        } 
+        }
         else { 
             for (let rect of [].slice.call(this.element.getElementsByClassName("path-index-" + index.toString()))) {
                 rect.remove();
             }
+            for (let rect of [].slice.call(this.element.getElementsByClassName("unvisited-index-" + index.toString()))) {
+                rect.remove();
+            }
         }
-        return path.isVisible;
+        return history.isVisible;
     }
 
     public placeTile(x: number, y: number, color: string) {

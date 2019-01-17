@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Net;
@@ -8,37 +7,45 @@ using System.Net;
 namespace Heuristic.PathfindingLab.Controllers
 {
     using Linq;
-    using Models;
+    using PathfindingLab.Models;
+    using PathfindingLab.Observers;
 
     [Produces("application/json")]
     [Route("api/[controller]")]
     public class PathfindingController : ControllerBase
     {
         [HttpPost]
-        public ResponseBody<Point[]> Find([FromBody]PathfindingRequestBody body)
+        public ResponseBody<AlgorithmSolution> Find([FromBody]PathfindingRequestBody body)
         {
+            var observer = new AlgorithmObserverFactory();
             var start = new Point(body.FromX, body.FromY);
             var goal = new Point(body.GoalX, body.GoalY);
             var boundary = new Rectangle(0, 0, body.Map.Length, body.Map.Max(row => row.Length));
             var unit = 1;
             var obstacles = PathfindingRequestBody.GetAllObstacles(body.Map);
-            var queryable = HeuristicSearch.Use(body.Algorithm, start, goal, (step, i) => step.GetFourDirections(unit));
-            var solution = from step in queryable.Except(obstacles)
-                           where boundary.Contains(step)
-                           select step;
+            var queryable = HeuristicSearch.Use(body.Algorithm, start, goal, (step, i) => step.GetFourDirections(unit), null, observer);
+            var solution = ApplyHeuristicFunction(queryable.Except(obstacles).Where(boundary.Contains), body.Heuristics).ToArray();
+
             try
             {
-                return new ResponseBody<Point[]>() { Data = ApplyHeuristicFunction(solution, body.Heuristics).ToArray() };
+                return new ResponseBody<AlgorithmSolution>()
+                {
+                    Data = new AlgorithmSolution()
+                    {
+                        Details = observer.Details,
+                        Solution = solution
+                    }
+                };
             }
             catch (InvalidOperationException)
             {
                 Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                return new ResponseBody<Point[]>() { };
+                return new ResponseBody<AlgorithmSolution>() { };
             }
             catch (Exception)
             {
                 Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                return new ResponseBody<Point[]>() { };
+                return new ResponseBody<AlgorithmSolution>() { };
             }
         }
 

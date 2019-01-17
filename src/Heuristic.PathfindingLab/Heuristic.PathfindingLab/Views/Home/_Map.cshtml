@@ -74,6 +74,12 @@
         <rect id="cursor-tile" width="@tileSize" height="@tileSize" fill-opacity="0.0">
             <animate attributeName="fill-opacity" values="0;0.6" dur="0.3s" repeatCount="0" fill="freeze" fill-opacity="freeze" />
         </rect>
+        <svg id="detail-tile" width="@tileSize" height="@tileSize">
+            <text x="3" y="14" fill="" style="font-size: 0.8em"></text>
+            <rect x="2" y="2" width="@(tileSize - 3)" height="@(tileSize - 3)" fill-opacity="0.0" stroke-width="2">
+                <animate attributeName="fill-opacity" values="0;0.6" dur="0.3s" repeatCount="0" fill="freeze" fill-opacity="freeze" />
+            </rect>
+        </svg>
     </defs>
     <!--Background-->
     <rect fill="url(#background-pattern)" width="@(tileSize * mapSize)" height="@(tileSize * mapSize)" />

@@ -12,9 +12,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="linq-to-astar" Version="1.1.0" />
+    <PackageReference Include="linq-to-astar" Version="1.2.0-beta2" />
     <PackageReference Include="Microsoft.AspNetCore.All" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.1" />
     <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="3.2.2" Condition="'$(CONFIG)'=='DEBUG'" />
   </ItemGroup>
   

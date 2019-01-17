@@ -31,23 +31,23 @@ $(document).ready(function () {
                     data: JSON.stringify(current),
                     contentType: "application/json",
                     success: function (response) {
-                        var data = response.data;
-                        var path = core.assignDirections(data);
+                        var solution = response.data.solution;
+                        var path = core.assignDirections(solution);
 
                         if (path.length > 0) {
-                            var history = new PathfindingHistory(path, heuristics, algorithm);
+                            var history = new PathfindingHistory(path, heuristics, algorithm, response.data.details);
 
                             foregroundLayer.placePath(path, step => "path-" + step.getDirectionShortName());
-                            if (cursorLayer.paths.length > 7) {
+                            if (cursorLayer.histories.length > 7) {
                                 $("#histories button:first-child").fadeOut(500, function () {
                                     $(this).remove();
-                                    if (cursorLayer.paths[0].isVisible) {
+                                    if (cursorLayer.histories[0].isVisible) {
                                         cursorLayer.togglePath(0);
                                     }
-                                    cursorLayer.paths.shift();
+                                    cursorLayer.histories.shift();
                                 });
                             }
-                            cursorLayer.paths.push(history);
+                            cursorLayer.histories.push(history);
                             cursorLayer.removeTile(path[0].x, path[0].y);
                             cursorLayer.removeTile(path[path.length - 1].x, path[path.length - 1].y);
 
@@ -61,14 +61,17 @@ $(document).ready(function () {
                                 var index = $(this).index();
 
                                 if (cursorLayer.togglePath(index)) {
-                                    updateOptions(cursorLayer.paths[index]);
-                                    updateExpressions(cursorLayer.paths[index]);
+                                    updateOptions(cursorLayer.histories[index]);
+                                    updateExpressions(cursorLayer.histories[index]);
                                 }
                                 else { // Restore to current state.
                                     updateOptions(current);
                                     updateExpressions(current);
                                 }
                             });
+                        } else { // Path not found
+                            cursorLayer.removeTile(path[0].x, path[0].y);
+                            cursorLayer.removeTile(path[path.length - 1].x, path[path.length - 1].y);
                         }
                         updateExpressions(current);
                     },
