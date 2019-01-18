@@ -1,6 +1,11 @@
 {
-    "compileOnSave": true,
-    "files": [
-      "wwwroot/js/core.ts"
-    ]
-  }
+	"compilerOptions": {
+		"target": "es6" 
+	},
+	"compileOnSave": true,
+	"outFile": "wwwroot/js/core.js",
+	"files": [
+		"wwwroot/js/core.ts",
+		"wwwroot/js/tile.ts"
+	]
+}

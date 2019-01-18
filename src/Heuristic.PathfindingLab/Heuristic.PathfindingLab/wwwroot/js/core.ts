@@ -443,18 +443,6 @@ abstract class Layer {
     }
 }
 
-class CursorTile {
-    public readonly x: number; // unit: tile
-    public readonly y: number; // unit: tile
-    public readonly color: string; // #007bff
-
-    constructor(x: number, y: number, color: string) {
-        this.x = x;
-        this.y = y;
-        this.color = color;
-    }
-}
-
 class CursorLayer extends Layer { 
     private readonly cursor: SVGRectElement;
 
