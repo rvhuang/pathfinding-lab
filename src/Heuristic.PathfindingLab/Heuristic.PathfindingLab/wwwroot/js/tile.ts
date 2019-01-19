@@ -1,24 +1,32 @@
 ﻿abstract class Tile<TElement extends SVGElement> {
     public readonly x: number; // unit: tile
     public readonly y: number; // unit: tile
-    public readonly color: string; // #007bff
-
+    
+    private _color: string; // #007bff
+    private _element: TElement;
+ 
+    protected get color() : string {
+        return this._color;
+    }
+    protected set color(value: string) {
+        this._color = value;
+    }
     protected get element(): TElement {
         return this._element;
     }
-
-    private _element: TElement;
     
     constructor(x: number, y: number, color: string) {
         this.x = x;
         this.y = y;
-        this.color = color;
+        this._color = color;
     }
 
-    protected abstract initialize( tileWidth: number, tileHeight: number): TElement;
+    protected abstract initialize(tileWidth: number, tileHeight: number): TElement;
 
-    public visualize( tileWidth: number, tileHeight: number) {
-        this._element = this.initialize( tileWidth, tileHeight);
+    public visualize(tileWidth: number, tileHeight: number): TElement {
+        this._element = this.initialize(tileWidth, tileHeight);
+
+        return this._element;
     }
 
     public remove() {
@@ -34,27 +42,27 @@
 
 class PathTile extends Tile<SVGElement> {
     public readonly levels: Array<number>;
+ 
+    constructor(x: number, y: number, level: number, color: string) {
+        super(x, y, color);
 
-    private readonly step: Step;
-
-    constructor(detail: Detail, color: string) {
-        super(detail.step.x, detail.step.y, color);
-
-        this.levels = [detail.level];
-        this.step = detail.step;
+        this.levels = [level]; 
     }
 
     public updateLevels(level: number) {
-        this.levels.push(level); 
-        super.element.querySelector("text").textContent = this.levels.join(", ");
+        this.levels.push(level);
+
+        if (this.element != null) {
+            this.element.querySelector("text").textContent = this.levels.join(", ");
+        }
     }
 
-    protected initialize( tileWidth: number, tileHeight: number): SVGElement {
+    protected initialize(tileWidth: number, tileHeight: number): SVGElement {
         let rect = document.getElementById("detail-tile").cloneNode(true) as SVGElement;
         let label = rect.querySelector("text") as SVGTextElement;
 
-        rect.setAttribute("x", (this.step.x * tileWidth).toString());
-        rect.setAttribute("y", (this.step.y * tileHeight).toString());
+        rect.setAttribute("x", (this.x * tileWidth).toString());
+        rect.setAttribute("y", (this.y * tileHeight).toString());
         rect.querySelector("rect").setAttribute("stroke", this.color);
         rect.querySelector("rect").setAttribute("fill", this.color);
 
@@ -67,26 +75,25 @@ class PathTile extends Tile<SVGElement> {
 class UnvisitedTile extends Tile<SVGElement> {
     public readonly levels: Array<number>;
 
-    private readonly step: Step;
-
-    constructor(detail: Detail, color: string) {
-        super(detail.step.x, detail.step.y, color);
-
-        this.levels = [];
-        this.step = detail.step;
+    constructor(x: number, y: number, color: string) {
+        super(x, y, color);
+        this.levels = []; 
     }
 
     public updateLevels(level: number) {
         this.levels.push(level);
-        super.element.querySelector("text").textContent = this.levels.join(", ");
+
+        if (this.element != null) {
+            this.element.querySelector("text").textContent = this.levels.join(", ");
+        }
     }
 
     protected initialize( tileWidth: number, tileHeight: number): SVGElement {
         let rect = document.getElementById("detail-tile").cloneNode(true) as SVGElement;
         let label = rect.querySelector("text") as SVGTextElement;
 
-        rect.setAttribute("x", (this.step.x * tileWidth).toString());
-        rect.setAttribute("y", (this.step.y * tileHeight).toString());
+        rect.setAttribute("x", (this.x * tileWidth).toString());
+        rect.setAttribute("y", (this.y * tileHeight).toString());
         rect.querySelector("rect").setAttribute("stroke", this.color);
         rect.querySelector("rect").querySelector("animate").remove();
 
@@ -94,17 +101,46 @@ class UnvisitedTile extends Tile<SVGElement> {
 
         return rect;
     }
+
+    public static merge(tiles: ReadonlyArray<UnvisitedTile>): ReadonlyArray<UnvisitedTile> {
+        var merged = [] as Array<UnvisitedTile>;
+
+        for (let tile of tiles) {
+            let filtered = merged.filter(t => t.x === tile.x && t.y === tile.y);
+            
+            if (filtered.length > 0) {
+                tile.levels.forEach(level => filtered[0].updateLevels(level));
+            }
+            else {
+                merged.push(tile);
+            }
+        }
+        return merged;
+    }
 }
 
-class CursorTile extends Tile<SVGRectElement> {
-    constructor(x: number, y: number, color: string, layerElement: SVGGElement) {
+class AnchorTile extends Tile<SVGUseElement> {
+    constructor(x: number, y: number, color: string) {
         super(x, y, color);
 
     }
 
-    protected initialize(tileWidth: number, tileHeight: number): SVGRectElement {
+    public updateColor(color: string) {
+        this.color = color;
+        this.element.setAttribute("fill", color);
+    }
 
-        return null;
+    protected initialize(tileWidth: number, tileHeight: number): SVGUseElement {
+        let rect = document.createElementNS("http://www.w3.org/2000/svg", "use");
+
+        rect.x.baseVal.value = this.x * tileWidth;
+        rect.y.baseVal.value = this.y * tileHeight;
+        rect.width.baseVal.value = tileWidth;
+        rect.height.baseVal.value = tileHeight;
+        rect.setAttribute("fill", this.color);
+        rect.setAttribute("href", "#cursor-tile");
+
+        return rect;
     }
 }
 

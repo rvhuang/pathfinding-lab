@@ -2,7 +2,7 @@ FROM node:alpine AS typescript
 WORKDIR /app
 COPY . ./
 RUN npm install typescript -g
-RUN tsc -p tsconfig.json
+RUN tsc -p tsconfig.json --out "wwwroot/js/core.js"
 
 FROM microsoft/dotnet:sdk AS build-env
 WORKDIR /app

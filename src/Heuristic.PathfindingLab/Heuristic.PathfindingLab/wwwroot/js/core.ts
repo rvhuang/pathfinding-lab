@@ -1,4 +1,6 @@
-﻿class Core {
+﻿// import * as Tiles from "tile";
+
+class Core {
     private readonly map: Direction[][];
 
     private fromX: number;
@@ -325,9 +327,9 @@ class Detail {
     public step: Step;
 }
 
-class PathfindingHistory implements Pathfinding {
-    public readonly path: ReadonlyArray<Step>;
-    public readonly details: ReadonlyArray<Detail>;
+class PathfindingHistory implements Pathfinding {    
+    public readonly path: ReadonlyArray<PathTile>;
+    public readonly details: ReadonlyArray<UnvisitedTile>;
     public readonly heuristics: string[];
     public readonly algorithm: string;
     public readonly algorithmShortName: string;
@@ -335,13 +337,13 @@ class PathfindingHistory implements Pathfinding {
 
     public isVisible: boolean;
 
-    constructor(path: Array<Step>, heuristics: Array<string>, algorithm: string, details: ReadonlyArray<Detail>) {
-        this.path = path;
-        this.details = details;
+    constructor(path: Array<Step>, heuristics: Array<string>, algorithm: string, details: ReadonlyArray<Detail>) {        
+        this.color = PathfindingHistory.getAlgorithmPathColor(algorithm);
+        this.path = path.map((p, i) => new PathTile(p.x, p.y, i, this.color));
+        this.details = UnvisitedTile.merge(details.map(d => new UnvisitedTile(d.step.x, d.step.y, this.color)));
         this.heuristics = heuristics;
         this.algorithm = algorithm;
         this.algorithmShortName = PathfindingHistory.getAlgorithmShortName(algorithm);
-        this.color = PathfindingHistory.getAlgorithmPathColor(algorithm);
         this.isVisible = false;
     }
 
@@ -449,6 +451,7 @@ class CursorLayer extends Layer {
     private cursorX: number = 0;
     private cursorY: number = 0;
 
+
     public readonly histories: Array<PathfindingHistory>;
 
     constructor(element: SVGGElement, cursor: SVGRectElement, tileWidth: number, tileHeight: number, mapWidth: number, mapHeight: number) {
@@ -492,41 +495,27 @@ class CursorLayer extends Layer {
 
         if (history.isVisible) {
             var begin = 0.3;
-            
-            for (let detail of history.details.filter(d => d.level >= 0 && d.step.x >= 0 && d.step.y >= 0)) {
-                let rect = document.getElementById("detail-tile").cloneNode(true) as SVGElement;
-                let label = rect.querySelector("text") as SVGTextElement;
+                
+            for (let step of history.path) {
+                let e = step.visualize(this.tileWidth, this.tileHeight);
 
-                rect.setAttribute("x", (detail.step.x * this.tileWidth).toString());
-                rect.setAttribute("y", (detail.step.y * this.tileHeight).toString());
-                rect.querySelector("rect").setAttribute("stroke", history.color);
-
-                label.textContent = detail.level.toString();
-
-                if (history.path.some(s => s.x === detail.step.x && s.y === detail.step.y)) {
-                    // The step appears in the solution.
-                    rect.classList.add("path-index");
-                    rect.classList.add("path-index-" + index.toString());
-                    rect.querySelector("rect").setAttribute("fill", history.color);
-                    rect.querySelector("rect").querySelector("animate").setAttribute("begin", "DOMNodeInsertedIntoDocument+" + begin.toString() + "s");
-
-                    begin += 0.1;
+                e.querySelector("animate").setAttribute("begin", "DOMNodeInsertedIntoDocument+" + begin.toString() + "s");
+                this.element.appendChild(e);
+                begin += 0.1;
+            }
+            for (let detail of history.details) {
+                var filtered = history.path.filter(p => p.x === detail.x && p.y === detail.y);
+                if (filtered.length > 0) {
+                    detail.levels.forEach(level => filtered[0].updateLevels(level));
                 }
                 else {
-                    rect.classList.add("unvisited-index");
-                    rect.classList.add("unvisited-index-" + index.toString());
-                    rect.querySelector("rect").querySelector("animate").remove();
+                    this.element.appendChild(detail.visualize(this.tileWidth, this.tileHeight));
                 }
-                this.element.appendChild(rect);
             }
         }
-        else { 
-            for (let rect of [].slice.call(this.element.getElementsByClassName("path-index-" + index.toString()))) {
-                rect.remove();
-            }
-            for (let rect of [].slice.call(this.element.getElementsByClassName("unvisited-index-" + index.toString()))) {
-                rect.remove();
-            }
+        else {
+            history.path.forEach(p => p.remove());
+            history.details.forEach(d => d.remove());
         }
         return history.isVisible;
     }
@@ -564,8 +553,9 @@ class CursorLayer extends Layer {
     }
 
     public clearTiles() {
-        for (let rect of [].slice.call(this.element.getElementsByClassName("path-index"))) {
-            rect.remove();
+        for (let history of this.histories) {
+            history.path.forEach(path => path.remove());
+            history.details.forEach(detail => detail.remove());
         }
         for (let rect of [].slice.call(this.element.getElementsByClassName("tile-index"))) {
             rect.remove();
