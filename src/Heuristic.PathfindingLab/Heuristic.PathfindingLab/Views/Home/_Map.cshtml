@@ -1,11 +1,11 @@
 ﻿@using Microsoft.AspNetCore.Http
 @using Microsoft.AspNetCore.Http.Extensions
+@model System.Drawing.Rectangle
 @{
     const int tileSize = 32; // pixel
     const int obstacleSize = 28;
-    const int mapSize = 20;
 }
-<svg version="2.0" width="@(tileSize * mapSize)" height="@(tileSize * mapSize)" id="map" oncontextmenu="return false;">
+<svg version="2.0" width="@(tileSize * Model.Width)" height="@(tileSize * Model.Height)" id="map" oncontextmenu="return false;">
     <defs>
         <image id="tile-assets" x="0" y="0" width="@(tileSize * 2 * 3)" height="@(tileSize * 2 * 5)" href="@UriHelper.BuildAbsolute(Context.Request.Scheme, Context.Request.Host, new PathString("/images/tileGrass.png"))" />
         <!---->
@@ -43,7 +43,7 @@
             <use href="#tile-assets" />
         </svg>
         <!---->
-        <pattern id="background-pattern" x="0" y="0" width="@(2f / mapSize)" height="@(1f / mapSize)">
+        <pattern id="background-pattern" x="0" y="0" width="@(2f / Model.Width)" height="@(1f / Model.Height)">
             <svg preserveAspectRatio="xMidYMid slice" x="0" y="0" viewBox="@(tileSize * 2 * 2) @(tileSize * 2 * 3) @(tileSize * 2) @(tileSize * 2)" width="@(tileSize)" height="@(tileSize)">
                 <use href="#tile-assets" />
             </svg>
@@ -82,7 +82,7 @@
         </svg>
     </defs>
     <!--Background-->
-    <rect fill="url(#background-pattern)" width="@(tileSize * mapSize)" height="@(tileSize * mapSize)" />
+    <rect fill="url(#background-pattern)" width="@(tileSize * Model.Width)" height="@(tileSize * Model.Height)" />
     <!--Foreground-->
     <g id="foreground"></g>
     <!--Cursor-->

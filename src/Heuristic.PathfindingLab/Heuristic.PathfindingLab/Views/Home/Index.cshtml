@@ -3,17 +3,15 @@
     <link rel="stylesheet" href="/css/site.css" />
 }
 <div class="row">
-    <div class="col-lg-6">
-        <div class="row">
-            <div class="col-md-12">
-                <div class="center-block">
-                    @await Html.PartialAsync("_Map")
-                </div>
-            </div>
-        </div>
-        <div class="row" style="margin-top: 2px;">
-            <div class="col-md-12">
-                <div class="btn-group" role="group">
+    <div class="col-lg-12">
+        <h3>Pathfinding Lab <small>powered by <a href="https://github.com/rvhuang/linq-to-astar" target="_blank">LINQ to A*</a></small></h3>
+        <hr />
+        <div class="center-block">@await Html.PartialAsync("_Map", new System.Drawing.Rectangle(0, 0, 40, 20))</div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-5">
+                 <div class="btn-group" role="group">
                     <button type="button" class="btn btn-default btn-sm" data-toggle="tooltip" title="Start over" id="btnClear">
                         <span class="glyphicon glyphicon-refresh"></span>
                     </button>
@@ -33,23 +31,18 @@
                     <button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#modalInfo">
                         <span class="glyphicon glyphicon-info-sign"></span>
                     </button>
-                </div>&nbsp;
-                <span class="hidden-xs hidden-sm small">Left click to place barriers, right click on two positions to get a path.</span>
-            </div>
-        </div>
+        </div>&nbsp;
+        <span class="hidden-xs hidden-sm small">Left click to place barriers, right click on two positions to get a path.</span>
     </div>
-    <div class="col-lg-6">
-        <div class="row">
-            <div class="col-md-12">
-                <h3>Pathfinding Lab <small>powered by <a href="https://github.com/rvhuang/linq-to-astar" target="_blank">LINQ to A*</a></small></h3>
-                <hr />
-            </div>
-        </div>
-        <div class="row">
-            <form id="options">
-                <div class="col-md-4">
+    <div class="col-lg-7"> 
+        <div class="btn-group" role="group" style="margin-top: 2px;" id="histories"></div>
+    </div>
+</div>
+<div class="row" style="margin-top: 12px">
+            <form id="options" role="form">
+                <div class="col-lg-2">
                     <label>Algorithm</label>
-                    <a href="#" role="button" class="btn btn-link" data-toggle="popover" data-trigger="focus" data-placement="right" data-container="body" data-content="Different algorithm can produce completely different path. In some circumstances, not every algorithm can find the path.">
+                    <a href="javascript:void();" role="button" class="btn btn-link" data-toggle="popover" data-trigger="focus" data-placement="right" data-container="body" data-content="Different algorithm can produce completely different path. In some circumstances, not every algorithm can find the path.">
                         <span class="glyphicon glyphicon-question-sign"></span>
                     </a>
                     <div class="radio">
@@ -65,9 +58,9 @@
                         <label><input type="radio" name="algorithm" value="RecursiveBestFirstSearch">Recursive Best-first Search</label>
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-lg-3">
                     <label>Heuristic Functions</label>
-                    <a href="#" role="button" class="btn btn-link" data-toggle="popover" data-trigger="focus" data-placement="right" data-container="body" data-content="A heuristic function is used to evaluate the cost of every step. For some of algorithms, at least one heuristic function needs to be selected. If more than one function are selected, the subsequent one will be used when previous one evaluates two steps as equal.">
+                    <a href="javascript:void();" role="button" class="btn btn-link" data-toggle="popover" data-trigger="focus" data-placement="right" data-container="body" data-content="A heuristic function is used to evaluate the cost of every step. For some of algorithms, at least one heuristic function needs to be selected. If more than one function are selected, the subsequent one will be used when previous one evaluates two steps as equal.">
                         <span class="glyphicon glyphicon-question-sign"></span>
                     </a>
                     <div class="checkbox">
@@ -81,11 +74,9 @@
                     </div>
                 </div>
             </form>
-        </div>
-        <div class="row" style="margin-top: 12px">
-            <div class="col-md-12">
+            <div class="col-lg-7">
                 <label>LINQ Expression</label>
-                <a href="#" role="button" class="btn btn-link" data-toggle="popover" data-trigger="focus" data-placement="right" data-container="body" data-content="Using LINQ to A* to state conditions and fetch the path found by selected algorithm will be displayed here.">
+                <a href="javascript:void();" role="button" class="btn btn-link" data-toggle="popover" data-trigger="focus" data-placement="right" data-container="body" data-content="A code snippet using LINQ to A* to state conditions and fetch the path found by selected algorithm will be displayed here.">
                     <span class="glyphicon glyphicon-question-sign"></span>
                 </a>
                 <!-- Nav tabs -->
@@ -97,27 +88,27 @@
                 <!-- Tab panes -->
                 <div class="tab-content" style="max-width: 640px">
                     <div role="tabpanel" class="tab-pane active" id="exampleSelectMany">
-                        <pre><code class="cs">// Left click on the map to place obstacles.
-// Right click on two different positions to find a path.
-// Equivalent LINQ expression using SelectMany() will be shown here.
+                        <pre><code class="cs">// Equivalent LINQ expression using SelectMany() will be shown here.
+
+
 
 
 
                                     </code></pre>
                     </div>
                     <div role="tabpanel" class="tab-pane" id="exampleExcept">
-                        <pre><code class="cs">// Left click on the map to place obstacles.
-// Right click on two different positions to find a path.
-// Equivalent LINQ expression using Except() will be shown here.
+                        <pre><code class="cs">// Equivalent LINQ expression using Except() will be shown here.
+
+
 
 
 
                                     </code></pre>
                     </div>
                     <div role="tabpanel" class="tab-pane" id="exampleWhere">
-                        <pre><code class="cs">// Left click on the map to place obstacles.
-// Right click on two different positions to find a path.
-// Equivalent LINQ expression using Where() clause will be shown here.
+                        <pre><code class="cs">// Equivalent LINQ expression using Where() clause will be shown here.
+
+
 
 
 
@@ -125,13 +116,6 @@
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col-md-12">
-                <div class="btn-group" role="group" style="margin-top: 2px;" id="histories"></div>
-            </div>
-        </div>
-    </div>
 </div>
 <!-- Modal -->
 <div id="modalInfo" class="modal fade" role="dialog">

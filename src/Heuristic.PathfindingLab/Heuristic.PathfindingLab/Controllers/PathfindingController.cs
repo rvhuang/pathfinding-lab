@@ -20,7 +20,7 @@ namespace Heuristic.PathfindingLab.Controllers
             var observer = new AlgorithmObserverFactory();
             var start = new Point(body.FromX, body.FromY);
             var goal = new Point(body.GoalX, body.GoalY);
-            var boundary = new Rectangle(0, 0, body.Map.Length, body.Map.Max(row => row.Length));
+            var boundary = new Rectangle(0, 0, body.Map.Max(row => row.Length), body.Map.Length);
             var unit = 1;
             var obstacles = PathfindingRequestBody.GetAllObstacles(body.Map);
             var queryable = HeuristicSearch.Use(body.Algorithm, start, goal, (step, i) => step.GetFourDirections(unit), null, observer);

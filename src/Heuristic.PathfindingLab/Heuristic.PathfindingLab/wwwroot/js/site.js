@@ -1,11 +1,11 @@
 ﻿var tileSize = 32;
 var mapSize = 20;
-var core = new Core(mapSize, mapSize);
+var core = new Core(40, 20);
 var current = new PathfindingRequestBody();
 
 $(document).ready(function () {
     
-    var cursorLayer = new CursorLayer(document.getElementById('cursor'), document.getElementById('mouse-cursor'), tileSize, tileSize, mapSize, mapSize);
+    var cursorLayer = new CursorLayer(document.getElementById('cursor'), document.getElementById('mouse-cursor'), tileSize, tileSize, 40, 20);
     var foregroundLayer = new ForegroundLayer(cursorLayer, document.getElementById('foreground'), [
         "obstacle-0",
         "obstacle-1",
@@ -169,9 +169,9 @@ function updateOptions(pathfinding) {
 }
 
 function updateExpressions(pathfinding) {
-    $("#exampleSelectMany").find("code").text(pathfinding.toSelectManyExpression(mapSize, mapSize).join('\r\n'));
-    $("#exampleExcept").find("code").text(pathfinding.toExceptExpression(mapSize, mapSize).join('\r\n'));
-    $("#exampleWhere").find("code").text(pathfinding.toWhereOnlyExpression(mapSize, mapSize).join('\r\n'));
+    $("#exampleSelectMany").find("code").text(pathfinding.toSelectManyExpression(40, 20).join('\r\n'));
+    $("#exampleExcept").find("code").text(pathfinding.toExceptExpression(40, 20).join('\r\n'));
+    $("#exampleWhere").find("code").text(pathfinding.toWhereOnlyExpression(40, 20).join('\r\n'));
     $("pre code").each(function(i, block) {
         hljs.highlightBlock(block);
     });
