@@ -24,19 +24,18 @@
     protected abstract initialize(tileWidth: number, tileHeight: number): TElement;
 
     public visualize(tileWidth: number, tileHeight: number): TElement {
-        this._element = this.initialize(tileWidth, tileHeight);
-
-        return this._element;
+        return this._element = this.initialize(tileWidth, tileHeight);
     }
 
     public remove() {
         if (this._element != null) {
             this._element.remove();
+            this._element = null;
         }
     }
 
     public isRemoved(): boolean {
-        return this._element != null && this._element.parentElement === null;
+        return this._element == null || this._element.parentElement === null;
     }
 }
 
@@ -45,16 +44,24 @@ class PathTile extends Tile<SVGElement> {
  
     constructor(x: number, y: number, level: number, color: string) {
         super(x, y, color);
-
         this.levels = [level]; 
     }
 
     public updateLevels(level: number) {
-        this.levels.push(level);
+        if (this.levels.indexOf(level) < 0) {
+            this.levels.push(level);
 
-        if (this.element != null) {
-            this.element.querySelector("text").textContent = this.levels.join(", ");
+            if (this.element != null) {
+                this.element.querySelector("text").textContent = this.levels.join(", ");
+            }
         }
+    }
+
+    public updateAnimation(begin: number) : SVGElement {
+        if (this.element != null) {
+            this.element.querySelector("rect").querySelector("animate").setAttribute("begin", "DOMNodeInsertedIntoDocument+" + begin + "s");
+        }
+        return this.element;
     }
 
     protected initialize(tileWidth: number, tileHeight: number): SVGElement {
@@ -75,9 +82,9 @@ class PathTile extends Tile<SVGElement> {
 class UnvisitedTile extends Tile<SVGElement> {
     public readonly levels: Array<number>;
 
-    constructor(x: number, y: number, color: string) {
+    constructor(x: number, y: number, level: number, color: string) {
         super(x, y, color);
-        this.levels = []; 
+        this.levels = [level]; 
     }
 
     public updateLevels(level: number) {
@@ -122,7 +129,6 @@ class UnvisitedTile extends Tile<SVGElement> {
 class AnchorTile extends Tile<SVGUseElement> {
     constructor(x: number, y: number, color: string) {
         super(x, y, color);
-
     }
 
     public updateColor(color: string) {

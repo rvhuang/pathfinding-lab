@@ -6,9 +6,24 @@ Visit [the instance](http://pathfinding-lab.codedwith.fun/) running on DigitalOc
 
 Read the article at [CodeProject](https://www.codeproject.com/Articles/1250578/A-Simple-Pathfinding-Laboratory) for detailed information.
 
-## Run the Dockerized instance
+## Build the project
 
+```bat
+cd src/Heuristic.PathfindingLab/Heuristic.PathfindingLab/
+tsc -p tsconfig.json --out "wwwroot/js/core.js"
+dotnet build Heuristic.PathfindingLab.csproj
 ```
+
+## Build Docker image
+
+```bat
+cd src/Heuristic.PathfindingLab/Heuristic.PathfindingLab/
+docker build -t pathfinding-lab .
+```
+
+## Run Dockerized instance
+
+```bat
 docker pull rvhuang/pathfinding-lab:latest
 docker run -d -p 8080:80 pathfinding-lab:latest --name p-lab
 ```

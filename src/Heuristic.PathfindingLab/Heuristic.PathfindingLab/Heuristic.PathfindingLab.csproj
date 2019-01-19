@@ -9,11 +9,8 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <Content Remove="wwwroot\js\core.ts" />
-    <Content Remove="wwwroot\js\tile.ts" />
-    
-    <None Include="wwwroot\js\core.ts" />
-    <None Include="wwwroot\js\tile.ts" />
+    <Content Remove="wwwroot\js\*.ts" />
+    <None Include="wwwroot\js\*.ts" />
   </ItemGroup>
 
   <ItemGroup>
@@ -28,8 +25,7 @@
   </ItemGroup>
   
   <ItemGroup>
-    <TypeScriptCompile Include="wwwroot\js\tile.ts" />
-    <TypeScriptCompile Include="wwwroot\js\core.ts" />
+    <TypeScriptCompile Include="wwwroot\js\*.ts" />
   </ItemGroup>
 
 </Project>

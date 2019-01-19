@@ -5,7 +5,8 @@
 	"compileOnSave": true,
 	"outFile": "wwwroot/js/core.js",
 	"files": [
-		"wwwroot/js/core.ts",
-		"wwwroot/js/tile.ts"
+		"wwwroot/js/tile.ts",
+		"wwwroot/js/layer.ts",
+		"wwwroot/js/core.ts"
 	]
 }
