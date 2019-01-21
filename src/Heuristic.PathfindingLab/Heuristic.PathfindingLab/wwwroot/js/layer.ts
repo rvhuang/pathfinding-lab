@@ -156,11 +156,17 @@ class ForegroundLayer extends Layer {
 
     public placePath(path: ReadonlyArray<Step>, assetIdSelector: (step: Step) => string) {
         for (let step of path) {
-            this.placeImage(step.x, step.y, assetIdSelector(step));    
+            var id = "step-x-" + step.x.toString() + "-y-" + step.y.toString();
+            var existing = this.element.querySelector("#" + id);
+
+            if (existing != null) {
+                existing.remove();
+            }
+            this.placeImage(step.x, step.y, assetIdSelector(step)).id = id;   
         };
     }
 
-    public placeStep (step: Step, assertId: string) {
+    public placeStep(step: Step, assertId: string) {
         this.placeImage(step.x, step.y, assertId);
     }
 
