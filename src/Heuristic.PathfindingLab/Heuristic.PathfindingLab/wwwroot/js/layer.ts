@@ -183,6 +183,12 @@ class ForegroundLayer extends Layer {
     }
 
     public placeObject(x: number, y: number) { 
+        var id = "step-x-" + x.toString() + "-y-" + y.toString();
+        var existing = this.element.querySelector("#" + id);
+
+        if (existing != null) {
+            existing.remove();
+        }
         this.placeImage(x, y, this.assetIds[(x + y) % this.assetIds.length]);
     }
 

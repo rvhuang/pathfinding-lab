@@ -50,10 +50,9 @@ class PathTile extends Tile<SVGElement> {
     public updateLevels(level: number) {
         if (this.levels.indexOf(level) < 0) {
             this.levels.push(level);
-
-            if (this.element != null) {
-                this.element.querySelector("text").textContent = this.levels.join(", ");
-            }
+        }
+        if (this.element != null) {
+            this.element.querySelector("text").textContent = this.levels.join(", ");
         }
     }
 
@@ -74,7 +73,6 @@ class PathTile extends Tile<SVGElement> {
         rect.querySelector("rect").setAttribute("fill", this.color);
 
         label.textContent = this.levels.join(", ");
-
         return rect;
     }
 }

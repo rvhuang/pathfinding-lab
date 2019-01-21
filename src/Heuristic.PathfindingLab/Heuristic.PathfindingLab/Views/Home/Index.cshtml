@@ -33,9 +33,9 @@
                     </button>
         </div>&nbsp;
         <span class="hidden-xs hidden-sm small">Left click to place barriers, right click on two positions to get a path.</span>
+        
     </div>
     <div class="col-lg-7"> 
-        <div class="btn-group" role="group" style="margin-top: 2px;" id="histories"></div>
     </div>
 </div>
 <div class="row" style="margin-top: 12px">
@@ -60,7 +60,7 @@
                 </div>
                 <div class="col-lg-3">
                     <label>Heuristic Functions</label>
-                    <a href="javascript:void();" role="button" class="btn btn-link" data-toggle="popover" data-trigger="focus" data-placement="right" data-container="body" data-content="A heuristic function is used to evaluate the cost of every step. For some of algorithms, at least one heuristic function needs to be selected. If more than one function are selected, the subsequent one will be used when previous one evaluates two steps as equal.">
+                    <a href="javascript:void();" role="button" class="btn btn-link" data-toggle="popover" data-trigger="focus" data-placement="right" data-container="body" data-content="A heuristic function is used to evaluate the cost of every step. For some of algorithms, at least one heuristic function needs to be selected. If more than one functions are selected, the subsequent one will be used when previous one evaluates two steps as equal.">
                         <span class="glyphicon glyphicon-question-sign"></span>
                     </a>
                     <div class="checkbox">
@@ -76,9 +76,10 @@
             </form>
             <div class="col-lg-7">
                 <label>LINQ Expression</label>
-                <a href="javascript:void();" role="button" class="btn btn-link" data-toggle="popover" data-trigger="focus" data-placement="right" data-container="body" data-content="A code snippet using LINQ to A* to state conditions and fetch the path found by selected algorithm will be displayed here.">
+                <a href="javascript:void();" role="button" class="btn btn-link" data-toggle="popover" data-trigger="focus" data-placement="right" data-container="body" data-content="A code snippet using LINQ to A* to set conditions and fetch the path will be displayed here.">
                     <span class="glyphicon glyphicon-question-sign"></span>
                 </a>
+                <div class="btn-group" role="group" style="margin-top: 2px;" id="histories"></div>
                 <!-- Nav tabs -->
                 <ul class="nav nav-tabs" role="tablist" style="max-width: 640px; margin-top: 12px">
                     <li role="presentation" class="active"><a href="#exampleSelectMany" aria-controls="exampleSelectMany" role="tab" data-toggle="tab">SelectMany</a></li>

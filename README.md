@@ -10,8 +10,8 @@ Read the article at [CodeProject](https://www.codeproject.com/Articles/1250578/A
 
 ```bat
 cd src/Heuristic.PathfindingLab/Heuristic.PathfindingLab/
-tsc -p tsconfig.json --out "wwwroot/js/core.js"
 dotnet build Heuristic.PathfindingLab.csproj
+tsc -p tsconfig.json --out "wwwroot/js/core.js"
 ```
 
 ## Build Docker image

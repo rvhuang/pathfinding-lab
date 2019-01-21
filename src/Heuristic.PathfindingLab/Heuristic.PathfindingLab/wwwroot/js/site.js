@@ -12,7 +12,15 @@ $(document).ready(function () {
         "obstacle-2",
         "obstacle-3",
         "obstacle-4",
-        "obstacle-5"
+        "obstacle-5",
+        "obstacle-6",
+        "obstacle-7",
+        "obstacle-8",
+        "obstacle-9",
+        "obstacle-10",
+        "obstacle-11",
+        "obstacle-12",
+        "obstacle-13"
     ]);
     foregroundLayer.objectPracingPredicate = (i, j) => core.placeObstacle(i, j);
     foregroundLayer.pathPlacingCallback = function(i, j) {
