@@ -24,10 +24,12 @@ namespace Heuristic.PathfindingLab.Controllers
             var unit = 1;
             var obstacles = PathfindingRequestBody.GetAllObstacles(body.Map);
             var queryable = HeuristicSearch.Use(body.Algorithm, start, goal, (step, i) => step.GetFourDirections(unit), null, observer);
-            var solution = ApplyHeuristicFunction(queryable.Except(obstacles).Where(boundary.Contains), body.Heuristics).ToArray();
-
+        
             try
-            {
+            {    
+                var solution = ApplyHeuristicFunction(queryable.Except(obstacles).Where(boundary.Contains), body.Heuristics).ToArray();
+
+                Response.StatusCode = solution.Any() ? (int)HttpStatusCode.OK : (int)HttpStatusCode.NotFound;                
                 return new ResponseBody<AlgorithmSolution>()
                 {
                     Data = new AlgorithmSolution()
@@ -35,7 +37,7 @@ namespace Heuristic.PathfindingLab.Controllers
                         Details = observer.Details,
                         Solution = solution
                     }
-                };
+                }; 
             }
             catch (InvalidOperationException)
             {

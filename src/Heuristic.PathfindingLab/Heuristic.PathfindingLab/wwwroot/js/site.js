@@ -90,6 +90,9 @@ $(document).ready(function () {
                                 msg = "// The selected algorithm needs at least one Heuristic function.";
                                 $(':input[name="heuristic"]').parent().css("color", "red");
                                 break;
+                            case 404:
+                                 msg = "// No solution is found.";
+                                break;
                             case 500:
                                 msg = "// Something went wrong. Please try again later or report an issue at GitHub.";
                                 break;

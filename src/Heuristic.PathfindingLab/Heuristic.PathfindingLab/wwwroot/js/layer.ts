@@ -55,7 +55,8 @@ class CursorLayer extends Layer {
     }
 
     private onLayerMouseEnter(event: MouseEvent) {
-        this.cursor.style.visibility = "inherit";
+        this.cursor.style.visibility = "inherit"; 
+        this.element.querySelector("#tile-description").textContent = ""; 
     }
 
     public togglePath(index: number): boolean {
@@ -66,10 +67,16 @@ class CursorLayer extends Layer {
 
         if (history.isVisible) {
             var begin = 0.3;
+            var description = this.element.querySelector("#tile-description");
+            var tileElement = null as SVGElement;
                 
             for (let step of history.path) {
-                step.visualize(this.tileWidth, this.tileHeight);
-                this.element.appendChild(step.updateAnimation(begin));
+                tileElement = step.visualize(this.tileWidth, this.tileHeight);
+                step.updateAnimation(begin);
+                tileElement.onmousemove = function (ev) {
+                    description.textContent = step.describes();
+                };
+                this.element.appendChild(tileElement);
                 begin += 0.1;
             }
             for (let detail of history.details) {
@@ -78,7 +85,11 @@ class CursorLayer extends Layer {
                     detail.levels.forEach(level => filtered[0].updateLevels(level));
                 }
                 else {
-                    this.element.appendChild(detail.visualize(this.tileWidth, this.tileHeight));
+                    tileElement = detail.visualize(this.tileWidth, this.tileHeight);
+                    tileElement.onmousemove = function (ev) {
+                        description.textContent = detail.describes();
+                    };
+                    this.element.appendChild(tileElement);
                 }
             }
         }

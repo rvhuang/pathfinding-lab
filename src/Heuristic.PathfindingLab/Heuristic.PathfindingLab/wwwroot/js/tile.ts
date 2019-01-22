@@ -39,7 +39,7 @@
     }
 }
 
-class PathTile extends Tile<SVGElement> {
+abstract class SolutionTile extends Tile<SVGElement> {
     public readonly levels: Array<number>;
  
     constructor(x: number, y: number, level: number, color: string) {
@@ -56,12 +56,32 @@ class PathTile extends Tile<SVGElement> {
         }
     }
 
+    public describes() : string {
+        var description = "";
+
+        if (this.levels.length > 1) {
+            description += "The node {" + this.x + ", " + this.y + "} has been explored for " + this.levels.length + " times. ";
+            description += "The depths (levels) of the node are " + this.levels.join(", ") + " respectively.";
+        }
+        else {
+            description += "The node {" + this.x + ", " + this.y + "} has been explored for 1 time. ";
+            description += "The depth (level) of the node is " + this.levels.join(", ") + ".";
+        }
+        return description;
+    }
+}
+
+class PathTile extends SolutionTile {  
+    constructor(x: number, y: number, level: number, color: string) {
+        super(x, y, level, color); 
+    }
+ 
     public updateAnimation(begin: number) : SVGElement {
         if (this.element != null) {
             this.element.querySelector("rect").querySelector("animate").setAttribute("begin", "DOMNodeInsertedIntoDocument+" + begin + "s");
         }
         return this.element;
-    }
+    } 
 
     protected initialize(tileWidth: number, tileHeight: number): SVGElement {
         let rect = document.getElementById("detail-tile").cloneNode(true) as SVGElement;
@@ -77,23 +97,14 @@ class PathTile extends Tile<SVGElement> {
     }
 }
 
-class UnvisitedTile extends Tile<SVGElement> {
+class UnvisitedTile extends SolutionTile {
     public readonly levels: Array<number>;
 
     constructor(x: number, y: number, level: number, color: string) {
-        super(x, y, color);
-        this.levels = [level]; 
+        super(x, y, level, color); 
     }
-
-    public updateLevels(level: number) {
-        this.levels.push(level);
-
-        if (this.element != null) {
-            this.element.querySelector("text").textContent = this.levels.join(", ");
-        }
-    }
-
-    protected initialize( tileWidth: number, tileHeight: number): SVGElement {
+ 
+    protected initialize(tileWidth: number, tileHeight: number): SVGElement {
         let rect = document.getElementById("detail-tile").cloneNode(true) as SVGElement;
         let label = rect.querySelector("text") as SVGTextElement;
 
@@ -105,7 +116,7 @@ class UnvisitedTile extends Tile<SVGElement> {
         label.textContent = this.levels.join(", ");
 
         return rect;
-    }
+    } 
 
     public static merge(tiles: ReadonlyArray<UnvisitedTile>): ReadonlyArray<UnvisitedTile> {
         var merged = [] as Array<UnvisitedTile>;

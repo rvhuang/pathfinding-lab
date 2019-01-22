@@ -14,10 +14,5 @@ namespace Heuristic.PathfindingLab.Controllers
         {
             return PartialView(new Rectangle(0, 0, mapWidth, mapHeight));
         }
-
-        public IActionResult Constants([FromQuery]int mapWidth = 40, [FromQuery]int mapHeight = 20) 
-        {
-            return Json(new { MapWidth = mapWidth, MapHeight = mapHeight });
-        }
     }
 }
