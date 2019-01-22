@@ -20,8 +20,17 @@ $(document).ready(function () {
         "obstacle-10",
         "obstacle-11",
         "obstacle-12",
-        "obstacle-13"
+        "obstacle-13",
+        "obstacle-14",
+        "obstacle-15",
+        "obstacle-16",
+        "obstacle-17",
+        "obstacle-18",
+        "obstacle-19"
     ]);
+    cursorLayer.showDetailDescription = function(step) {
+        $("#description").text(step.describes());
+    };
     foregroundLayer.objectPracingPredicate = (i, j) => core.placeObstacle(i, j);
     foregroundLayer.pathPlacingCallback = function(i, j) {
         if (core.isObstacle(i, j)) {
@@ -100,6 +109,9 @@ $(document).ready(function () {
                         $("#exampleSelectMany").find("code").text(msg);
                         $("#exampleExcept").find("code").text(msg);
                         $("#exampleWhere").find("code").text(msg);
+                    },
+                    complete: function () {
+                        $("#description").text("");
                     }
                 });
                 break;
@@ -116,6 +128,8 @@ $(document).ready(function () {
         core.clearObstacles();
         foregroundLayer.clearMap();
         cursorLayer.clearTiles();
+
+        $("#description").text("");
     });
     $('#btnSave').click(function (event) {
         core.saveMap();
@@ -153,15 +167,16 @@ $(document).ready(function () {
                 current.heuristics.splice(index, 1);
             }
         }
+        if (current.heuristics.length === 0) {
+            $('input[name="algorithm"][value="AStar"]').parent().children("span").text("Dijkstra");
+        }
+        else {
+            $('input[name="algorithm"][value="AStar"]').parent().children("span").text("A*");
+        }
         if (current.fromX !== current.goalX && current.FromY !== current.goalY) {
             updateExpressions(current);
         }
-    }).click(function (/*event*/) {
-        //if (!this.checked && current.heuristics.length === 1) {
-        //    $(this).parent().css("color", "red"); 
-        //    event.preventDefault(); 
-        //    return false;
-        //}
+    }).click(function (event) {
         $("div.checkbox").children("label").css("color", ""); 
         return true;
     });

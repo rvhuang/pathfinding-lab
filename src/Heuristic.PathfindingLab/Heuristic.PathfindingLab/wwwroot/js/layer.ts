@@ -24,6 +24,8 @@ class CursorLayer extends Layer {
 
     public readonly histories: Array<PathfindingHistory>;
 
+    public showDetailDescription: (tile: SolutionTile) => any;
+
     constructor(element: SVGGElement, cursor: SVGRectElement, tileWidth: number, tileHeight: number, mapWidth: number, mapHeight: number) {
         super(element, tileWidth, tileHeight, mapWidth, mapHeight);
 
@@ -56,7 +58,6 @@ class CursorLayer extends Layer {
 
     private onLayerMouseEnter(event: MouseEvent) {
         this.cursor.style.visibility = "inherit"; 
-        this.element.querySelector("#tile-description").textContent = ""; 
     }
 
     public togglePath(index: number): boolean {
@@ -67,15 +68,18 @@ class CursorLayer extends Layer {
 
         if (history.isVisible) {
             var begin = 0.3;
-            var description = this.element.querySelector("#tile-description");
             var tileElement = null as SVGElement;
+            var callback = this.showDetailDescription;
                 
             for (let step of history.path) {
                 tileElement = step.visualize(this.tileWidth, this.tileHeight);
                 step.updateAnimation(begin);
-                tileElement.onmousemove = function (ev) {
-                    description.textContent = step.describes();
-                };
+                
+                if (callback != null) {
+                    tileElement.onmousemove = function (ev) {
+                        callback(step);
+                    };
+                }
                 this.element.appendChild(tileElement);
                 begin += 0.1;
             }
@@ -86,9 +90,11 @@ class CursorLayer extends Layer {
                 }
                 else {
                     tileElement = detail.visualize(this.tileWidth, this.tileHeight);
-                    tileElement.onmousemove = function (ev) {
-                        description.textContent = detail.describes();
-                    };
+                    if (callback != null) {
+                        tileElement.onmousemove = function (ev) {
+                            callback(detail);
+                        };
+                    }
                     this.element.appendChild(tileElement);
                 }
             }
