@@ -2,9 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
-    <TypeScriptToolsVersion>3.2</TypeScriptToolsVersion>
-    <TypeScriptTarget>ES6</TypeScriptTarget>
-    <TypeScriptOutFile>wwwroot\js\core.js</TypeScriptOutFile>
     <PublishWithAspNetCoreTargetManifest>false</PublishWithAspNetCoreTargetManifest>
   </PropertyGroup>
   
@@ -18,7 +15,6 @@
     <PackageReference Include="Microsoft.AspNetCore.All" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Api.Analyzers" Version="2.2.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.1" />
-    <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="3.2.2" Condition="'$(Configuration)' == 'Debug'" />
   </ItemGroup>
   
   <ItemGroup>
@@ -28,5 +24,9 @@
   <ItemGroup>
     <TypeScriptCompile Include="wwwroot\js\*.ts" />
   </ItemGroup>
+  
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent" >
+    <Exec Condition="'$(Configuration)' == 'Debug'" Command="tsc -p tsconfig.json --out wwwroot\js\core.js" />
+  </Target>
 
 </Project>

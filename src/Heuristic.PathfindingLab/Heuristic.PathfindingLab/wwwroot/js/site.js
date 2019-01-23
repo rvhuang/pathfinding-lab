@@ -31,7 +31,7 @@ $(document).ready(function () {
     cursorLayer.showDetailDescription = function(step) {
         $("#description").text(step.describes());
     };
-    foregroundLayer.objectPracingPredicate = (i, j) => core.placeObstacle(i, j);
+    foregroundLayer.objectPracingPredicate = (i, j, obstacle) => core.placeObstacle(i, j, obstacle);
     foregroundLayer.pathPlacingCallback = function(i, j) {
         if (core.isObstacle(i, j)) {
             return;
@@ -141,7 +141,7 @@ $(document).ready(function () {
             foregroundLayer.placeObject(x, y);
         },
         function (step) { 
-            foregroundLayer.placeStep(step, "path-" + step.getDirectionShortName());
+            foregroundLayer.placeStep(step.x, step.y, "path-" + step.getDirectionShortName());
         });
     });
     $('#btnDownload').click(function (event) {

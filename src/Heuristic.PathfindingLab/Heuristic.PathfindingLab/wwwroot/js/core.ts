@@ -17,18 +17,26 @@
         this.fromY = NaN;
     }
 
-    public placeObstacle(x: number, y: number): boolean {
-        if (isNaN(this.map[y][x])) {
-            this.map[y][x] = Direction.None;
+    public placeObstacle(x: number, y: number, obstacle: number): boolean {
+        if (y < 0 || y >= this.map.length || x < 0 || x >= this.map[0].length) {
+            return false;
+        }
+        if (this.map[y][x] < 0) {
+            this.map[y][x] = Direction.None; // clear obstacle
             return false;
         } else {
-            this.map[y][x] = NaN; // NaN -> Obstacle
+            // less than zero -> obstacle
+            // 0 -> none 
+            this.map[y][x] = 0 - Math.abs(obstacle);
             return true;
         }
     }
 
     public isObstacle(x: number, y: number): boolean {
-        return isNaN(this.map[y][x]);
+        if (y < 0 || y >= this.map.length || x < 0 || x >= this.map[0].length) {
+            return true;
+        }
+        return this.map[y][x] < 0;
     }
 
     public clearObstacles() {
@@ -52,7 +60,7 @@
                     var dir = old[y][x];
 
                     this.map[y][x] = dir;
-                    if (isNaN(dir) || dir === null) {
+                    if (dir < 0) { // less than zero -> Obstacle
                         placeObstacleCallback(x, y);
                     }
                     else if (dir != Direction.None) {
@@ -96,7 +104,7 @@
         var existing = this.map[step.y][step.x];
         var dir = step.direction;
 
-        if (!isNaN(existing)) { // NaN -> Obstacle
+        if (existing >= 0) { // less than zero -> Obstacle
             dir = existing | step.direction;
         }
         this.map[step.y][step.x] = dir;
@@ -110,7 +118,7 @@
             let x2 = solution[i + 1].x;
             let y2 = solution[i + 1].y;
 
-            if (isNaN(solution[i].direction)) {
+            if (solution[i].direction < 0) { // less than zero -> Obstacle
                 solution[i].direction = Direction.None;
             }
             if (x1 > x2) {

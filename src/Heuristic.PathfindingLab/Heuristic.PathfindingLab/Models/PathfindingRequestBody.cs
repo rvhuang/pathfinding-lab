@@ -19,7 +19,7 @@ namespace Heuristic.PathfindingLab.Models
         public int GoalY { get; set; }
 
         [JsonProperty(Required = Required.Always)]
-        public int?[][] Map { get; set; }
+        public int[][] Map { get; set; }
 
         [JsonProperty(Required = Required.Always)]
         public string[] Heuristics { get; set; }
@@ -27,11 +27,11 @@ namespace Heuristic.PathfindingLab.Models
         [JsonProperty(Required = Required.Always)]
         public string Algorithm { get; set; }
 
-        public static IEnumerable<Point> GetAllObstacles(int?[][] map)
+        public static IEnumerable<Point> GetAllObstacles(int[][] map)
         {
             for (var y = 0; y < map.Length; y++)
                 for (var x = 0; x < map[y].Length; x++)
-                    if (map[y][x] == null || map[y][x].GetValueOrDefault() < 0)
+                    if (map[y][x] < 0)
                         yield return new Point(x, y);
         }
     }

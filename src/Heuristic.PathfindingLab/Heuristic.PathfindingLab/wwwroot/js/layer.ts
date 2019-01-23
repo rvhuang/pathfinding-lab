@@ -107,6 +107,9 @@ class CursorLayer extends Layer {
     }
 
     public placeTile(x: number, y: number, color: string) {
+        if (x < 0 || y < 0 || x >= this.mapWidth || y >= this.mapHeight) {
+            return;
+        }
         let filtered = this.anchors.filter(a => a.x === x && a.y === y);
         
         if (filtered.length > 0) {
@@ -121,6 +124,9 @@ class CursorLayer extends Layer {
     }
 
     public removeTile(x: number, y: number) {
+        if (x < 0 || y < 0 || x >= this.mapWidth || y >= this.mapHeight) {
+            return;
+        }
         this.anchors.filter(a => a.x === x && a.y === y).forEach(a => a.remove());
         this.anchors = this.anchors.filter(a => !a.isRemoved());
     }
@@ -139,7 +145,8 @@ class CursorLayer extends Layer {
 class ForegroundLayer extends Layer {
     private readonly assetIds: ReadonlyArray<string>;
 
-    public objectPracingPredicate: (i: number, j: number) => boolean;
+    public obstacle: number;
+    public objectPracingPredicate: (i: number, j: number, obstacle: number) => boolean;
     public pathPlacingCallback: (i: number, j: number) => boolean;
 
     constructor(sourceLayer: Layer, element: SVGGElement, assetIds: ReadonlyArray<string>) {
@@ -147,6 +154,7 @@ class ForegroundLayer extends Layer {
         
         this.element.parentElement.addEventListener("mouseup", e => this.onSourceLayerMouseUp(e));
         this.assetIds = assetIds;
+        this.obstacle = 1;
     }
 
     private onSourceLayerMouseUp(event: MouseEvent) {
@@ -156,7 +164,7 @@ class ForegroundLayer extends Layer {
 
         switch (event.button) {
             case 0:
-                if (this.objectPracingPredicate != null && this.objectPracingPredicate(i, j)) {
+                if (this.objectPracingPredicate != null && this.objectPracingPredicate(i, j, this.obstacle)) {
                     this.placeObject(i, j);
                 }
                 else {
@@ -183,8 +191,11 @@ class ForegroundLayer extends Layer {
         };
     }
 
-    public placeStep(step: Step, assertId: string) {
-        this.placeImage(step.x, step.y, assertId);
+    public placeStep(x: number, y: number, assertId: string) {
+        if (x < 0 || y < 0 || x >= this.mapWidth || y >= this.mapHeight) {
+            return;
+        }
+        this.placeImage(x, y, assertId);
     }
 
     private placeImage(x: number, y: number, assertId: string): SVGUseElement {
@@ -199,17 +210,24 @@ class ForegroundLayer extends Layer {
         return img;
     }
 
-    public placeObject(x: number, y: number) { 
+    public placeObject(x: number, y: number) {
+        if (x < 0 || y < 0 || x >= this.mapWidth || y >= this.mapHeight) {
+            return;
+        }
         var id = "step-x-" + x.toString() + "-y-" + y.toString();
         var existing = this.element.querySelector("#" + id);
 
         if (existing != null) {
             existing.remove();
         }
-        this.placeImage(x, y, this.assetIds[(x + y) % this.assetIds.length]);
+        // because the property is not index so we need to substract the value by one.
+        this.placeImage(x, y, this.assetIds[this.obstacle - 1]);
     }
 
     public removeObject(x: number, y: number) {
+        if (x < 0 || y < 0 || x >= this.mapWidth || y >= this.mapHeight) {
+            return;
+        }
         for (let img of [].slice.call(this.element.getElementsByClassName("image-x-" + x.toString() + "-y-" + y.toString()))) {
             img.remove();
         }

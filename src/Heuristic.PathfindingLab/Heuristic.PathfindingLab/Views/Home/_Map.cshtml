@@ -6,7 +6,7 @@
     const int baseOffsetX = 5 * assetSize + 5;
     const int baseOffsetY = 19 * assetSize + 19;
 }
-<svg version="2.0" width="@(assetSize * 2 * Model.Width)" height="@(assetSize * 2 * Model.Height)" id="map" oncontextmenu="return false;">
+<svg version="2.0" width="@(assetSize * 2 * Model.Width)" height="@(assetSize * 2 * (Model.Height + 1))" id="map" oncontextmenu="return false;">
     <defs>
         <image id="tile-assets" x="0" y="0" width="968" height="526" href="@UriHelper.BuildAbsolute(Context.Request.Scheme, Context.Request.Host, new PathString("/images/assets.png"))" />
         <!---->
@@ -59,64 +59,64 @@
             </svg>
         </pattern>
         <!---->
-        <svg id="obstacle-0"  preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 13 + 13) @(assetSize * 9 + 9) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
+        <svg id="obstacle-0" preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 13 + 13) @(assetSize * 9 + 9) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
             <use href="#tile-assets" />
         </svg>
-        <svg id="obstacle-1"  preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 14 + 14) @(assetSize * 9 + 9) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
+        <svg id="obstacle-1" preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 14 + 14) @(assetSize * 9 + 9) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
             <use href="#tile-assets" />
         </svg>
-        <svg id="obstacle-2"  preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 15 + 15) @(assetSize * 9 + 9) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
+        <svg id="obstacle-2" preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 15 + 15) @(assetSize * 9 + 9) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
             <use href="#tile-assets" />
         </svg>
-        <svg id="obstacle-3"  preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 16 + 16) @(assetSize * 9 + 9) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
+        <svg id="obstacle-3" preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 16 + 16) @(assetSize * 9 + 9) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
             <use href="#tile-assets" />
         </svg>
-        <svg id="obstacle-4"  preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 17 + 17) @(assetSize * 9 + 9) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
+        <svg id="obstacle-4" preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 17 + 17) @(assetSize * 9 + 9) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
             <use href="#tile-assets" />
         </svg>
-        <svg id="obstacle-5"   preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 18 + 18) @(assetSize * 9 + 9) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
+        <svg id="obstacle-5" preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 18 + 18) @(assetSize * 9 + 9) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
             <use href="#tile-assets" />
         </svg>
-        <svg id="obstacle-6"   preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 19 + 19) @(assetSize * 9 + 9) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
+        <svg id="obstacle-6" preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 19 + 19) @(assetSize * 9 + 9) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
             <use href="#tile-assets" />
         </svg>
-        <svg id="obstacle-7"   preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 20 + 20) @(assetSize * 9 + 9) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
+        <svg id="obstacle-7" preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 20 + 20) @(assetSize * 9 + 9) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
             <use href="#tile-assets" />
         </svg>
-        <svg id="obstacle-8"   preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 21 + 21) @(assetSize * 9 + 9) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
+        <svg id="obstacle-8" preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 21 + 21) @(assetSize * 9 + 9) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
             <use href="#tile-assets" />
         </svg>
-        <svg id="obstacle-9"   preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 22 + 22) @(assetSize * 9 + 9) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
+        <svg id="obstacle-9" preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 22 + 22) @(assetSize * 9 + 9) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
             <use href="#tile-assets" />
         </svg>
-        <svg id="obstacle-10"   preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 23 + 23) @(assetSize * 9 + 9) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
+        <svg id="obstacle-10" preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 23 + 23) @(assetSize * 9 + 9) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
             <use href="#tile-assets" />
         </svg>
-        <svg id="obstacle-11"   preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 24 + 24) @(assetSize * 9 + 9) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
+        <svg id="obstacle-11" preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 24 + 24) @(assetSize * 9 + 9) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
             <use href="#tile-assets" />
         </svg>
-        <svg id="obstacle-12"   preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 25 + 25) @(assetSize * 9 + 9) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
+        <svg id="obstacle-12" preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 25 + 25) @(assetSize * 9 + 9) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
             <use href="#tile-assets" />
         </svg>
-        <svg id="obstacle-13"   preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 26 + 26) @(assetSize * 9 + 9) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
+        <svg id="obstacle-13" preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 26 + 26) @(assetSize * 9 + 9) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
             <use href="#tile-assets" />
         </svg>
-        <svg id="obstacle-14"   preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 24 + 24) @(assetSize * 10 + 10) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
+        <svg id="obstacle-14" preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 24 + 24) @(assetSize * 10 + 10) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
             <use href="#tile-assets" />
         </svg>
-        <svg id="obstacle-15"   preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 25 + 25) @(assetSize * 10 + 10) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
+        <svg id="obstacle-15" preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 25 + 25) @(assetSize * 10 + 10) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
             <use href="#tile-assets" />
         </svg>
-        <svg id="obstacle-16"   preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 26 + 26) @(assetSize * 10 + 10) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
+        <svg id="obstacle-16" preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 26 + 26) @(assetSize * 10 + 10) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
             <use href="#tile-assets" />
         </svg>
-        <svg id="obstacle-17"   preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 24 + 24) @(assetSize * 11 + 11) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
+        <svg id="obstacle-17" preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 24 + 24) @(assetSize * 11 + 11) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
             <use href="#tile-assets" />
         </svg>
-        <svg id="obstacle-18"   preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 26 + 26) @(assetSize * 11 + 11) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
+        <svg id="obstacle-18" preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 26 + 26) @(assetSize * 11 + 11) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
             <use href="#tile-assets" />
         </svg>
-        <svg id="obstacle-19"   preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 27 + 27) @(assetSize * 11 + 11) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
+        <svg id="obstacle-19" preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 27 + 27) @(assetSize * 11 + 11) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
             <use href="#tile-assets" />
         </svg>
         <!---->
@@ -136,6 +136,12 @@
     <g id="foreground"></g>
     <!--Cursor-->
     <g id="cursor"></g>
+    <svg id="obstacle-list" x="0" y="@(assetSize * 2 * Model.Height)" width="@(assetSize * 2 * 20)" height="@(assetSize * 2)">
+        @for (var i = 0; i < 20; i++)
+        {
+            <use x="@(assetSize * 2 * i)" y="0" href="#obstacle-@(i)" />
+        }
+    </svg>
     <g>
         <rect id="mouse-cursor" width="@(assetSize * 2)" height="@(assetSize * 2)" x="0" y="0" fill="cadetblue" fill-opacity="0.6" />
     </g>
