@@ -1,18 +1,18 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System.Drawing;
+﻿using Heuristic.PathfindingLab.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Heuristic.PathfindingLab.Controllers
 {
     public class HomeController : Controller
     {
-        public IActionResult Index()
+        public IActionResult Index([FromQuery]int w = MapSettings.DefaultMapWidth, [FromQuery]int h = MapSettings.DefaultMapHeight)
         {
-            return View();
+            return View(new MapSettings(w, h));
         }
 
-        public IActionResult Map([FromQuery]int mapWidth, [FromQuery]int mapHeight)
+        public IActionResult Map([FromQuery]int w = MapSettings.DefaultMapWidth, [FromQuery]int h = MapSettings.DefaultMapHeight)
         {
-            return PartialView(new Rectangle(0, 0, mapWidth, mapHeight));
+            return PartialView(new MapSettings(w, h));
         }
     }
 }

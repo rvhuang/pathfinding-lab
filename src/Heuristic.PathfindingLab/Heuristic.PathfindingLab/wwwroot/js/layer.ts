@@ -6,8 +6,8 @@ abstract class Layer {
     public readonly mapWidth: number; // unit: tile
     public readonly mapHeight: number; //  unit: tile
 
-    constructor(canvas: SVGGElement, tileWidth: number, tileHeight: number, mapWidth: number, mapHeight: number) {
-        this.element = canvas;
+    constructor(element: SVGGElement, tileWidth: number, tileHeight: number, mapWidth: number, mapHeight: number) {
+        this.element = element;
         this.mapWidth = mapWidth;
         this.mapHeight = mapHeight;
         this.tileWidth = tileWidth;
@@ -26,8 +26,8 @@ class CursorLayer extends Layer {
 
     public showDetailDescription: (tile: SolutionTile) => any;
 
-    constructor(element: SVGGElement, cursor: SVGRectElement, tileWidth: number, tileHeight: number, mapWidth: number, mapHeight: number) {
-        super(element, tileWidth, tileHeight, mapWidth, mapHeight);
+    constructor(element: SVGGElement, cursor: SVGRectElement, tileWidth: number, tileHeight: number) {
+        super(element, tileWidth, tileHeight, parseInt(element.parentElement.getAttribute("data-map-width")), parseInt(element.parentElement.getAttribute("data-map-height")));
 
         this.anchors = new Array<AnchorTile>();
         this.histories = new Array<PathfindingHistory>();
@@ -151,10 +151,14 @@ class ForegroundLayer extends Layer {
 
     constructor(sourceLayer: Layer, element: SVGGElement, assetIds: ReadonlyArray<string>) {
         super(element, sourceLayer.tileWidth, sourceLayer.tileHeight, sourceLayer.mapWidth, sourceLayer.mapHeight);
-        
+
         this.element.parentElement.addEventListener("mouseup", e => this.onSourceLayerMouseUp(e));
         this.assetIds = assetIds;
         this.obstacle = 1;
+
+        for (let obj of this.element.parentElement.querySelectorAll("#obstacle-list > svg")) {
+            obj.addEventListener("click", e => this.onChangeObstacle(e));
+        }
     }
 
     private onSourceLayerMouseUp(event: MouseEvent) {
@@ -179,6 +183,10 @@ class ForegroundLayer extends Layer {
         }
     }
 
+    private onChangeObstacle(event: Event) {
+        this.obstacle = parseInt(event.srcElement.getAttribute("data-obstacle-value"));
+    }
+
     public placePath(path: ReadonlyArray<Step>, assetIdSelector: (step: Step) => string) {
         for (let step of path) {
             var id = "step-x-" + step.x.toString() + "-y-" + step.y.toString();
@@ -187,7 +195,7 @@ class ForegroundLayer extends Layer {
             if (existing != null) {
                 existing.remove();
             }
-            this.placeImage(step.x, step.y, assetIdSelector(step)).id = id;   
+            this.placeImage(step.x, step.y, assetIdSelector(step)).id = id;
         };
     }
 
@@ -200,10 +208,10 @@ class ForegroundLayer extends Layer {
 
     private placeImage(x: number, y: number, assertId: string): SVGUseElement {
         var img = document.createElementNS("http://www.w3.org/2000/svg", "use");
-    
+
         img.x.baseVal.value = x * this.tileWidth;
         img.y.baseVal.value = y * this.tileHeight;
-        img.setAttribute("href", "#" + assertId);
+        img.setAttribute("xlink:href", "#" + assertId);
         img.classList.add("image-x-" + x.toString() + "-y-" + y.toString());
 
         this.element.appendChild(img);
@@ -234,8 +242,8 @@ class ForegroundLayer extends Layer {
     }
 
     public clearMap() {
-        while (this.element.lastChild != null) {
-            this.element.removeChild(this.element.lastChild);
-        } 
+        for (let img of this.element.querySelectorAll("use")) {
+            img.remove();
+        }
     }
 }

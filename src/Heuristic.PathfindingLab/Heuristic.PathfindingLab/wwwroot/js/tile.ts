@@ -153,7 +153,7 @@ class AnchorTile extends Tile<SVGUseElement> {
         rect.width.baseVal.value = tileWidth;
         rect.height.baseVal.value = tileHeight;
         rect.setAttribute("fill", this.color);
-        rect.setAttribute("href", "#cursor-tile");
+        rect.setAttribute("xlink:href", "#cursor-tile");
 
         return rect;
     }

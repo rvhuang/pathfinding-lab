@@ -1,11 +1,10 @@
-﻿var tileSize = 32;
-var mapSize = 20;
+﻿var tileSize = 32; 
 var core = new Core(40, 20);
 var current = new PathfindingRequestBody();
 
 $(document).ready(function () {
     
-    var cursorLayer = new CursorLayer(document.getElementById('cursor'), document.getElementById('mouse-cursor'), tileSize, tileSize, 40, 20);
+    var cursorLayer = new CursorLayer(document.getElementById('cursor'), document.getElementById('mouse-cursor'), tileSize, tileSize);
     var foregroundLayer = new ForegroundLayer(cursorLayer, document.getElementById('foreground'), [
         "obstacle-0",
         "obstacle-1",
@@ -130,25 +129,6 @@ $(document).ready(function () {
         cursorLayer.clearTiles();
 
         $("#description").text("");
-    });
-    $('#btnSave').click(function (event) {
-        core.saveMap();
-    });
-    $('#btnLoad').click(function (event) {
-        foregroundLayer.clearMap();
-        core.clearObstacles();
-        core.loadMap(function(x, y) { 
-            foregroundLayer.placeObject(x, y);
-        },
-        function (step) { 
-            foregroundLayer.placeStep(step.x, step.y, "path-" + step.getDirectionShortName());
-        });
-    });
-    $('#btnDownload').click(function (event) {
-        this.href = "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(document.getElementById("map").outerHTML);
-    });
-    $('#btnDownloadJson').click(function (event) {
-        this.href = "data:text/json;charset=UTF-8," + encodeURIComponent(JSON.stringify(current));
     });
     $(':input[name="algorithm"]').change(function (event) {
         current.algorithm = this.value;

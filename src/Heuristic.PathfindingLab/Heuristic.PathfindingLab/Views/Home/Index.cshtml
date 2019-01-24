@@ -1,119 +1,108 @@
-﻿@section Styles {
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" />    
+﻿@using Heuristic.PathfindingLab.Models 
+@model MapSettings
+@section Styles {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" />
     <link rel="stylesheet" href="/css/site.css" />
 }
 <div class="row">
     <div class="col-lg-12">
         <h3>Pathfinding Lab <small>powered by <a href="https://github.com/rvhuang/linq-to-astar" target="_blank">LINQ to A*</a></small></h3>
         <hr />
-        <div class="center-block">@await Html.PartialAsync("_Map", new System.Drawing.Rectangle(0, 0, 40, 20))</div>
+        <div class="center-block">@await Html.PartialAsync("_Map", Model)</div>
     </div>
 </div>
 <div class="row">
     <div class="col-lg-12">
-                 <div class="btn-group" role="group">
-                    <button type="button" class="btn btn-default btn-sm" data-toggle="tooltip" title="Start over" id="btnClear">
-                        <span class="glyphicon glyphicon-refresh"></span>
-                    </button>
-                    <button type="button" class="btn btn-default btn-sm" data-toggle="tooltip" title="Save current state" id="btnSave">
-                        <span class="glyphicon glyphicon-floppy-disk"></span>
-                    </button>
-                    <button type="button" class="btn btn-default btn-sm" data-toggle="tooltip" title="Load saved state" id="btnLoad">
-                        <span class="glyphicon glyphicon-floppy-open"></span>
-                    </button>
-                    @*
-            <a class="btn btn-default btn-sm" download="pathfinding-lab.svg" data-toggle="tooltip" title="Save as SVG image" id="btnDownload">
-                <span class="glyphicon glyphicon-picture"></span>
-            </a>*@
-                    <a class="btn btn-default btn-sm" download="data.json" data-toggle="tooltip" title="Download map data in JSON format" id="btnDownloadJson">
-                        <span class="glyphicon glyphicon-download"></span>
-                    </a>
-                    <button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#modalInfo">
-                        <span class="glyphicon glyphicon-info-sign"></span>
-                    </button>
+        <div class="btn-group" role="group">
+            <button type="button" class="btn btn-default btn-sm" data-toggle="tooltip" title="Start over" id="btnClear">
+                <span class="glyphicon glyphicon-refresh"></span>
+            </button>
+            <button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#modalInfo">
+                <span class="glyphicon glyphicon-info-sign"></span>
+            </button>
         </div>&nbsp;
         <span id="description" class="hidden-xs hidden-sm small">Left click to place barriers, right click on two positions to get a path.</span>
     </div>
 </div>
 <div class="row" style="margin-top: 12px">
-            <form id="options" role="form">
-                <div class="col-lg-2">
-                    <label>Algorithm</label>
-                    <a href="javascript:void();" role="button" class="btn btn-link" data-toggle="popover" data-trigger="focus" data-placement="right" data-container="body" data-content="Different algorithm can produce completely different path. In some circumstances, not every algorithm can find the path.">
-                        <span class="glyphicon glyphicon-question-sign"></span>
-                    </a>
-                    <div class="radio">
-                        <label><input type="radio" name="algorithm" value="AStar" checked /><span>A*</span></label>
-                    </div>
-                    <div class="radio">
-                        <label><input type="radio" name="algorithm" value="BestFirstSearch" />Best-first Search</label>
-                    </div>
-                    <div class="radio">
-                        <label><input type="radio" name="algorithm" value="IterativeDeepeningAStar" />Iterative Deepening A*</label>
-                    </div>
-                    <div class="radio">
-                        <label><input type="radio" name="algorithm" value="RecursiveBestFirstSearch" />Recursive Best-first Search</label>
-                    </div>
-                </div>
-                <div class="col-lg-3">
-                    <label>Heuristic Functions</label>
-                    <a href="javascript:void();" role="button" class="btn btn-link" data-toggle="popover" data-trigger="focus" data-placement="right" data-container="body" data-content="A heuristic function is used to evaluate the cost of every step. For some of algorithms, at least one heuristic function needs to be selected. If more than one functions are selected, the subsequent one will be used when previous one evaluates two steps as equal.">
-                        <span class="glyphicon glyphicon-question-sign"></span>
-                    </a>
-                    <div class="checkbox">
-                        <label><input type="checkbox" name="heuristic" value="GetChebyshevDistance">Chebyshev Distance</label>
-                    </div>
-                    <div class="checkbox">
-                        <label><input type="checkbox" name="heuristic" value="GetEuclideanDistance">Euclidean Distance</label>
-                    </div>
-                    <div class="checkbox">
-                        <label><input type="checkbox" name="heuristic" value="GetManhattanDistance" checked>Manhattan Distance</label>
-                    </div>
-                </div>
-            </form>
-            <div class="col-lg-7">
-                <label>LINQ Expression</label>
-                <a href="javascript:void();" role="button" class="btn btn-link" data-toggle="popover" data-trigger="focus" data-placement="right" data-container="body" data-content="A code snippet using LINQ to A* to set conditions and fetch the path will be displayed here.">
-                    <span class="glyphicon glyphicon-question-sign"></span>
-                </a>
-                <div class="btn-group" role="group" style="margin-top: 2px;" id="histories"></div>
-                <!-- Nav tabs -->
-                <ul class="nav nav-tabs" role="tablist" style="max-width: 640px; margin-top: 12px">
-                    <li role="presentation" class="active"><a href="#exampleSelectMany" aria-controls="exampleSelectMany" role="tab" data-toggle="tab">SelectMany</a></li>
-                    <li role="presentation"><a href="#exampleExcept" aria-controls="exampleExcept" role="tab" data-toggle="tab">Except</a></li>
-                    <li role="presentation"><a href="#exampleWhere" aria-controls="exampleWhere" role="tab" data-toggle="tab">Where only</a></li>
-                </ul>
-                <!-- Tab panes -->
-                <div class="tab-content" style="max-width: 640px">
-                    <div role="tabpanel" class="tab-pane active" id="exampleSelectMany">
-                        <pre><code class="cs">// Equivalent LINQ expression using SelectMany() will be shown here.
+    <form id="options" role="form">
+        <div class="col-lg-2">
+            <label>Algorithm</label>
+            <a href="javascript:void();" role="button" class="btn btn-link" data-toggle="popover" data-trigger="focus" data-placement="right" data-container="body" data-content="Different algorithm can produce completely different path. In some circumstances, not every algorithm can find the path.">
+                <span class="glyphicon glyphicon-question-sign"></span>
+            </a>
+            <div class="radio">
+                <label><input type="radio" name="algorithm" value="AStar" checked /><span>A*</span></label>
+            </div>
+            <div class="radio">
+                <label><input type="radio" name="algorithm" value="BestFirstSearch" />Best-first Search</label>
+            </div>
+            <div class="radio">
+                <label><input type="radio" name="algorithm" value="IterativeDeepeningAStar" />Iterative Deepening A*</label>
+            </div>
+            <div class="radio">
+                <label><input type="radio" name="algorithm" value="RecursiveBestFirstSearch" />Recursive Best-first Search</label>
+            </div>
+        </div>
+        <div class="col-lg-3">
+            <label>Heuristic Functions</label>
+            <a href="javascript:void();" role="button" class="btn btn-link" data-toggle="popover" data-trigger="focus" data-placement="right" data-container="body" data-content="A heuristic function is used to evaluate the cost of every step. For some of algorithms, at least one heuristic function needs to be selected. If more than one functions are selected, the subsequent one will be used when previous one evaluates two steps as equal.">
+                <span class="glyphicon glyphicon-question-sign"></span>
+            </a>
+            <div class="checkbox">
+                <label><input type="checkbox" name="heuristic" value="GetChebyshevDistance">Chebyshev Distance</label>
+            </div>
+            <div class="checkbox">
+                <label><input type="checkbox" name="heuristic" value="GetEuclideanDistance">Euclidean Distance</label>
+            </div>
+            <div class="checkbox">
+                <label><input type="checkbox" name="heuristic" value="GetManhattanDistance" checked>Manhattan Distance</label>
+            </div>
+        </div>
+    </form>
+    <div class="col-lg-7">
+        <label>LINQ Expression</label>
+        <a href="javascript:void();" role="button" class="btn btn-link" data-toggle="popover" data-trigger="focus" data-placement="right" data-container="body" data-content="A code snippet using LINQ to A* to set conditions and fetch the path will be displayed here.">
+            <span class="glyphicon glyphicon-question-sign"></span>
+        </a>
+        <div class="btn-group" role="group" style="margin-top: 2px;" id="histories"></div>
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs" role="tablist" style="max-width: 640px; margin-top: 12px">
+            <li role="presentation" class="active"><a href="#exampleSelectMany" aria-controls="exampleSelectMany" role="tab" data-toggle="tab">SelectMany</a></li>
+            <li role="presentation"><a href="#exampleExcept" aria-controls="exampleExcept" role="tab" data-toggle="tab">Except</a></li>
+            <li role="presentation"><a href="#exampleWhere" aria-controls="exampleWhere" role="tab" data-toggle="tab">Where only</a></li>
+        </ul>
+        <!-- Tab panes -->
+        <div class="tab-content" style="max-width: 640px">
+            <div role="tabpanel" class="tab-pane active" id="exampleSelectMany">
+                <pre><code class="cs">// Equivalent LINQ expression using SelectMany() will be shown here.
 
 
 
 
 
                                     </code></pre>
-                    </div>
-                    <div role="tabpanel" class="tab-pane" id="exampleExcept">
-                        <pre><code class="cs">// Equivalent LINQ expression using Except() will be shown here.
+            </div>
+            <div role="tabpanel" class="tab-pane" id="exampleExcept">
+                <pre><code class="cs">// Equivalent LINQ expression using Except() will be shown here.
 
 
 
 
 
                                     </code></pre>
-                    </div>
-                    <div role="tabpanel" class="tab-pane" id="exampleWhere">
-                        <pre><code class="cs">// Equivalent LINQ expression using Where() clause will be shown here.
+            </div>
+            <div role="tabpanel" class="tab-pane" id="exampleWhere">
+                <pre><code class="cs">// Equivalent LINQ expression using Where() clause will be shown here.
 
 
 
 
 
                                 </code></pre>
-                    </div>
-                </div>
             </div>
+        </div>
+    </div>
 </div>
 <!-- Modal -->
 <div id="modalInfo" class="modal fade" role="dialog">

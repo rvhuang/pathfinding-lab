@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Drawing;
 using System.Linq;
 using System.Net;
 
@@ -17,27 +16,19 @@ namespace Heuristic.PathfindingLab.Controllers
         [HttpPost]
         public ResponseBody<AlgorithmSolution> Find([FromBody]PathfindingRequestBody body)
         {
-            var observer = new AlgorithmObserverFactory();
-            var start = new Point(body.FromX, body.FromY);
-            var goal = new Point(body.GoalX, body.GoalY);
-            var boundary = new Rectangle(0, 0, body.Map.Max(row => row.Length), body.Map.Length);
-            var unit = 1;
-            var obstacles = PathfindingRequestBody.GetAllObstacles(body.Map);
-            var queryable = HeuristicSearch.Use(body.Algorithm, start, goal, (step, i) => step.GetFourDirections(unit), null, observer);
-        
-            try
-            {    
-                var solution = ApplyHeuristicFunction(queryable.Except(obstacles).Where(boundary.Contains), body.Heuristics).ToArray();
+            var settings = body.ToSettings();
 
-                Response.StatusCode = solution.Any() ? (int)HttpStatusCode.OK : (int)HttpStatusCode.NotFound;                
-                return new ResponseBody<AlgorithmSolution>()
-                {
-                    Data = new AlgorithmSolution()
-                    {
-                        Details = observer.Details,
-                        Solution = solution
-                    }
-                }; 
+            if (!PathfindingSettings.CheckIfValid(settings))
+            {
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return new ResponseBody<AlgorithmSolution>();
+            }
+            try
+            {
+                var result = AlgorithmCore.Find(settings, body.Map);
+
+                Response.StatusCode = result.Solution.Any() ? (int)HttpStatusCode.OK : (int)HttpStatusCode.NotFound;
+                return new ResponseBody<AlgorithmSolution>() { Data = result };
             }
             catch (InvalidOperationException)
             {
@@ -49,51 +40,6 @@ namespace Heuristic.PathfindingLab.Controllers
                 Response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 return new ResponseBody<AlgorithmSolution>() { };
             }
-        }
-
-        private static HeuristicSearchBase<Point, Point> ApplyHeuristicFunction(HeuristicSearchBase<Point, Point> queryable, string[] heuristicNames)
-        {
-            var orderBy = default(HeuristicSearchOrderBy<Point, Point>);
-            var goal = queryable.To;
-
-            switch (heuristicNames.FirstOrDefault())
-            {
-                case nameof(PointExtensions.GetChebyshevDistance):
-                    orderBy = queryable.OrderBy(p => p.GetChebyshevDistance(goal));
-                    break;
-
-                case nameof(PointExtensions.GetEuclideanDistance):
-                    orderBy = queryable.OrderBy(p => p.GetEuclideanDistance(goal));
-                    break;
-
-                case nameof(PointExtensions.GetManhattanDistance):
-                    orderBy = queryable.OrderBy(p => p.GetManhattanDistance(goal));
-                    break;
-
-                default:
-                    return queryable;
-            }
-            foreach (var heuristicName in heuristicNames.Skip(1).Take(2))
-            {
-                switch (heuristicName)
-                {
-                    case nameof(PointExtensions.GetChebyshevDistance):
-                        orderBy = orderBy.ThenBy(p => p.GetChebyshevDistance(goal));
-                        break;
-
-                    case nameof(PointExtensions.GetEuclideanDistance):
-                        orderBy = orderBy.ThenBy(p => p.GetEuclideanDistance(goal));
-                        break;
-
-                    case nameof(PointExtensions.GetManhattanDistance):
-                        orderBy = orderBy.ThenBy(p => p.GetManhattanDistance(goal));
-                        break;
-
-                    default:
-                        continue;
-                }
-            }
-            return orderBy;
         }
     }
 }

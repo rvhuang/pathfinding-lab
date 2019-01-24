@@ -204,6 +204,10 @@ interface Pathfinding {
     toWhereOnlyExpression(mapWidth: number, mapHeight: number): string[];
 }
 
+class PathfindingSettings {
+
+}
+
 class PathfindingRequestBody implements Pathfinding {
     public fromX: number;
     public fromY: number;

@@ -1,123 +1,124 @@
 ﻿@using Microsoft.AspNetCore.Http
 @using Microsoft.AspNetCore.Http.Extensions
-@model System.Drawing.Rectangle
+@using Heuristic.PathfindingLab.Models
+@model MapSettings
 @{
     const int assetSize = 16; // pixel
     const int baseOffsetX = 5 * assetSize + 5;
     const int baseOffsetY = 19 * assetSize + 19;
 }
-<svg version="2.0" width="@(assetSize * 2 * Model.Width)" height="@(assetSize * 2 * (Model.Height + 1))" id="map" oncontextmenu="return false;">
+<svg version="1.1" width="@(assetSize * 2 * Model.Width)" height="@(assetSize * 2 * (Model.Height + 1))" id="map" oncontextmenu="return false;" data-map-width="@Model.Width" data-map-height="@Model.Height">
     <defs>
         <image id="tile-assets" x="0" y="0" width="968" height="526" href="@UriHelper.BuildAbsolute(Context.Request.Scheme, Context.Request.Host, new PathString("/images/assets.png"))" />
         <!---->
         <svg id="path-dr" preserveAspectRatio="xMidYMid slice" viewBox="@(baseOffsetX + assetSize * 2 + 2) @(baseOffsetY) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
-            <use href="#tile-assets" />
+            <use xlink:href="#tile-assets" />
         </svg>
         <svg id="path-dlr" preserveAspectRatio="xMidYMid slice" viewBox="@(baseOffsetX) @(baseOffsetY) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
-            <use href="#tile-assets" />
+            <use xlink:href="#tile-assets" />
         </svg>
         <svg id="path-dl" preserveAspectRatio="xMidYMid slice" viewBox="@(baseOffsetX + assetSize * 3 + 3) @(baseOffsetY ) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
-            <use href="#tile-assets" />
+            <use xlink:href="#tile-assets" />
         </svg>
         <svg id="path-dru" preserveAspectRatio="xMidYMid slice" viewBox="@(baseOffsetX) @(baseOffsetY + assetSize + 1) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
-            <use href="#tile-assets" />
+            <use xlink:href="#tile-assets" />
         </svg>
         <svg id="path-dlru" preserveAspectRatio="xMidYMid slice" viewBox="@(baseOffsetX + assetSize * 2 + 2) @(baseOffsetY + assetSize * 5 + 5) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
-            <use href="#tile-assets" />
+            <use xlink:href="#tile-assets" />
         </svg>
         <svg id="path-dlu" preserveAspectRatio="xMidYMid slice" viewBox="@(baseOffsetX + assetSize + 1) @(baseOffsetY) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
-            <use href="#tile-assets" />
+            <use xlink:href="#tile-assets" />
         </svg>
         <svg id="path-ru" preserveAspectRatio="xMidYMid slice" viewBox="@(baseOffsetX + assetSize * 2 + 2) @(baseOffsetY + assetSize + 1) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
-            <use href="#tile-assets" />
+            <use xlink:href="#tile-assets" />
         </svg>
         <svg id="path-lru" preserveAspectRatio="xMidYMid slice" viewBox="@(baseOffsetX + assetSize + 1) @(baseOffsetY + assetSize + 1) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
-            <use href="#tile-assets" />
+            <use xlink:href="#tile-assets" />
         </svg>
         <svg id="path-lu" preserveAspectRatio="xMidYMid slice" viewBox="@(baseOffsetX + assetSize * 3 + 3) @(baseOffsetY + assetSize + 1) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
-            <use href="#tile-assets" />
+            <use xlink:href="#tile-assets" />
         </svg>
         <svg id="path-du" preserveAspectRatio="xMidYMid slice" viewBox="@(baseOffsetX + assetSize * 4 + 4) @(baseOffsetY) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
-            <use href="#tile-assets" />
+            <use xlink:href="#tile-assets" />
         </svg>
         <svg id="path-lr" preserveAspectRatio="xMidYMid slice" viewBox="@(baseOffsetX + assetSize * 4 + 4) @(baseOffsetY + assetSize + 1) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
-            <use href="#tile-assets" />
+            <use xlink:href="#tile-assets" />
         </svg>
         <!---->
         <pattern id="background-pattern" patternUnits="userSpaceOnUse" patternContentUnits="userSpaceOnUse" x="0" y="0" width="@(assetSize * 2)" height="@(assetSize * 2)">
             <svg x="0" y="0" viewBox="@(assetSize * 5 + 5) 0 @(assetSize) @(assetSize)" width="@(assetSize)" height="@(assetSize)">
-                <use href="#tile-assets" />
+                <use xlink:href="#tile-assets" />
             </svg>
             <svg x="0" y="@assetSize" viewBox="@(assetSize * 5 + 5) @(assetSize + 1) @(assetSize) @(assetSize)" width="@(assetSize)" height="@(assetSize)">
-                <use href="#tile-assets" />
+                <use xlink:href="#tile-assets" />
             </svg>
             <svg x="@assetSize" y="0" viewBox="@(assetSize * 5 + 5) @(assetSize + 1) @(assetSize) @(assetSize)" width="@(assetSize)" height="@(assetSize)">
-                <use href="#tile-assets" />
+                <use xlink:href="#tile-assets" />
             </svg>
             <svg x="@assetSize" y="@assetSize" viewBox="@(assetSize * 5 + 5) 0 @(assetSize) @(assetSize)" width="@(assetSize)" height="@(assetSize)">
-                <use href="#tile-assets" />
+                <use xlink:href="#tile-assets" />
             </svg>
         </pattern>
         <!---->
         <svg id="obstacle-0" preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 13 + 13) @(assetSize * 9 + 9) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
-            <use href="#tile-assets" />
+            <use xlink:href="#tile-assets" />
         </svg>
         <svg id="obstacle-1" preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 14 + 14) @(assetSize * 9 + 9) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
-            <use href="#tile-assets" />
+            <use xlink:href="#tile-assets" />
         </svg>
         <svg id="obstacle-2" preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 15 + 15) @(assetSize * 9 + 9) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
-            <use href="#tile-assets" />
+            <use xlink:href="#tile-assets" />
         </svg>
         <svg id="obstacle-3" preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 16 + 16) @(assetSize * 9 + 9) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
-            <use href="#tile-assets" />
+            <use xlink:href="#tile-assets" />
         </svg>
         <svg id="obstacle-4" preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 17 + 17) @(assetSize * 9 + 9) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
-            <use href="#tile-assets" />
+            <use xlink:href="#tile-assets" />
         </svg>
         <svg id="obstacle-5" preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 18 + 18) @(assetSize * 9 + 9) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
-            <use href="#tile-assets" />
+            <use xlink:href="#tile-assets" />
         </svg>
         <svg id="obstacle-6" preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 19 + 19) @(assetSize * 9 + 9) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
-            <use href="#tile-assets" />
+            <use xlink:href="#tile-assets" />
         </svg>
         <svg id="obstacle-7" preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 20 + 20) @(assetSize * 9 + 9) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
-            <use href="#tile-assets" />
+            <use xlink:href="#tile-assets" />
         </svg>
         <svg id="obstacle-8" preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 21 + 21) @(assetSize * 9 + 9) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
-            <use href="#tile-assets" />
+            <use xlink:href="#tile-assets" />
         </svg>
         <svg id="obstacle-9" preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 22 + 22) @(assetSize * 9 + 9) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
-            <use href="#tile-assets" />
+            <use xlink:href="#tile-assets" />
         </svg>
         <svg id="obstacle-10" preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 23 + 23) @(assetSize * 9 + 9) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
-            <use href="#tile-assets" />
+            <use xlink:href="#tile-assets" />
         </svg>
         <svg id="obstacle-11" preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 24 + 24) @(assetSize * 9 + 9) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
-            <use href="#tile-assets" />
+            <use xlink:href="#tile-assets" />
         </svg>
         <svg id="obstacle-12" preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 25 + 25) @(assetSize * 9 + 9) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
-            <use href="#tile-assets" />
+            <use xlink:href="#tile-assets" />
         </svg>
         <svg id="obstacle-13" preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 26 + 26) @(assetSize * 9 + 9) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
-            <use href="#tile-assets" />
+            <use xlink:href="#tile-assets" />
         </svg>
         <svg id="obstacle-14" preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 24 + 24) @(assetSize * 10 + 10) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
-            <use href="#tile-assets" />
+            <use xlink:href="#tile-assets" />
         </svg>
         <svg id="obstacle-15" preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 25 + 25) @(assetSize * 10 + 10) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
-            <use href="#tile-assets" />
+            <use xlink:href="#tile-assets" />
         </svg>
         <svg id="obstacle-16" preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 26 + 26) @(assetSize * 10 + 10) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
-            <use href="#tile-assets" />
+            <use xlink:href="#tile-assets" />
         </svg>
         <svg id="obstacle-17" preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 24 + 24) @(assetSize * 11 + 11) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
-            <use href="#tile-assets" />
+            <use xlink:href="#tile-assets" />
         </svg>
         <svg id="obstacle-18" preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 26 + 26) @(assetSize * 11 + 11) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
-            <use href="#tile-assets" />
+            <use xlink:href="#tile-assets" />
         </svg>
         <svg id="obstacle-19" preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 27 + 27) @(assetSize * 11 + 11) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
-            <use href="#tile-assets" />
+            <use xlink:href="#tile-assets" />
         </svg>
         <!---->
         <rect id="cursor-tile" width="@(assetSize * 2)" height="@(assetSize * 2)" fill-opacity="0.0">
@@ -133,16 +134,27 @@
     <!--Background-->
     <rect fill="url(#background-pattern)" width="@(assetSize * 2 * Model.Width)" height="@(assetSize * 2 * Model.Height)" />
     <!--Foreground-->
-    <g id="foreground"></g>
+    <g id="foreground">
+        @foreach (var obstacle in Model.Obstacles.Where(Model.CheckIfObstacleValid))
+        {
+            <use xlink:href="#obstacle-@(obstacle.Value - 1)" x="@(obstacle.X * assetSize)" y="@(obstacle.Y * assetSize)" class="image-x-@(obstacle.X)-y-@(obstacle.Y)" />
+        }
+        @foreach (var settings in Model.PathfindingSettingsList.Where(Model.CheckIfPathfindingSettingsValid))
+        { 
+
+        }
+    </g>
     <!--Cursor-->
     <g id="cursor"></g>
-    <svg id="obstacle-list" x="0" y="@(assetSize * 2 * Model.Height)" width="@(assetSize * 2 * 20)" height="@(assetSize * 2)">
-        @for (var i = 0; i < 20; i++)
-        {
-            <use x="@(assetSize * 2 * i)" y="0" href="#obstacle-@(i)" />
-        }
-    </svg>
     <g>
         <rect id="mouse-cursor" width="@(assetSize * 2)" height="@(assetSize * 2)" x="0" y="0" fill="cadetblue" fill-opacity="0.6" />
+    </g>
+    <g id="obstacle-list">
+        @for (var i = 0; i < 20; i++)
+        {
+            <svg x="@(assetSize * 2 * i)" y="@(assetSize * 2 * Model.Height)" width="@(assetSize * 2)" height="@(assetSize * 2)">
+                <use xlink:href="#obstacle-@(i)" data-obstacle-value="@(i + 1)" />
+            </svg>
+        }
     </g>
 </svg>
