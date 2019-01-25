@@ -7,9 +7,9 @@
     const int baseOffsetX = 5 * assetSize + 5;
     const int baseOffsetY = 19 * assetSize + 19;
 }
-<svg version="1.1" width="@(assetSize * 2 * Model.Width)" height="@(assetSize * 2 * (Model.Height + 1))" id="map" oncontextmenu="return false;" data-map-width="@Model.Width" data-map-height="@Model.Height">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="@(assetSize * 2 * Model.Width)" height="@(assetSize * 2 * (Model.Height + 1))" id="map" oncontextmenu="return false;">
     <defs>
-        <image id="tile-assets" x="0" y="0" width="968" height="526" href="@UriHelper.BuildAbsolute(Context.Request.Scheme, Context.Request.Host, new PathString("/images/assets.png"))" />
+        <image id="tile-assets" x="0" y="0" width="968" height="526" xlink:href="@UriHelper.BuildAbsolute(Context.Request.Scheme, Context.Request.Host, new PathString("/images/assets.png"))" />
         <!---->
         <svg id="path-dr" preserveAspectRatio="xMidYMid slice" viewBox="@(baseOffsetX + assetSize * 2 + 2) @(baseOffsetY) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
             <use xlink:href="#tile-assets" />
@@ -134,16 +134,7 @@
     <!--Background-->
     <rect fill="url(#background-pattern)" width="@(assetSize * 2 * Model.Width)" height="@(assetSize * 2 * Model.Height)" />
     <!--Foreground-->
-    <g id="foreground">
-        @foreach (var obstacle in Model.Obstacles.Where(Model.CheckIfObstacleValid))
-        {
-            <use xlink:href="#obstacle-@(obstacle.Value - 1)" x="@(obstacle.X * assetSize)" y="@(obstacle.Y * assetSize)" class="image-x-@(obstacle.X)-y-@(obstacle.Y)" />
-        }
-        @foreach (var settings in Model.PathfindingSettingsList.Where(Model.CheckIfPathfindingSettingsValid))
-        { 
-
-        }
-    </g>
+    <g id="foreground"></g>
     <!--Cursor-->
     <g id="cursor"></g>
     <g>

@@ -26,8 +26,8 @@ class CursorLayer extends Layer {
 
     public showDetailDescription: (tile: SolutionTile) => any;
 
-    constructor(element: SVGGElement, cursor: SVGRectElement, tileWidth: number, tileHeight: number) {
-        super(element, tileWidth, tileHeight, parseInt(element.parentElement.getAttribute("data-map-width")), parseInt(element.parentElement.getAttribute("data-map-height")));
+    constructor(element: SVGGElement, cursor: SVGRectElement, tileWidth: number, tileHeight: number, mapWidth: number, mapHeight: number) {
+        super(element, tileWidth, tileHeight, mapWidth, mapHeight);
 
         this.anchors = new Array<AnchorTile>();
         this.histories = new Array<PathfindingHistory>();
@@ -131,13 +131,17 @@ class CursorLayer extends Layer {
         this.anchors = this.anchors.filter(a => !a.isRemoved());
     }
 
+    public clearAnchors() {
+        for (let anchor of this.anchors) {
+            anchor.remove();
+        }
+        this.anchors = new Array<AnchorTile>();
+    }
+
     public clearTiles() {
         for (let history of this.histories) {
             history.path.forEach(path => path.remove());
             history.details.forEach(detail => detail.remove());
-        }
-        for (let anchor of this.anchors) {
-            anchor.remove();
         }
     }
 }
@@ -211,7 +215,7 @@ class ForegroundLayer extends Layer {
 
         img.x.baseVal.value = x * this.tileWidth;
         img.y.baseVal.value = y * this.tileHeight;
-        img.setAttribute("xlink:href", "#" + assertId);
+        img.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", "#" + assertId);
         img.classList.add("image-x-" + x.toString() + "-y-" + y.toString());
 
         this.element.appendChild(img);

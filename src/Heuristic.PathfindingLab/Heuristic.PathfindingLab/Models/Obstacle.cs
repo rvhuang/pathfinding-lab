@@ -12,7 +12,7 @@ namespace Heuristic.PathfindingLab.Models
 
         [JsonProperty(Required = Required.Always)]
         public int Y { get; set; }
-
+        
         public bool CheckIfPathfindingSettingsValid(PathfindingSettings s)
         {
             return s != null && s.FromX != X && s.FromY != Y && s.GoalX != X && s.GoalY != Y;

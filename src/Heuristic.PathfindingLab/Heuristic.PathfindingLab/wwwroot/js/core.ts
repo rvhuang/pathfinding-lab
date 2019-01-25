@@ -1,4 +1,8 @@
 ﻿class Core {
+    public readonly mapWidth: number;
+    public readonly mapHeight: number;
+
+
     private readonly map: Direction[][];
 
     private fromX: number;
@@ -13,6 +17,8 @@
                 this.map[y][x] = Direction.None;
             }
         }
+        this.mapWidth = mapWidth;
+        this.mapHeight = mapHeight;
         this.fromX = NaN;
         this.fromY = NaN;
     }
@@ -51,20 +57,20 @@
         localStorage.setItem("map", JSON.stringify(this.map));
     }
 
-    public loadMap(placeObstacleCallback: (x: number, y: number) => any, placeStepCallback: (step: Step) => any) {
-        var old = JSON.parse(localStorage.getItem("map")) as Array<Array<Direction>>;
+    public loadMap(placeObstacleCallback: (x: number, y: number, obstacle: number) => any, placeStepCallback: (step: Step) => any) {
+        var old = JSON.parse(localStorage.getItem("map")) as number[][];
         
         try {
             for (var y = 0; y < this.map.length; y++) {
                 for (var x = 0; x < this.map[y].length; x++) {
-                    var dir = old[y][x];
+                    var value = old[y][x];
 
-                    this.map[y][x] = dir;
-                    if (dir < 0) { // less than zero -> Obstacle
-                        placeObstacleCallback(x, y);
+                    this.map[y][x] = value;
+                    if (value < 0) { // less than zero -> Obstacle
+                        placeObstacleCallback(x, y, value);
                     }
-                    else if (dir != Direction.None) {
-                        placeStepCallback(new Step(x, y, dir));
+                    else if (value != Direction.None) {
+                        placeStepCallback(new Step(x, y, value));
                     }
                 }
             }

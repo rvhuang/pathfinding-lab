@@ -12,12 +12,16 @@ namespace Heuristic.PathfindingLab.Observers
     {
         public static AlgorithmSolution Find(PathfindingSettings settings, int[][] map)
         {
+            return Find(settings, map.Max(row => row.Length), map.Length, GetAllObstacles(map));
+        }
+
+        public static AlgorithmSolution Find(PathfindingSettings settings, int mapWidth, int mapHeight, IEnumerable<Point> obstacles)
+        {
             var observer = new AlgorithmObserverFactory();
             var start = new Point(settings.FromX, settings.FromY);
             var goal = new Point(settings.GoalX, settings.GoalY);
-            var boundary = new Rectangle(0, 0, map.Max(row => row.Length), map.Length);
-            var unit = 1;
-            var obstacles = GetAllObstacles(map);
+            var boundary = new Rectangle(0, 0, mapWidth, mapHeight);
+            var unit = 1; 
             var queryable = HeuristicSearch.Use(settings.Algorithm, start, goal, (step, i) => step.GetFourDirections(unit), null, observer);
             var solution = ApplyHeuristicFunction(queryable.Except(obstacles).Where(boundary.Contains), settings.Heuristics);
 

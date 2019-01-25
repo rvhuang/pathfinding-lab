@@ -27,8 +27,10 @@ namespace Heuristic.PathfindingLab.Models
         public static bool CheckIfValid(PathfindingSettings s)
         {
             if (s == null) return false;
+            if (s.FromX < 0 || s.FromY < 0) return false;
+            if (s.FromX == s.GoalX && s.FromY == s.GoalY) return false;
 
-            return s.FromX >= 0 && s.FromY >= 0 && s.FromX != s.GoalX && s.FromY != s.GoalY && HeuristicSearch.RegisteredAlgorithms.ContainsKey(s.Algorithm);
+            return HeuristicSearch.RegisteredAlgorithms.ContainsKey(s.Algorithm);
         }
     }
 }

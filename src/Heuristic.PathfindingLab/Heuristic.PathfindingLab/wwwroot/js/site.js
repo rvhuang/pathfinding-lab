@@ -1,10 +1,10 @@
 ﻿var tileSize = 32; 
-var core = new Core(40, 20);
+var core = typeof mapSettings !== "undefined" ? new Core(mapSettings.width, mapSettings.height) : new Core(40, 20);
 var current = new PathfindingRequestBody();
 
 $(document).ready(function () {
     
-    var cursorLayer = new CursorLayer(document.getElementById('cursor'), document.getElementById('mouse-cursor'), tileSize, tileSize);
+    var cursorLayer = new CursorLayer(document.getElementById('cursor'), document.getElementById('mouse-cursor'), tileSize, tileSize, core.mapWidth, core.mapHeight);
     var foregroundLayer = new ForegroundLayer(cursorLayer, document.getElementById('foreground'), [
         "obstacle-0",
         "obstacle-1",
@@ -27,6 +27,13 @@ $(document).ready(function () {
         "obstacle-18",
         "obstacle-19"
     ]);
+    if (typeof mapSettings !== "undefined") {
+        mapSettings.obstacles.forEach(function (o) {
+            core.placeObstacle(o.x, o.y, o.value);
+            foregroundLayer.obstacle = o.value;
+            foregroundLayer.placeObject(o.x, o.y);
+        });
+    }
     cursorLayer.showDetailDescription = function(step) {
         $("#description").text(step.describes());
     };
@@ -64,8 +71,7 @@ $(document).ready(function () {
                                 });
                             }
                             cursorLayer.histories.push(history);
-                            cursorLayer.removeTile(path[0].x, path[0].y);
-                            cursorLayer.removeTile(path[path.length - 1].x, path[path.length - 1].y);
+                            cursorLayer.clearAnchors();
 
                             var btn = $("#historyTemplate button:first-child").clone();
 
@@ -86,8 +92,7 @@ $(document).ready(function () {
                                 }
                             });
                         } else { // Path not found
-                            cursorLayer.removeTile(path[0].x, path[0].y);
-                            cursorLayer.removeTile(path[path.length - 1].x, path[path.length - 1].y);
+                            cursorLayer.clearAnchors();
                         }
                         updateExpressions(current);
                     },

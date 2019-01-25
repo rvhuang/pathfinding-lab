@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 
 namespace Heuristic.PathfindingLab.Models
@@ -20,9 +21,6 @@ namespace Heuristic.PathfindingLab.Models
 
         [JsonProperty(Required = Required.Default)]
         public IReadOnlyList<Obstacle> Obstacles { get => _obstacles; set => _obstacles = value ?? Array.Empty<Obstacle>(); }
-
-        [JsonProperty(Required = Required.Default)]
-        public IReadOnlyList<PathfindingSettings> PathfindingSettingsList { get => _settings; set => _settings = value ?? Array.Empty<PathfindingSettings>(); }
 
         [JsonProperty(Required = Required.Always)]
         public int Width { get => _width; set => Math.Max(MinMapWidth, value); }
@@ -54,6 +52,13 @@ namespace Heuristic.PathfindingLab.Models
         public bool CheckIfPathfindingSettingsValid(PathfindingSettings s)
         {
             return PathfindingSettings.CheckIfValid(s) && _obstacles.Where(CheckIfObstacleValid).All(o => o.CheckIfPathfindingSettingsValid(s));
+        }
+
+        public IEnumerable<Point> GetObstaclePoints()
+        {
+            foreach (var obstacle in Obstacles)
+                if (Obstacle.CheckIfValid(obstacle))
+                    yield return new Point(obstacle.X, obstacle.Y);
         }
     }
 }

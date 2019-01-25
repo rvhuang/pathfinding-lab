@@ -21,7 +21,7 @@ namespace Heuristic.PathfindingLab.Controllers
             if (!PathfindingSettings.CheckIfValid(settings))
             {
                 Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                return new ResponseBody<AlgorithmSolution>();
+                return new ResponseBody<AlgorithmSolution>() { Errors = new[] { ResponseError.InvalidFromAndGoalSettings } };
             }
             try
             {
