@@ -61,7 +61,7 @@ $(document).ready(function () {
                             var history = new PathfindingHistory(path, heuristics, algorithm, response.data.details);
 
                             foregroundLayer.placePath(path, step => "path-" + step.getDirectionShortName());
-                            if (cursorLayer.histories.length > 7) {
+                            if (cursorLayer.histories.length > 5) {
                                 $("#histories button:first-child").fadeOut(500, function () {
                                     $(this).remove();
                                     if (cursorLayer.histories[0].isVisible) {
@@ -105,6 +105,7 @@ $(document).ready(function () {
                                 break;
                             case 404:
                                  msg = "// No solution is found.";
+                                 cursorLayer.clearAnchors();
                                 break;
                             case 500:
                                 msg = "// Something went wrong. Please try again later or report an issue at GitHub.";
