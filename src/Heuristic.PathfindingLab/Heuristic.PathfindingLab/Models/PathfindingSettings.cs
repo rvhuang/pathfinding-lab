@@ -2,7 +2,9 @@
 
 namespace Heuristic.PathfindingLab.Models
 {
-    public class PathfindingRequestBody
+    using Linq;
+
+    public class PathfindingSettings
     {
         [JsonProperty(Required = Required.Always)]
         public int FromX { get; set; }
@@ -16,26 +18,19 @@ namespace Heuristic.PathfindingLab.Models
         [JsonProperty(Required = Required.Always)]
         public int GoalY { get; set; }
 
-        [JsonProperty(Required = Required.Always)]
-        public int[][] Map { get; set; }
-
-        [JsonProperty(Required = Required.Always)]
+        [JsonProperty(Required = Required.Default)]
         public string[] Heuristics { get; set; }
 
         [JsonProperty(Required = Required.Always)]
         public string Algorithm { get; set; }
 
-        public PathfindingSettings ToSettings()
+        public static bool CheckIfValid(PathfindingSettings s)
         {
-            return new PathfindingSettings()
-            {
-                Algorithm = Algorithm,
-                FromX = FromX,
-                FromY = FromY,
-                GoalX = GoalX,
-                GoalY = GoalY,
-                Heuristics = Heuristics
-            };
+            if (s == null) return false;
+            if (s.FromX < 0 || s.FromY < 0) return false;
+            if (s.FromX == s.GoalX && s.FromY == s.GoalY) return false;
+
+            return HeuristicSearch.RegisteredAlgorithms.ContainsKey(s.Algorithm);
         }
     }
 }

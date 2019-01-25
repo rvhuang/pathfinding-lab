@@ -1,4 +1,8 @@
 ﻿class Core {
+    public readonly mapWidth: number;
+    public readonly mapHeight: number;
+
+
     private readonly map: Direction[][];
 
     private fromX: number;
@@ -13,22 +17,32 @@
                 this.map[y][x] = Direction.None;
             }
         }
+        this.mapWidth = mapWidth;
+        this.mapHeight = mapHeight;
         this.fromX = NaN;
         this.fromY = NaN;
     }
 
-    public placeObstacle(x: number, y: number): boolean {
-        if (isNaN(this.map[y][x])) {
-            this.map[y][x] = Direction.None;
+    public placeObstacle(x: number, y: number, obstacle: number): boolean {
+        if (y < 0 || y >= this.map.length || x < 0 || x >= this.map[0].length) {
+            return false;
+        }
+        if (this.map[y][x] < 0) {
+            this.map[y][x] = Direction.None; // clear obstacle
             return false;
         } else {
-            this.map[y][x] = NaN; // NaN -> Obstacle
+            // less than zero -> obstacle
+            // 0 -> none 
+            this.map[y][x] = 0 - Math.abs(obstacle);
             return true;
         }
     }
 
     public isObstacle(x: number, y: number): boolean {
-        return isNaN(this.map[y][x]);
+        if (y < 0 || y >= this.map.length || x < 0 || x >= this.map[0].length) {
+            return true;
+        }
+        return this.map[y][x] < 0;
     }
 
     public clearObstacles() {
@@ -43,20 +57,20 @@
         localStorage.setItem("map", JSON.stringify(this.map));
     }
 
-    public loadMap(placeObstacleCallback: (x: number, y: number) => any, placeStepCallback: (step: Step) => any) {
-        var old = JSON.parse(localStorage.getItem("map")) as Array<Array<Direction>>;
+    public loadMap(placeObstacleCallback: (x: number, y: number, obstacle: number) => any, placeStepCallback: (step: Step) => any) {
+        var old = JSON.parse(localStorage.getItem("map")) as number[][];
         
         try {
             for (var y = 0; y < this.map.length; y++) {
                 for (var x = 0; x < this.map[y].length; x++) {
-                    var dir = old[y][x];
+                    var value = old[y][x];
 
-                    this.map[y][x] = dir;
-                    if (isNaN(dir) || dir === null) {
-                        placeObstacleCallback(x, y);
+                    this.map[y][x] = value;
+                    if (value < 0) { // less than zero -> Obstacle
+                        placeObstacleCallback(x, y, value);
                     }
-                    else if (dir != Direction.None) {
-                        placeStepCallback(new Step(x, y, dir));
+                    else if (value != Direction.None) {
+                        placeStepCallback(new Step(x, y, value));
                     }
                 }
             }
@@ -96,7 +110,7 @@
         var existing = this.map[step.y][step.x];
         var dir = step.direction;
 
-        if (!isNaN(existing)) { // NaN -> Obstacle
+        if (existing >= 0) { // less than zero -> Obstacle
             dir = existing | step.direction;
         }
         this.map[step.y][step.x] = dir;
@@ -104,13 +118,13 @@
     }
 
     public assignDirections(solution: Array<Step>): ReadonlyArray<Step> {
-        for (var i = 0; i < solution.length - 1; i++) {
-            var x1 = solution[i].x;
-            var y1 = solution[i].y;
-            var x2 = solution[i + 1].x;
-            var y2 = solution[i + 1].y;
+        for (let i = 0; i < solution.length - 1; i++) {
+            let x1 = solution[i].x;
+            let y1 = solution[i].y;
+            let x2 = solution[i + 1].x;
+            let y2 = solution[i + 1].y;
 
-            if (isNaN(solution[i].direction)) {
+            if (solution[i].direction < 0) { // less than zero -> Obstacle
                 solution[i].direction = Direction.None;
             }
             if (x1 > x2) {
@@ -130,7 +144,8 @@
                 solution[i + 1].direction = solution[i + 1].direction | Direction.Up;
             }
             this.assignDirection(solution[i]);
-        }
+        }        
+        this.assignDirection(solution[solution.length - 1]);
         return solution.map(s => new Step(s.x, s.y, s.direction));
     }
 }
@@ -193,6 +208,10 @@ interface Pathfinding {
     toSelectManyExpression(mapWidth: number, mapHeight: number): string[];
     toExceptExpression(mapWidth: number, mapHeight: number): string[];
     toWhereOnlyExpression(mapWidth: number, mapHeight: number): string[];
+}
+
+class PathfindingSettings {
+
 }
 
 class PathfindingRequestBody implements Pathfinding {
@@ -320,8 +339,14 @@ class PathfindingRequestBody implements Pathfinding {
     }
 }
 
-class PathfindingHistory implements Pathfinding {
-    public readonly path: ReadonlyArray<Step>;
+class Detail {
+    public level: number;
+    public step: Step;
+}
+
+class PathfindingHistory implements Pathfinding {    
+    public readonly path: ReadonlyArray<PathTile>;
+    public readonly details: ReadonlyArray<UnvisitedTile>;
     public readonly heuristics: string[];
     public readonly algorithm: string;
     public readonly algorithmShortName: string;
@@ -329,12 +354,13 @@ class PathfindingHistory implements Pathfinding {
 
     public isVisible: boolean;
 
-    constructor(path: Array<Step>, heuristics: Array<string>, algorithm: string) {
-        this.path = path;
+    constructor(path: Array<Step>, heuristics: Array<string>, algorithm: string, details: ReadonlyArray<Detail>) {        
+        this.color = PathfindingHistory.getAlgorithmPathColor(algorithm);
+        this.path = path.map((p, i) => new PathTile(p.x, p.y, i, this.color));
+        this.details = UnvisitedTile.merge(details.map(d => new UnvisitedTile(d.step.x, d.step.y, d.level, this.color)));
         this.heuristics = heuristics;
         this.algorithm = algorithm;
         this.algorithmShortName = PathfindingHistory.getAlgorithmShortName(algorithm);
-        this.color = PathfindingHistory.getAlgorithmPathColor(algorithm);
         this.isVisible = false;
     }
 
@@ -417,222 +443,5 @@ class PathfindingHistory implements Pathfinding {
             default:
                 return "#17a2b8";
         }
-    }
-}
-
-abstract class Layer {
-    public readonly element: SVGGElement;
-    public readonly tileWidth: number; // unit: px
-    public readonly tileHeight: number; // unit: px
-    public readonly mapWidth: number; // unit: tile
-    public readonly mapHeight: number; //  unit: tile
-
-    constructor(canvas: SVGGElement, tileWidth: number, tileHeight: number, mapWidth: number, mapHeight: number) {
-        this.element = canvas;
-        this.mapWidth = mapWidth;
-        this.mapHeight = mapHeight;
-        this.tileWidth = tileWidth;
-        this.tileHeight = tileHeight;
-    }
-}
-
-class CursorTile {
-    public readonly x: number; // unit: tile
-    public readonly y: number; // unit: tile
-    public readonly color: string; // #007bff
-
-    constructor(x: number, y: number, color: string) {
-        this.x = x;
-        this.y = y;
-        this.color = color;
-    }
-}
-
-class CursorLayer extends Layer { 
-    private readonly cursor: SVGRectElement;
-
-    private cursorX: number = 0;
-    private cursorY: number = 0;
-
-    public readonly paths: Array<PathfindingHistory>;
-
-    constructor(element: SVGGElement, cursor: SVGRectElement, tileWidth: number, tileHeight: number, mapWidth: number, mapHeight: number) {
-        super(element, tileWidth, tileHeight, mapWidth, mapHeight);
-
-        this.paths = new Array<PathfindingHistory>();
-        this.cursor = cursor;
-        this.element.parentElement.addEventListener("mousemove", e => this.onLayerMouseMove(e));
-        this.element.parentElement.addEventListener("mouseleave", e => this.onLayerMouseLeave(e));
-        this.element.parentElement.addEventListener("mouseenter", e => this.onLayerMouseEnter(e));
-    }
-
-    private onLayerMouseMove(event: MouseEvent) {
-        var rect = this.element.parentElement.getBoundingClientRect();
-        var mouseX = Math.floor((event.clientX - rect.left) / this.tileWidth);
-        var mouseY = Math.floor((event.clientY - rect.top) / this.tileHeight);
-    
-        if (this.cursorX != mouseX) {
-            this.cursor.x.baseVal.value = mouseX * this.tileWidth;
-            this.cursorX = mouseX;
-        }
-        if (this.cursorY != mouseY) {
-            this.cursor.y.baseVal.value = mouseY * this.tileHeight;
-            this.cursorY = mouseY;
-        }
-    }
-
-    private onLayerMouseLeave(event: MouseEvent) {
-        this.cursor.style.visibility = "hidden";
-    }
-
-    private onLayerMouseEnter(event: MouseEvent) {
-        this.cursor.style.visibility = "inherit";
-    }
-
-    public togglePath(index: number): boolean {
-        var path = this.paths[index];
-        if (path == null) return;
-
-        path.isVisible = !path.isVisible;
-
-        if (path.isVisible) {
-            var begin = 0.3;
-
-            for (let step of path.path) {
-                var rect = document.getElementById("cursor-tile").cloneNode(true) as SVGRectElement; // document.createElementNS("http://www.w3.org/2000/svg", "use");
-    
-                rect.id = "path-index-" + index.toString() + "-" + step.x.toString() + "-" + step.y.toString();
-                rect.x.baseVal.value = step.x * this.tileWidth;
-                rect.y.baseVal.value = step.y * this.tileHeight;
-                rect.classList.add("path-index");
-                rect.classList.add("path-index-" + index.toString());
-                rect.setAttribute("fill", path.color); 
-                rect.querySelector("animate").setAttribute("begin", "DOMNodeInsertedIntoDocument+" + begin.toString() + "s");   
-
-                begin += 0.1;
-                this.element.appendChild(rect);
-            }
-        } 
-        else { 
-            for (let rect of [].slice.call(this.element.getElementsByClassName("path-index-" + index.toString()))) {
-                rect.remove();
-            }
-        }
-        return path.isVisible;
-    }
-
-    public placeTile(x: number, y: number, color: string) {
-        var elementId = "tile-index-" + x.toString() + "-" + y.toString();
-        var rect = this.element.querySelector("#" + elementId);
-
-        if (rect != null) {
-            rect.setAttribute("fill", color);
-        }
-        else {
-            let tile = document.createElementNS("http://www.w3.org/2000/svg", "use");
-
-            tile.id = elementId;
-            tile.x.baseVal.value = x * this.tileWidth;
-            tile.y.baseVal.value = y * this.tileHeight;
-            tile.width.baseVal.value = this.tileWidth;
-            tile.height.baseVal.value = this.tileHeight;
-            tile.classList.add("tile-index");
-            tile.setAttribute("fill", color);
-            tile.setAttribute("href", "#cursor-tile");
-
-            this.element.appendChild(tile);
-        }
-    }
-
-    public removeTile(x: number, y: number) {
-        var elementId = "tile-index-" + x.toString() + "-" + y.toString();
-        var rect = this.element.querySelector("#" + elementId);
-
-        if (rect != null) {
-            rect.remove();
-        }
-    }
-
-    public clearTiles() {
-        for (let rect of [].slice.call(this.element.getElementsByClassName("path-index"))) {
-            rect.remove();
-        }
-        for (let rect of [].slice.call(this.element.getElementsByClassName("tile-index"))) {
-            rect.remove();
-        }
-    }
-}
-
-class ForegroundLayer extends Layer {
-    private readonly assetIds: ReadonlyArray<string>;
-
-    public objectPracingPredicate: (i: number, j: number) => boolean;
-    public pathPlacingCallback: (i: number, j: number) => boolean;
-
-    constructor(sourceLayer: Layer, element: SVGGElement, assetIds: ReadonlyArray<string>) {
-        super(element, sourceLayer.tileWidth, sourceLayer.tileHeight, sourceLayer.mapWidth, sourceLayer.mapHeight);
-        
-        this.element.parentElement.addEventListener("mouseup", e => this.onSourceLayerMouseUp(e));
-        this.assetIds = assetIds;
-    }
-
-    private onSourceLayerMouseUp(event: MouseEvent) {
-        var rect = this.element.parentElement.getBoundingClientRect();
-        var i = Math.floor((event.clientX - rect.left) / this.tileWidth);
-        var j = Math.floor((event.clientY - rect.top) / this.tileHeight);
-
-        switch (event.button) {
-            case 0:
-                if (this.objectPracingPredicate != null && this.objectPracingPredicate(i, j)) {
-                    this.placeObject(i, j);
-                }
-                else {
-                    this.removeObject(i, j);
-                }
-                break;
-            case 2:
-                if (this.pathPlacingCallback != null) {
-                    this.pathPlacingCallback(i, j);
-                }
-                break;
-        }
-    }
-
-    public placePath(path: ReadonlyArray<Step>, assetIdSelector: (step: Step) => string) {
-        for (let step of path) {
-            this.placeImage(step.x, step.y, assetIdSelector(step));    
-        };
-    }
-
-    public placeStep (step: Step, assertId: string) {
-        this.placeImage(step.x, step.y, assertId);
-    }
-
-    private placeImage(x: number, y: number, assertId: string): SVGUseElement {
-        var img = document.createElementNS("http://www.w3.org/2000/svg", "use");
-    
-        img.x.baseVal.value = x * this.tileWidth;
-        img.y.baseVal.value = y * this.tileHeight;
-        img.setAttribute("href", "#" + assertId);
-        img.classList.add("image-x-" + x.toString() + "-y-" + y.toString());
-
-        this.element.appendChild(img);
-        return img;
-    }
-
-    public placeObject(x: number, y: number) { 
-        this.placeImage(x, y, this.assetIds[(x + y) % this.assetIds.length]);
-    }
-
-    public removeObject(x: number, y: number) {
-        for (let img of [].slice.call(this.element.getElementsByClassName("image-x-" + x.toString() + "-y-" + y.toString()))) {
-            img.remove();
-        }
-    }
-
-    public clearMap() {
-        while (this.element.lastChild != null) {
-            this.element.removeChild(this.element.lastChild);
-        } 
     }
 }

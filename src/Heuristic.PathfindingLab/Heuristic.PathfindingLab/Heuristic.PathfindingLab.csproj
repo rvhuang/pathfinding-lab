@@ -5,21 +5,29 @@
     <TypeScriptToolsVersion>3.2</TypeScriptToolsVersion>
     <PublishWithAspNetCoreTargetManifest>false</PublishWithAspNetCoreTargetManifest>
   </PropertyGroup>
-
+  
   <ItemGroup>
-    <Content Remove="wwwroot\js\core.ts" />
-    <None Include="wwwroot\js\core.ts" />
+    <Content Remove="wwwroot\js\*.ts" />
+    <None Include="wwwroot\js\*.ts" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="linq-to-astar" Version="1.1.0" />
+    <PackageReference Include="linq-to-astar" Version="1.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.All" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.0" />
-    <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="3.2.2" Condition="'$(CONFIG)'=='DEBUG'" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Api.Analyzers" Version="2.2.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.1" />
   </ItemGroup>
   
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.4" />
   </ItemGroup>
+  
+  <ItemGroup>
+    <TypeScriptCompile Include="wwwroot\js\*.ts" />
+  </ItemGroup>
+  
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent" >
+    <Exec Condition="'$(Configuration)' == 'Debug'" Command="tsc -p tsconfig.json --out wwwroot\js\core.js" />
+  </Target>
 
 </Project>

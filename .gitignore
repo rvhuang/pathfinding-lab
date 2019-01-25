@@ -8,6 +8,12 @@
 src/Heuristic.PathfindingLab/Heuristic.PathfindingLab/wwwroot/js/core.js
 src/Heuristic.PathfindingLab/Heuristic.PathfindingLab/wwwroot/js/core.js.map
 
+src/Heuristic.PathfindingLab/Heuristic.PathfindingLab/wwwroot/js/tile.js
+src/Heuristic.PathfindingLab/Heuristic.PathfindingLab/wwwroot/js/tile.js.map
+
+src/Heuristic.PathfindingLab/Heuristic.PathfindingLab/wwwroot/js/layer.js
+src/Heuristic.PathfindingLab/Heuristic.PathfindingLab/wwwroot/js/layer.js.map
+
 # Minimized
 
 *.min.css
