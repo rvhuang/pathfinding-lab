@@ -1,5 +1,6 @@
 ﻿using Heuristic.PathfindingLab.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Net.Http.Headers;
 using System;
 using System.Linq;
 using System.Net.Http;
@@ -10,12 +11,23 @@ namespace Heuristic.PathfindingLab.Controllers
     public class HomeController : Controller
     {
         private readonly static string[] mimes = new[] { "application/json", "text/json", "text/x-json" };
+        private readonly static string[] mobiles = new[] { "iPhone", "Android" };
+        private readonly static string[] touches = new[] { "iPhone", "Android", "iPad" };
         private readonly static HttpClient client = new HttpClient() { Timeout = TimeSpan.FromSeconds(4) };
 
         [HttpGet]
         public IActionResult Index([FromQuery]int w = MapSettings.DefaultMapWidth, [FromQuery]int h = MapSettings.DefaultMapHeight)
         {
-            return View(new MapSettings(w, h));
+            var userAgent = Request.Headers[HeaderNames.UserAgent].FirstOrDefault();
+
+            if (!Request.Query.ContainsKey("w") && !string.IsNullOrWhiteSpace(userAgent) && mobiles.Any(userAgent.Contains))
+            { 
+                return View(new MapSettings(MapSettings.MinMapWidth, h) { IsSmartDevice = touches.Any(userAgent.Contains) });
+            }
+            else
+            {
+                return View(new MapSettings(w, h) { IsSmartDevice = touches.Any(userAgent.Contains) });
+            }
         }
 
         [HttpGet]

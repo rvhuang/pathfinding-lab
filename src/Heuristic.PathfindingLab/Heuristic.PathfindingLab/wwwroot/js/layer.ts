@@ -150,6 +150,7 @@ class ForegroundLayer extends Layer {
     private readonly assetIds: ReadonlyArray<string>;
 
     public obstacle: number;
+    public isPathfindingOnly: boolean;
     public objectPracingPredicate: (i: number, j: number, obstacle: number) => boolean;
     public pathPlacingCallback: (i: number, j: number) => boolean;
 
@@ -160,6 +161,7 @@ class ForegroundLayer extends Layer {
         this.element.parentElement.addEventListener("contextmenu", e => e.preventDefault());
         this.assetIds = assetIds;
         this.obstacle = 1;
+        this.isPathfindingOnly = false;
 
         for (let obj of this.element.parentElement.querySelectorAll("#obstacle-list > svg")) {
             obj.addEventListener("click", e => this.onChangeObstacle(e));
@@ -171,6 +173,12 @@ class ForegroundLayer extends Layer {
         var i = Math.floor((event.clientX - rect.left) / this.tileWidth);
         var j = Math.floor((event.clientY - rect.top) / this.tileHeight);
 
+        if (this.isPathfindingOnly) { 
+            if (this.pathPlacingCallback != null) {
+                this.pathPlacingCallback(i, j);
+            }
+            return;
+        }
         switch (event.button) {
             case 0:
                 if (this.objectPracingPredicate != null && this.objectPracingPredicate(i, j, this.obstacle)) {

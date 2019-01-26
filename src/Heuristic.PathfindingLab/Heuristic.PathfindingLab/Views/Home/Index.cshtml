@@ -23,10 +23,20 @@
             <button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#modalInfo">
                 <span class="glyphicon glyphicon-info-sign"></span>
             </button>
+            @if (Model.IsSmartDevice) {
+                <button type="button" class="btn btn-default btn-sm" data-toggle="button" id="btnFindPath">
+                    <span class="glyphicon glyphicon-search"></span>
+                </button>
+            }
         </div>
-        <span>&nbsp;</span>
-        <span id="description" class="hidden-xs hidden-sm small">Left click to place barriers, right click on two positions to get a path.</span>
-    </div>
+        <span>&nbsp;</span> 
+            @if (Model.IsSmartDevice) {
+               <span id="description" class="small"></span>
+            }
+            else {
+                <span id="description" class="small">Left click to place barriers, right click on two positions to get a path.</span>
+            }
+        </div>
 </div>
 <div class="row">
     <form id="options" role="form">

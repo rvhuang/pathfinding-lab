@@ -135,6 +135,9 @@ $(document).ready(function () {
 
         $("#description").text("");
     });
+    $('#btnFindPath').click(function (event) { 
+        foregroundLayer.isPathfindingOnly = !foregroundLayer.isPathfindingOnly; 
+    });
     $(':input[name="algorithm"]').change(function (event) {
         current.algorithm = this.value;
         if (current.fromX !== current.goalX && current.FromY !== current.goalY) {
