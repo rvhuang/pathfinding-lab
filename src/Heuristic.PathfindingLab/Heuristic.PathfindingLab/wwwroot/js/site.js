@@ -3,7 +3,6 @@ var core = typeof mapSettings !== "undefined" ? new Core(mapSettings.width, mapS
 var current = new PathfindingRequestBody();
 
 $(document).ready(function () {
-    
     var cursorLayer = new CursorLayer(document.getElementById('cursor'), document.getElementById('mouse-cursor'), tileSize, tileSize, core.mapWidth, core.mapHeight);
     var foregroundLayer = new ForegroundLayer(cursorLayer, document.getElementById('foreground'), [
         "obstacle-0",

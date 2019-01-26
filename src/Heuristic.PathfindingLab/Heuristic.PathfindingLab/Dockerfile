@@ -2,7 +2,7 @@ FROM node:alpine AS typescript
 WORKDIR /app
 COPY . ./
 RUN npm install typescript -g
-RUN tsc -p tsconfig.json --out "wwwroot/js/core.js"
+RUN tsc -p tsconfig.json
 
 FROM microsoft/dotnet:sdk AS build-env
 WORKDIR /app
@@ -13,6 +13,8 @@ RUN dotnet restore
 
 # Copy everything else and build
 COPY --from=typescript /app ./
+RUN dotnet restore
+RUN dotnet bundle
 RUN dotnet publish -c Release -o out
 
 # Build runtime image

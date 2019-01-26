@@ -12,22 +12,25 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="BundlerMinifier.Core" Version="2.8.391" />
     <PackageReference Include="linq-to-astar" Version="1.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.All" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Api.Analyzers" Version="2.2.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.1" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.4" />
   </ItemGroup>
   
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.4" />
+    <DotNetCliToolReference Include="BundlerMinifier.Core" Version="2.8.391" />
   </ItemGroup>
   
   <ItemGroup>
     <TypeScriptCompile Include="wwwroot\js\*.ts" />
   </ItemGroup>
   
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent" >
-    <Exec Condition="'$(Configuration)' == 'Debug'" Command="tsc -p tsconfig.json --out wwwroot\js\core.js" />
+  <Target Name="PreBuild" AfterTargets="PreBuildEvent">
+    <Exec Condition="'$(Configuration)' == 'Debug'" Command="tsc -p tsconfig.json" />
   </Target>
 
 </Project>

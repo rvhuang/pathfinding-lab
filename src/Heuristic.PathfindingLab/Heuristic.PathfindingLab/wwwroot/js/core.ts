@@ -2,7 +2,6 @@
     public readonly mapWidth: number;
     public readonly mapHeight: number;
 
-
     private readonly map: Direction[][];
 
     private fromX: number;
@@ -50,33 +49,6 @@
             for (var x = 0; x < this.map[y].length; x++) {
                 this.map[y][x] = Direction.None;
             }
-        }
-    }
-
-    public saveMap() {
-        localStorage.setItem("map", JSON.stringify(this.map));
-    }
-
-    public loadMap(placeObstacleCallback: (x: number, y: number, obstacle: number) => any, placeStepCallback: (step: Step) => any) {
-        var old = JSON.parse(localStorage.getItem("map")) as number[][];
-        
-        try {
-            for (var y = 0; y < this.map.length; y++) {
-                for (var x = 0; x < this.map[y].length; x++) {
-                    var value = old[y][x];
-
-                    this.map[y][x] = value;
-                    if (value < 0) { // less than zero -> Obstacle
-                        placeObstacleCallback(x, y, value);
-                    }
-                    else if (value != Direction.None) {
-                        placeStepCallback(new Step(x, y, value));
-                    }
-                }
-            }
-        }
-        catch (e) {
-            console.log(e);
         }
     }
 

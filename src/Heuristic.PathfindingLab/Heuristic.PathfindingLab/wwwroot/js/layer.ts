@@ -157,6 +157,7 @@ class ForegroundLayer extends Layer {
         super(element, sourceLayer.tileWidth, sourceLayer.tileHeight, sourceLayer.mapWidth, sourceLayer.mapHeight);
 
         this.element.parentElement.addEventListener("mouseup", e => this.onSourceLayerMouseUp(e));
+        this.element.parentElement.addEventListener("contextmenu", e => e.preventDefault());
         this.assetIds = assetIds;
         this.obstacle = 1;
 

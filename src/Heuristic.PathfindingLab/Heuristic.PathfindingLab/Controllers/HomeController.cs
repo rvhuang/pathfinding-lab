@@ -9,7 +9,7 @@ namespace Heuristic.PathfindingLab.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly static string[] mimes = new[] { "application/json", "text/json" };
+        private readonly static string[] mimes = new[] { "application/json", "text/json", "text/x-json" };
         private readonly static HttpClient client = new HttpClient() { Timeout = TimeSpan.FromSeconds(4) };
 
         [HttpGet]
@@ -41,7 +41,9 @@ namespace Heuristic.PathfindingLab.Controllers
         [HttpGet]
         public IActionResult Map([FromQuery]int w = MapSettings.DefaultMapWidth, [FromQuery]int h = MapSettings.DefaultMapHeight)
         {
-            return PartialView(new MapSettings(w, h));
+            Response.ContentType = "image/svg+xml";
+
+            return PartialView("_Map", new MapSettings(w, h));
         }
     }
 }
