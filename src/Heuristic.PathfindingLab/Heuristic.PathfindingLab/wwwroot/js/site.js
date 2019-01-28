@@ -54,12 +54,12 @@ $(document).ready(function () {
                     contentType: "application/json",
                     success: function (response) {
                         var solution = response.data.solution;
-                        var path = core.assignDirections(solution);
 
-                        if (path.length > 0) {
-                            var history = new PathfindingHistory(path, heuristics, algorithm, response.data.details);
+                        if (solution.length > 0) {
+                            var assigned = core.assignDirections(solution);
+                            var history = new PathfindingHistory(solution, heuristics, algorithm, response.data.details);
 
-                            foregroundLayer.placePath(path, step => "path-" + step.getDirectionShortName());
+                            foregroundLayer.placePath(assigned, step => step.getDirectionShortName());
                             if (cursorLayer.histories.length > 5) {
                                 $("#histories button:first-child").fadeOut(500, function () {
                                     $(this).remove();
@@ -128,6 +128,20 @@ $(document).ready(function () {
                 break;
         }
     };
+    $('#btnUndo').click(function (event) {
+        if (cursorLayer.histories[cursorLayer.histories.length - 1].isVisible) {
+            cursorLayer.togglePath(cursorLayer.histories.length - 1);
+        }
+
+        var history = cursorLayer.histories.pop();
+        var steps = core.removeDirections(history.steps);
+
+        foregroundLayer.removePath(steps, step => step.getDirectionShortName());
+
+        $("#histories button:last-child").fadeOut(300, function () {
+            $(this).remove();
+        });
+    });
     $('#btnClear').click(function (event) {
         core.clearObstacles();
         foregroundLayer.clearMap();

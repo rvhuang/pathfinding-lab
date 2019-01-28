@@ -78,25 +78,27 @@
         return PathfindingRequestStatus.Ready; // Ready for sending request.
     }
 
-    public assignDirection(step: Step) {
-        var existing = this.map[step.y][step.x];
+    public assignDirection(step: Step) : Step {
+        var original = this.map[step.y][step.x];
         var dir = step.direction;
 
-        if (existing >= 0) { // less than zero -> Obstacle
-            dir = existing | step.direction;
-        }
+        if (original >= 0) { // less than zero -> Obstacle
+            dir = original | dir;
+            step.undo = original ^ dir; // What we should do if we want to undo
+        } 
         this.map[step.y][step.x] = dir;
-        step.direction = dir;
+        return new Step(step.x, step.y, dir, step.undo);
     }
 
     public assignDirections(solution: Array<Step>): ReadonlyArray<Step> {
+        var assigned = new Array<Step>();
         for (let i = 0; i < solution.length - 1; i++) {
             let x1 = solution[i].x;
             let y1 = solution[i].y;
             let x2 = solution[i + 1].x;
             let y2 = solution[i + 1].y;
 
-            if (solution[i].direction < 0) { // less than zero -> Obstacle
+            if (typeof solution[i].direction === "undefined" || solution[i].direction == null || solution[i].direction < 0) { // less than zero -> Obstacle
                 solution[i].direction = Direction.None;
             }
             if (x1 > x2) {
@@ -115,10 +117,26 @@
                 solution[i].direction = solution[i].direction | Direction.Down;
                 solution[i + 1].direction = solution[i + 1].direction | Direction.Up;
             }
-            this.assignDirection(solution[i]);
-        }        
-        this.assignDirection(solution[solution.length - 1]);
-        return solution.map(s => new Step(s.x, s.y, s.direction));
+            assigned.push(this.assignDirection(solution[i]));
+        }
+        assigned.push(this.assignDirection(solution[solution.length - 1]));
+        return assigned;
+    }
+
+    public removeDirection(step: Step) {
+        var original = this.map[step.y][step.x];
+
+        if (original >= 0) { // less than zero -> Obstacle
+            this.map[step.y][step.x] = original & ~step.undo;
+        }
+        step.direction = this.map[step.y][step.x];
+    }
+
+    public removeDirections(solution: Array<Step>): ReadonlyArray<Step> {
+        for (let i = 0; i < solution.length; i++) {
+            this.removeDirection(solution[i]);
+        }
+        return solution.map(step => new Step(step.x, step.y, step.direction, step.undo));
     }
 }
 
@@ -126,11 +144,13 @@ class Step {
     public x: number; // unit: tile
     public y: number; // unit: tile
     public direction: Direction;
+    public undo: Direction;
 
-    constructor(x: number, y: number, dir: Direction) {
+    constructor(x: number, y: number, dir: Direction, undo: Direction) {
         this.x = x;
         this.y = y;
         this.direction = dir;
+        this.undo = undo;
     }
 
     public getDirectionShortName(): string {
@@ -316,7 +336,8 @@ class Detail {
     public step: Step;
 }
 
-class PathfindingHistory implements Pathfinding {    
+class PathfindingHistory implements Pathfinding {
+    public readonly steps: ReadonlyArray<Step>;
     public readonly path: ReadonlyArray<PathTile>;
     public readonly details: ReadonlyArray<UnvisitedTile>;
     public readonly heuristics: string[];
@@ -326,9 +347,10 @@ class PathfindingHistory implements Pathfinding {
 
     public isVisible: boolean;
 
-    constructor(path: Array<Step>, heuristics: Array<string>, algorithm: string, details: ReadonlyArray<Detail>) {        
+    constructor(steps: Array<Step>, heuristics: Array<string>, algorithm: string, details: ReadonlyArray<Detail>) {        
         this.color = PathfindingHistory.getAlgorithmPathColor(algorithm);
-        this.path = path.map((p, i) => new PathTile(p.x, p.y, i, this.color));
+        this.steps = steps.map(step => new Step(step.x, step.y, step.direction, step.undo));
+        this.path = steps.map((p, i) => new PathTile(p.x, p.y, i, this.color));
         this.details = UnvisitedTile.merge(details.map(d => new UnvisitedTile(d.step.x, d.step.y, d.level, this.color)));
         this.heuristics = heuristics;
         this.algorithm = algorithm;

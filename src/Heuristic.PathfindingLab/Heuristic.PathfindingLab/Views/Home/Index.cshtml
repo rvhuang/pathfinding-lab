@@ -20,10 +20,14 @@
             <button type="button" class="btn btn-default btn-sm" data-toggle="tooltip" title="Start over" id="btnClear">
                 <span class="glyphicon glyphicon-refresh"></span>
             </button>
+            <button type="button" class="btn btn-default btn-sm" data-toggle="tooltip" title="Undo the last pathfinding result" id="btnUndo">
+                <span class="glyphicon glyphicon-triangle-left"></span>
+            </button>
             <button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#modalInfo">
                 <span class="glyphicon glyphicon-info-sign"></span>
             </button>
-            @if (Model.IsSmartDevice) {
+            @if (Model.IsSmartDevice)
+            {
                 <button type="button" class="btn btn-default btn-sm" data-toggle="button" id="btnFindPath">
                     <span class="glyphicon glyphicon-search"></span>
                 </button>
@@ -140,7 +144,7 @@
 </div>
 <div id="historyTemplate" style="display: none">
     <button type="button" class="btn btn-default btn-sm" data-toggle="button">
-        <span data-field="PathColor">&#9724;</span>
+        <span data-field="PathColor" class="glyphicon glyphicon-stop"></span>
         <span data-field="AlgorithmShortName"></span>
         <span data-field="Path"></span>
     </button>

@@ -204,12 +204,30 @@ class ForegroundLayer extends Layer {
         for (let step of path) {
             var id = "step-x-" + step.x.toString() + "-y-" + step.y.toString();
             var existing = this.element.querySelector("#" + id);
+            var assetId = assetIdSelector(step);
 
             if (existing != null) {
                 existing.remove();
             }
-            this.placeImage(step.x, step.y, assetIdSelector(step)).id = id;
-        };
+            if (assetId != null && assetId.length > 0) {
+                this.placeImage(step.x, step.y, "path-" + assetId).id = id;
+            }
+        }
+    }
+
+    public removePath(path: ReadonlyArray<Step>, assetIdSelector: (step: Step) => string) {
+        for (let step of path) {
+            var id = "step-x-" + step.x.toString() + "-y-" + step.y.toString();
+            var existing = this.element.querySelector("#" + id);
+            var assetId = assetIdSelector(step);
+
+            if (existing != null) {
+                existing.remove();
+            }
+            if (assetId != null && assetId.length > 0) {
+                this.placeImage(step.x, step.y, "path-" + assetId).id = id;
+            }
+        }
     }
 
     public placeStep(x: number, y: number, assertId: string) {
