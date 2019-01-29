@@ -217,17 +217,27 @@ class ForegroundLayer extends Layer {
 
     public removePath(path: ReadonlyArray<Step>, assetIdSelector: (step: Step) => string) {
         for (let step of path) {
-            var id = "step-x-" + step.x.toString() + "-y-" + step.y.toString();
-            var existing = this.element.querySelector("#" + id);
+            var id = this.removeStep(step.x, step.y);
             var assetId = assetIdSelector(step);
 
-            if (existing != null) {
-                existing.remove();
-            }
             if (assetId != null && assetId.length > 0) {
                 this.placeImage(step.x, step.y, "path-" + assetId).id = id;
             }
         }
+    }
+
+    public removeStep(x: number, y: number): string {
+        var id = "step-x-" + x.toString() + "-y-" + y.toString();
+
+        if (x < 0 || y < 0 || x >= this.mapWidth || y >= this.mapHeight) {
+            return id;
+        }
+        var existing = this.element.querySelector("#" + id);
+
+        if (existing != null) {
+            existing.remove();
+        }
+        return id;
     }
 
     public placeStep(x: number, y: number, assertId: string) {
@@ -258,8 +268,10 @@ class ForegroundLayer extends Layer {
 
         if (existing != null) {
             existing.remove();
-        }
-        // because the property is not index so we need to substract the value by one.
+        } 
+        // Replace the path with obstacle.
+        this.removeStep(x, y);
+        // because the property is not an index so we need to substract the value by one.
         this.placeImage(x, y, this.assetIds[this.obstacle - 1]).id = id;
     }
 
