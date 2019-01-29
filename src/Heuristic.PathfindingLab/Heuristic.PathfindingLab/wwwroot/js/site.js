@@ -152,6 +152,13 @@ $(document).ready(function () {
     $('#btnFindPath').click(function (event) { 
         foregroundLayer.isPathfindingOnly = !foregroundLayer.isPathfindingOnly; 
     });
+    $('#btnDelObstacles').click(function (event) {
+        var obstacles = core.clearObstacles();
+
+        for (let obstacle of obstacles) {
+            foregroundLayer.removeObject(obstacle.x, obstacle.y);
+        }
+    });
     $(':input[name="algorithm"]').change(function (event) {
         current.algorithm = this.value;
         if (current.fromX !== current.goalX && current.FromY !== current.goalY) {

@@ -1,18 +1,21 @@
 ﻿@using Microsoft.AspNetCore.Http
 @using Microsoft.AspNetCore.Http.Extensions
-
+@{ 
+    const string description = "Run, test and compare pathfinding algorithms and heuristic functions";
+}
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta property="description" content="@description" />
     <meta property="og:title" content="Pathfinding Laboratory - Powered by LINQ to A*" />
-    <meta property="og:description" content="Run, test and compare all algorithms and heuristic functions" />
+    <meta property="og:description" content="@description" />
     <meta property="og:image" content="@UriHelper.BuildAbsolute(Context.Request.Scheme, Context.Request.Host, new PathString("/images/assets.png"))" />
     <meta property="og:url" content="@UriHelper.BuildAbsolute(Context.Request.Scheme, Context.Request.Host)">
     <title>Pathfinding Laboratory - Powered by LINQ to A*</title>
     <link rel="shortcut icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAKGElEQVRYR8WXW4xd51XHf/t29j57n/tl5szMmZtn7HhqZ3wb7NqOGydNelGo2giMykN4A0RpxVN5AUF54AEkEEJQlIgHBAjUplSh1zSSayWZ4NiOncTOeG72jD0zZ67nftv3vdFxaaAhlZunfm9b+2H9vv9a31r/JfBLPsIvOT4fGeD8146mIoYeqXUaot2WWlW/GvQu0d/p966/cN39qBf6SACf/utDmY7KQtdx8pIIqiRR3zBxuyG+6bYlMfrEdHXl7RdfxP9FQX5hgJk/PXAymYs8n8kZR8eG0qRVAUmW8TyPSi3grWvrlO6VW5KunFvKlm5dmENYSZ8QH6bKQwEe/7OjTydjwj9G+tWR4UyCveQYk0mPtG+S0aL4fkhpu8nqfJX7pRr3t3e/bMTFz0Wi0qfada+tR9Rnr/3tysWfp8hDAS58/dTvuLL//PGpYWqewG5lha5YYET3GM9n0QSF+VvbvPHKKlpKYatcJxKRmTlXJBpRmL+7aTYd7VPv/sXc7IdBPBRg5vcnn5s63ffPRw8MU242WahuAwLldouMZjCTHmV3o4Mal2i0Tb7/jdvEUirHzu4jN5Tk8lvLNNYaDSOd/OLNry++/EGIDwWY/pPha7lJY0ZxlBdVN152doLfS8Z1tnN7zBRy3LViDDld9o3lCTseu5ttsn0GISHf/vebKDkdz/AIEwKdTQV7a4v2HQdBGXxh67W5L8H/Fun/A5j6cuHV4kj6E9OPFmntBuH9tZbvxCy5XGnz9Inj7HjrNNsmSS/N/okMSVWl2fF4770aIwMyff0xNvcs3thaQIqFWCsyYdhm69t17KqPIInfqWfNC8zh9NR4H2DfV/qfUmW+qnSUx3/11x9VFVWismWSH0njdAL+48Z1ikEST/U4u38SURC5sVBhqpgm0xfBNn1WN6oM96d49eo2LZrUl0VCJ0AfatF+r4Wci2Ktm9hr9gu1Het33wfInMokCicj83JCNJJmPDk6lgFBxkk5ZHMG7VWJ1Z11zK6H68p8/pMHCQi4eGmHvZLLM18YJKpJLK91WbxZp1KqkxqMEn3ExDdDyrMWkmyTmo4gCxLVWfPy/Tf2zrwPYJw3CsOHkkuiFsQkTxa6TZvHnznAvtEctuexvtcgq8X51r/dIOzK5HIKphWjUwsIPJGBCZ1kP+D4GKrOynwbaayDaHgIikdYUjCKCs1SB8FT6Nw2ry7/aOvU+wC5s7n40En9jxzP+azoS9PJuMr+M3kG8imatsVao0rC1dlarLFxt0agBQSNPrxWgGhD/rBKtC9gcl+SyVSB69e2Wa5s4rZt1H7w6gGu6RMEIZ0rHqIkzJZu1s79TA0c+tJYwXWtjYH+pJQeVREMgbWdBrm4gRGLsBXUcG6BuWeRShlU1wSccoAnKERHIxQmojx2fBC75mFZHpcuLdLcdEkc8bFLLmJUIHChdrFL6AfvVPfMYz8DMPXbY39g1/2/ycQzxJ+0iUVk2osOx8ZHKUzGsXD5r9fW+JWDw7i+z7demiN0YUBJ0zeUQjBgaaPFyKBBKikz+/0VgrCXIpvYJNi1kM68i19zeqmqS3HjLi3p/E9ewQWkg9rIldS4esK8K+FmZVJ5hYKqoQkqowd1JEFia8MkkvdwmgE3u/dpLrl8dvoI2b4ooRLy3ZfXWJotYWQ0wnZvQAUgWSjpkG41IDYQxa5LRBQBv26HNNSLQi/4oVzxPweOJ54pRLLcXtigtqTgNQJCyyYSk0k8qlD8mMZoX56JVBZC+NHNZT4+OUQ+Ged2aYOmZ6OVo6y8U2F5vY7XCgmcACHqYyQiuEIMfBd710Ms2gwOxMKV16uXhcFzxa9mTwR/mRkv0rWzNK4u0a45eLWQiAqKBsnTEvljUfoScQ7rI/hWyMriLsdmioiSyHcv3+KJwwdQNZkXf3yd+292wbeRdIEjpwfQkgo3b3TobrnYWz6h0aFwMsLqN1qWkJ0evJg/zZNKPIU+MMLO9TuYez7JfTkKUzrld9apVTocfWqAvozB7bdMTn0iz1CfxtpahcaeiZgPOVQcw/IdXrqyhlWTsEubaEk4dXIERZFYeLPB4o9bvfaCkghx2gHdRqcp5E4O/zBzOPUZ836dIBAhBk5HIDuZI2MotDYrbJctYuNpzKU93I5DbEzk2G/l+fTQUV774QqFozqXZhdwFAilJKOZOF6rw+K1bTwrZN9UnvGDcV7/l11sx3tQdl7bw6k0LCFzZOCVkV+Tn25eiWBWfRIfi1M41MfZw2mq7ZBb13fYWqtjtR3MO2VkRSB7XKNwRmdaf4QfPP8Ox58ssnRrh43tFsaIzokzg3RbNlExpFbq0rVdynMt2lUfLasQplysPQ/zra4n5I7mX08fDB8L1SjNOYHofolTn5/ksfE8r7xdZWe3g9x1aK3s0Co7FA+lqGzahGGAI8g07lRRYirdchdRkxh6bBC5X6aYEBgd1Nhb77L0ZoX195pEUxFCPUTM+tj3PazrHV/IPZJ7Qtblf03OMNjZUEFyKF7QCSyFI/1FUnGFy5eqxA70YYtRlJpFc2Ebq9XE0EMa1ZCN+SaeaaIVBOKpJMa0jvN2k9PPDlK63eLd2T3khExoBoROCLKCvW3ibrffFTh/Xs6X5/9Q0vgaoaBIWohxXCT+iI4mJei3U3RklVhGZVh3KeYMvvnyVfL5NOdm9vO9b26wOb+DmrBJFmVK90yCXQFv0yJURPzQJ3Umjm+HuFUPUYZon0H9stuul7b/4afj+GyyL/FPIbTRSMaGU2OChiAKEtZWm0PPDZMcLrBmpzkYrbG+vMThiQKpXAHbkbj+6jz7pzQsX+D17zTpLG4/SJFsyA+eopKWQASr7JM+HsVaC73ufGtrb7XxVz0ACVCBr4iiGJV0aUgfMp7TUopqbpuIikDxN5IIO0mM4QQTkzrbJZcxXWHu3j0ETcTedbFMH9sJURQdBxe3bON3fbyGi2/7hDKIkQiRuEjYCGktVy63u/6f/19HNAU8C0T0THQmmpWfCUSBMAQ1lIhO5ogNABMuclNk70qTxAkVt+wjKuB2RfzuTyyOMR7HLlkPTEhQdxFjCsqAitcU8HYbvTZcqbe9vwP+/oOWLAd8EcjJsmwEBDYQqPHIROKw8ZtqXhYihkx71cRuhuh94oORnDqpo/ZLNG/2OqiAv+nju/4DfxAGQShGI0IggN/o+F7bu9Lu+K8GQXAVeOnDTKkCTAMfB/K9piGKojDwVOaP26uOKCgQmAGCIqKlVeSEjiD5CKKHVwnwSg6+E1SsrjXre36ZENf1wzpBT5vACwJawGXgjZ45fZgtzwC91IyIUJQTkSeVRGRCCMJxraDIkYyMpEp45ShBU8Rtm8t2tXaj07EWPmC/G8A9YA6401P1p/8fBvBhu8RgTxnD0B6NJKJThHLCt+yqZVnLjuVsAr1gvdPbD3f/57vz8zaj/wYfTcHHO/CQnwAAAABJRU5ErkJggg==" type="image/png" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.0/css/bootstrap.min.css" />
     @RenderSection("Styles", false)
 </head>
 <body>
@@ -21,15 +24,15 @@
     </a>
     <div class="container-fluid">
         <div class="page-header">
-            <h1>Pathfinding Laboratory&nbsp;
-                <small>powered by <a href="https://github.com/rvhuang/linq-to-astar" target="_blank">LINQ to A*</a></small>
+            <h1>Pathfinding Laboratory
+                <small class="hidden-xs hidden-sm">powered by <a href="https://github.com/rvhuang/linq-to-astar" target="_blank">LINQ to A*</a></small>
             </h1>
-            <p>Run, test and compare all algorithms and heuristic functions</p>
+            <p>@description</p>
         </div>
         @RenderBody()
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.0/js/bootstrap.min.js"></script>
     @RenderSection("Scripts", required: false)
 </body>
 </html>

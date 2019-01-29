@@ -253,22 +253,25 @@ class ForegroundLayer extends Layer {
         if (x < 0 || y < 0 || x >= this.mapWidth || y >= this.mapHeight) {
             return;
         }
-        var id = "step-x-" + x.toString() + "-y-" + y.toString();
+        var id = "object-x-" + x.toString() + "-y-" + y.toString();
         var existing = this.element.querySelector("#" + id);
 
         if (existing != null) {
             existing.remove();
         }
         // because the property is not index so we need to substract the value by one.
-        this.placeImage(x, y, this.assetIds[this.obstacle - 1]);
+        this.placeImage(x, y, this.assetIds[this.obstacle - 1]).id = id;
     }
 
     public removeObject(x: number, y: number) {
         if (x < 0 || y < 0 || x >= this.mapWidth || y >= this.mapHeight) {
             return;
         }
-        for (let img of [].slice.call(this.element.getElementsByClassName("image-x-" + x.toString() + "-y-" + y.toString()))) {
-            img.remove();
+        var id = "object-x-" + x.toString() + "-y-" + y.toString();
+        var existing = this.element.querySelector("#" + id);
+
+        if (existing != null) {
+            existing.remove();
         }
     }
 

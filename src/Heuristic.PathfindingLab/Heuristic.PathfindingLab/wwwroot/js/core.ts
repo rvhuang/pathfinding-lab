@@ -44,12 +44,18 @@
         return this.map[y][x] < 0;
     }
 
-    public clearObstacles() {
+    public clearObstacles(): ReadonlyArray<Step> {
+        var obstacles = new Array<Step>();
+
         for (var y = 0; y < this.map.length; y++) {
             for (var x = 0; x < this.map[y].length; x++) {
-                this.map[y][x] = Direction.None;
+                if (this.map[y][x] < 0) { // obstacle
+                    obstacles.push(new Step(x, y, this.map[y][x], this.map[y][x]));
+                    this.map[y][x] = Direction.None;                    
+                }
             }
         }
+        return obstacles;
     }
 
     public createPathfindingRequestBody(body: PathfindingRequestBody, x: number, y: number): PathfindingRequestStatus {
