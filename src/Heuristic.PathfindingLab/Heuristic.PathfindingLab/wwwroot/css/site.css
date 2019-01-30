@@ -2,3 +2,7 @@
     font-size: x-small;
 }
 
+#chart {
+    width: 500px;
+    height: 300px;
+}

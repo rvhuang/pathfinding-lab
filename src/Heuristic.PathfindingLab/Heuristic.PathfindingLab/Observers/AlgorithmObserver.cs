@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Linq;
 
 namespace Heuristic.PathfindingLab.Observers
 {
@@ -16,6 +17,7 @@ namespace Heuristic.PathfindingLab.Observers
             {
                 Level = p.Node != null ? p.Node.Level : -1,
                 Step = p.Node != null ? p.Node.Step : new Point(-1, -1),
+                Candidates = p.Candidates.Select(c => c.Step).ToArray()
             });
         }
     }
