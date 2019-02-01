@@ -14,6 +14,9 @@ src/Heuristic.PathfindingLab/Heuristic.PathfindingLab/wwwroot/js/tile.js.map
 src/Heuristic.PathfindingLab/Heuristic.PathfindingLab/wwwroot/js/layer.js
 src/Heuristic.PathfindingLab/Heuristic.PathfindingLab/wwwroot/js/layer.js.map
 
+src/Heuristic.PathfindingLab/Heuristic.PathfindingLab/wwwroot/js/chart.js
+src/Heuristic.PathfindingLab/Heuristic.PathfindingLab/wwwroot/js/chart.js.map
+
 # Minimized
 
 *.min.css

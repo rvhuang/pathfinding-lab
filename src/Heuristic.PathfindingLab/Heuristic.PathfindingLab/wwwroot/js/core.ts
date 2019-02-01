@@ -349,6 +349,7 @@ class Detail {
 
 class PathfindingHistory implements Pathfinding {
     public readonly steps: ReadonlyArray<Step>; 
+    public readonly details: Array<Detail>;
     public readonly path: ReadonlyArray<PathTile>;
     public readonly unvisited: ReadonlyArray<UnvisitedTile>;
     public readonly heuristics: string[];
@@ -358,9 +359,10 @@ class PathfindingHistory implements Pathfinding {
 
     public isVisible: boolean;
 
-    constructor(steps: Array<Step>, heuristics: Array<string>, algorithm: string, details: ReadonlyArray<Detail>) {        
+    constructor(steps: Array<Step>, heuristics: Array<string>, algorithm: string, details: Array<Detail>) {        
         this.color = PathfindingHistory.getAlgorithmPathColor(algorithm);
         this.steps = steps.map(step => new Step(step.x, step.y, step.direction, step.undo));
+        this.details = details;
         this.path = steps.map((p, i) => new PathTile(p.x, p.y, i, this.color));
         this.unvisited = UnvisitedTile.merge(details.map(d => new UnvisitedTile(d.step.x, d.step.y, d.level, this.color)));
         this.heuristics = heuristics;

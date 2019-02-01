@@ -16,7 +16,7 @@
     </div>
 </div>
 <div class="row">
-    <div class="col-lg-12" style="margin-bottom: 8px">
+    <div class="col-lg-12">
         <form id="options" role="form" class="form-inline">
             <div class="btn-group" role="group">
                 <button type="button" class="btn btn-default btn-sm" data-toggle="tooltip" title="Start over" id="btnClear">
@@ -53,19 +53,15 @@
                 </button>
             }
             <span>&nbsp;</span>
-            @if (Model.IsSmartDevice)
+            @if (!Model.IsSmartDevice)
             {
-                <span id="description" class="small"></span>
-            }
-            else
-            {
-                <span id="description" class="small">Left click to place barriers, right click on two positions to get a path.</span>
+                <span class="small">Left click to place barriers, right click on two positions to get a path.</span>
             }
         </form>
     </div>
 </div>
-<div class="row">
-    <div class="col-lg-7">
+<div class="row" style="margin-top: 8px">
+    <div class="col-lg-6">
         <label>LINQ Expression</label>
         <a href="javascript:void();" role="button" class="btn btn-link" data-toggle="popover" data-trigger="focus" data-placement="right" data-container="body" data-content="A code snippet using LINQ to A* to set conditions and fetch the path will be displayed here.">
             <span class="glyphicon glyphicon-question-sign"></span>
@@ -109,7 +105,12 @@
         </div>
         <small>Tip: you can change the map size by attaching <b>w</b> and <b>h</b> parameters to the query string. The default size is @(MapSettings.DefaultMapWidth)x@(MapSettings.DefaultMapHeight) and the minimum size is @(MapSettings.MinMapWidth)x@(MapSettings.MinMapHeight).</small>
     </div>
-    <div class="col-lg-5">
+    <div class="col-lg-6">
+        <label>Open List</label>
+        <a href="javascript:void();" role="button" class="btn btn-link" data-toggle="popover" data-trigger="focus" data-placement="right" data-container="body" data-content="The chart shows the variation of the length of open list.">
+            <span class="glyphicon glyphicon-question-sign"></span>
+        </a>
+        <span id="description" class="small"></span>
         <div id="chart"></div>
     </div>
 </div>

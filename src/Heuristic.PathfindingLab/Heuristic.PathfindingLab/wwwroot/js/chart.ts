@@ -15,7 +15,7 @@
         this.height = containerHeight - Chart.margin.top - Chart.margin.bottom;
     }
 
-    public updateStatistics(data: Array<Detail>, color: string, tiles: ReadonlyArray<SolutionTile>) {
+    public updateStatistics(history: PathfindingHistory) {
         let parent = d3.select("#" + this.elementId);
         let svg = parent.select("svg");
 
@@ -31,8 +31,8 @@
 
         g = svg.append('g').attr('transform', 'translate(' + Chart.margin.left + ', ' + Chart.margin.top + ')');
 
-        let xDomain = d3.extent(data, function (d, i) { return i; })
-        let yDomain = d3.extent(data, function (d) { return d.candidates.length; });
+        let xDomain = d3.extent(history.details, function (d, i) { return i; })
+        let yDomain = d3.extent(history.details, function (d) { return d.candidates.length; });
 
         let xScale = d3.scaleLinear().range([0, this.width]).domain(xDomain);
         let yScale = d3.scaleLinear().range([this.height, 0]).domain(yDomain);
@@ -68,17 +68,17 @@
             .text("Nodes on open list");
 
         g.append<SVGPathElement>('path')
-            .datum(data)
+            .datum(history.details)
             .attr('class', 'line')
-            .attr('d', line(data))
-            .style('stroke', color);
+            .attr('d', line(history.details))
+            .style('stroke', history.color);
 
-        g.selectAll<SVGCircleElement, Detail>('circle').data(data).enter().append('circle')
+        g.selectAll<SVGCircleElement, Detail>('circle').data(history.details).enter().append('circle')
             .attr('cx', function (d, i) { return xScale(i); })
             .attr('cy', function (d) { return yScale(d.candidates.length); })
             .attr('r', 4)
             .attr('class', 'circle')
-            .style('stroke', color);
+            .style('stroke', history.color);
 
         // focus tracking
         var focus = g.append('g').style('display', 'none');
@@ -99,18 +99,9 @@
             .attr('height', this.height)
             .on('mouseover', function () { focus.style('display', null); })
             .on('mouseout', function () {
-                var mouse = d3.mouse(this);
-                var mouseX = xScale.invert(mouse[0]);
-                var i = Math.round(mouseX); 
-
-                for (let tile of tiles) {
-                    for (let candidate of data[i].candidates) {
-                        if (tile.x === candidate.x && tile.y === candidate.y) {
-                            tile.hide();
-                        }
-                        else {
-                            tile.show();
-                        }
+                if (history.isVisible) {
+                    for (let tile of history.getSolutionTiles()) {
+                        tile.show();
                     }
                 }
                 focus.style('display', 'none');
@@ -120,22 +111,22 @@
                 var mouseX = xScale.invert(mouse[0]);
                 var i = Math.round(mouseX);
                 var x = xScale(i);
-                var y = yScale(data[i].candidates.length);
+                var y = yScale(history.details[i].candidates.length);
 
-                focusCircle.attr('cx', x).attr('cy', y).style('fill', color);
+                focusCircle.attr('cx', x).attr('cy', y).style('fill', history.color);
                 focusLineX.attr('x1', x).attr('y1', yScale(yDomain[0])).attr('x2', x).attr('y2', yScale(yDomain[1]));
                 focusLineY.attr('x1', xScale(xDomain[0])).attr('y1', y).attr('x2', xScale(xDomain[1])).attr('y2', y);
-                 
-                for (let tile of tiles) {
-                    for (let candidate of data[i].candidates) {
-                        if (tile.x === candidate.x && tile.y === candidate.y) {
+                  
+                if (history.isVisible) {
+                    for (let tile of history.getSolutionTiles()) {
+                        if (history.details[i].candidates.some(c => c.x === tile.x && c.y === tile.y)) {
                             tile.show();
                         }
                         else {
                             tile.hide();
-                        }
-                    }
-                } 
+                        } 
+                    } 
+                }
             });
     }
 }

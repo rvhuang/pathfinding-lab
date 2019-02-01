@@ -29,13 +29,13 @@
 
     public hide() {
         if (this._element != null) {
-            this._element.style.visibility = "none";
+            this._element.style.display = "none";
         }
     }
 
     public show() {
         if (this._element != null) {
-            this._element.style.visibility = "";
+            this._element.style.display = "";
         }
     }
     

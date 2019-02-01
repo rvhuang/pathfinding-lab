@@ -26,7 +26,7 @@ $(document).ready(function () {
         "obstacle-18",
         "obstacle-19"
     ]);
-    var chart = new Chart("chart", 500, 300);
+    var chart = new Chart("chart", 600, 300);
     if (typeof mapSettings !== "undefined") {
         mapSettings.obstacles.forEach(function (o) {
             core.placeObstacle(o.x, o.y, o.value);
@@ -58,7 +58,7 @@ $(document).ready(function () {
                         var assigned = core.assignDirections(solution);
                         var history = new PathfindingHistory(solution, heuristics, algorithm, response.data.details);
                         
-                        chart.updateStatistics(response.data.details, PathfindingHistory.getAlgorithmPathColor(current.algorithm), history.getSolutionTiles());
+                        chart.updateStatistics(history);
                         foregroundLayer.placePath(assigned, step => step.getDirectionShortName());
 
                         if (cursorLayer.histories.length > 5) {
@@ -81,17 +81,19 @@ $(document).ready(function () {
                         btn.appendTo("#histories");
                         btn.click(function (e) {
                             var index = $(this).index();
-                            var toggled = cursorLayer.histories[index];
-
                             if (cursorLayer.togglePath(index)) {
+                                let toggled = cursorLayer.histories[index];
+
                                 updateOptions(toggled);
                                 updateExpressions(toggled);
-                                // chart.updateStatistics(null, PathfindingHistory.getAlgorithmPathColor(toggled.algorithm), toggled.getSolutionTiles());
+                                chart.updateStatistics(toggled);
                             }
-                            else { // Restore to current state.
-                                updateOptions(current);
-                                updateExpressions(current);
-                                // chart.updateStatistics(null, PathfindingHistory.getAlgorithmPathColor(current.algorithm), current.getSolutionTiles());
+                            else { // Restore to latest state.                                
+                                let latest = cursorLayer.histories[cursorLayer.histories.length - 1];
+
+                                updateOptions(latest);
+                                updateExpressions(latest);
+                                chart.updateStatistics(latest);
                             }
                         });
                         if (solution.length === 0) { // Path not found
@@ -109,10 +111,6 @@ $(document).ready(function () {
                             case 400:
                                 msg = "// The selected algorithm needs at least one Heuristic function.";
                                 $(':input[name="heuristic"]').parent().css("color", "red");
-                                break;
-                            case 404:
-                                msg = "// No solution is found.";
-                                cursorLayer.clearAnchors();
                                 break;
                             case 500:
                                 msg = "// Something went wrong. Please try again later or report an issue at GitHub.";
