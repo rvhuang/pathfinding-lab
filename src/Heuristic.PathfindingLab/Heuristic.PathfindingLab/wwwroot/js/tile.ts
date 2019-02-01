@@ -27,6 +27,18 @@
         return this._element = this.initialize(tileWidth, tileHeight);
     }
 
+    public hide() {
+        if (this._element != null) {
+            this._element.style.visibility = "none";
+        }
+    }
+
+    public show() {
+        if (this._element != null) {
+            this._element.style.visibility = "";
+        }
+    }
+    
     public remove() {
         if (this._element != null) {
             this._element.remove();

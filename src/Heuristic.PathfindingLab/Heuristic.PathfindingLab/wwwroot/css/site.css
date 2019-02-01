@@ -2,7 +2,70 @@
     font-size: x-small;
 }
 
-#chart {
-    width: 500px;
-    height: 300px;
+label.algorithm {
+    min-width: 10ch
 }
+
+.axis path, .axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+}
+
+/*.x.axis path {
+    display: none;
+}*/
+
+.line {
+    fill: none;
+    stroke-width: 2px;
+}
+
+.circle { 
+    stroke-width: 2px;
+    fill: white;
+} 
+
+.zeroline {
+    fill: none;
+    stroke: green;
+    stroke-width: 0.5px;
+    stroke-dasharray: 5 5;
+}
+
+.zerolinetext {
+    fill: red;
+}
+
+.overlay {
+    fill: none;
+    stroke: none;
+    pointer-events: all;
+}
+
+.focusLine {
+    fill: none;
+    stroke: darkgreen;
+    stroke-width: 1px;
+}
+
+/*#chart > svg {
+    font-family: Sans-Serif, Arial;
+}
+
+#chart .line {
+    stroke-width: 2;
+    fill: none;
+}
+
+#chart .axis path {
+    stroke: black;
+}
+
+#chart .text {
+    font-size: 12px;
+}
+
+#chart .title-text {
+    font-size: 12px;
+}*/

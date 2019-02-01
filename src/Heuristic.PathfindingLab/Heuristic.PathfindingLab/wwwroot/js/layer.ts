@@ -83,16 +83,16 @@ class CursorLayer extends Layer {
                 this.element.appendChild(tileElement);
                 begin += 0.1;
             }
-            for (let detail of history.details) {
-                var filtered = history.path.filter(p => p.x === detail.x && p.y === detail.y);
+            for (let tile of history.unvisited) {
+                var filtered = history.path.filter(p => p.x === tile.x && p.y === tile.y);
                 if (filtered.length > 0) {
-                    detail.levels.forEach(level => filtered[0].updateLevels(level));
+                    tile.levels.forEach(level => filtered[0].updateLevels(level));
                 }
                 else {
-                    tileElement = detail.visualize(this.tileWidth, this.tileHeight);
+                    tileElement = tile.visualize(this.tileWidth, this.tileHeight);
                     if (callback != null) {
                         tileElement.onmousemove = function (ev) {
-                            callback(detail);
+                            callback(tile);
                         };
                     }
                     this.element.appendChild(tileElement);
@@ -101,7 +101,7 @@ class CursorLayer extends Layer {
         }
         else {
             history.path.forEach(p => p.remove());
-            history.details.forEach(d => d.remove());
+            history.unvisited.forEach(d => d.remove());
         }
         return history.isVisible;
     }
@@ -141,7 +141,7 @@ class CursorLayer extends Layer {
     public clearTiles() {
         for (let history of this.histories) {
             history.path.forEach(path => path.remove());
-            history.details.forEach(detail => detail.remove());
+            history.unvisited.forEach(detail => detail.remove());
         }
     }
 }

@@ -4,9 +4,10 @@
 	},
 	"compileOnSave": true,
 	"outFile": "wwwroot/js/core.js",
-	"files": [
-		"wwwroot/js/tile.ts",
-		"wwwroot/js/layer.ts",
-		"wwwroot/js/core.ts"
-	]
+  "files": [
+    "wwwroot/js/tile.ts",
+    "wwwroot/js/layer.ts",
+    "wwwroot/js/chart.ts",
+    "wwwroot/js/core.ts"
+  ]
 }

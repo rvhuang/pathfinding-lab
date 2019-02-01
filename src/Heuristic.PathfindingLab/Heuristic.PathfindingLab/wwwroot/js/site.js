@@ -26,6 +26,7 @@ $(document).ready(function () {
         "obstacle-18",
         "obstacle-19"
     ]);
+    var chart = new Chart("chart", 500, 300);
     if (typeof mapSettings !== "undefined") {
         mapSettings.obstacles.forEach(function (o) {
             core.placeObstacle(o.x, o.y, o.value);
@@ -54,44 +55,51 @@ $(document).ready(function () {
                     contentType: "application/json",
                     success: function (response) {
                         var solution = response.data.solution;
+                        var assigned = core.assignDirections(solution);
+                        var history = new PathfindingHistory(solution, heuristics, algorithm, response.data.details);
+                        
+                        chart.updateStatistics(response.data.details, PathfindingHistory.getAlgorithmPathColor(current.algorithm), history.getSolutionTiles());
+                        foregroundLayer.placePath(assigned, step => step.getDirectionShortName());
 
-                        if (solution.length > 0) {
-                            var assigned = core.assignDirections(solution);
-                            var history = new PathfindingHistory(solution, heuristics, algorithm, response.data.details);
-
-                            foregroundLayer.placePath(assigned, step => step.getDirectionShortName());
-                            if (cursorLayer.histories.length > 5) {
-                                $("#histories button:first-child").fadeOut(500, function () {
-                                    $(this).remove();
-                                    if (cursorLayer.histories[0].isVisible) {
-                                        cursorLayer.togglePath(0);
-                                    }
-                                    cursorLayer.histories.shift();
-                                });
-                            }
-                            cursorLayer.histories.push(history);
-                            cursorLayer.clearAnchors();
-
-                            var btn = $("#historyTemplate button:first-child").clone();
-
-                            btn.children('[data-field="PathColor"]').css("color", history.color);
-                            btn.children('[data-field="AlgorithmShortName"]').text(history.algorithmShortName);
-                            btn.children('[data-field="Path"]').text("(" + history.path.length + ")");
-                            btn.appendTo("#histories");
-                            btn.click(function (e) {
-                                var index = $(this).index();
-
-                                if (cursorLayer.togglePath(index)) {
-                                    updateOptions(cursorLayer.histories[index]);
-                                    updateExpressions(cursorLayer.histories[index]);
+                        if (cursorLayer.histories.length > 5) {
+                            $("#histories button:first-child").fadeOut(500, function () {
+                                $(this).remove();
+                                if (cursorLayer.histories[0].isVisible) {
+                                    cursorLayer.togglePath(0);
                                 }
-                                else { // Restore to current state.
-                                    updateOptions(current);
-                                    updateExpressions(current);
-                                }
+                                cursorLayer.histories.shift();
                             });
-                        } else { // Path not found
-                            cursorLayer.clearAnchors();
+                        }
+                        cursorLayer.histories.push(history);
+                        cursorLayer.clearAnchors();
+
+                        var btn = $("#historyTemplate button:first-child").clone();
+
+                        btn.children('[data-field="PathColor"]').css("color", history.color);
+                        btn.children('[data-field="AlgorithmShortName"]').text(history.algorithmShortName);
+                        btn.children('[data-field="Path"]').text("(" + history.path.length + ")");
+                        btn.appendTo("#histories");
+                        btn.click(function (e) {
+                            var index = $(this).index();
+                            var toggled = cursorLayer.histories[index];
+
+                            if (cursorLayer.togglePath(index)) {
+                                updateOptions(toggled);
+                                updateExpressions(toggled);
+                                // chart.updateStatistics(null, PathfindingHistory.getAlgorithmPathColor(toggled.algorithm), toggled.getSolutionTiles());
+                            }
+                            else { // Restore to current state.
+                                updateOptions(current);
+                                updateExpressions(current);
+                                // chart.updateStatistics(null, PathfindingHistory.getAlgorithmPathColor(current.algorithm), current.getSolutionTiles());
+                            }
+                        });
+                        if (solution.length === 0) { // Path not found
+                            let msg = "// No solution is found.";
+
+                            $("#exampleSelectMany").find("code").text(msg);
+                            $("#exampleExcept").find("code").text(msg);
+                            $("#exampleWhere").find("code").text(msg);
                         }
                         updateExpressions(current);
                     },
@@ -103,8 +111,8 @@ $(document).ready(function () {
                                 $(':input[name="heuristic"]').parent().css("color", "red");
                                 break;
                             case 404:
-                                 msg = "// No solution is found.";
-                                 cursorLayer.clearAnchors();
+                                msg = "// No solution is found.";
+                                cursorLayer.clearAnchors();
                                 break;
                             case 500:
                                 msg = "// Something went wrong. Please try again later or report an issue at GitHub.";

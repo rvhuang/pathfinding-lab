@@ -27,7 +27,6 @@ namespace Heuristic.PathfindingLab.Controllers
             {
                 var result = AlgorithmCore.Find(settings, body.Map);
 
-                Response.StatusCode = (int)(result.Solution.Any() ? HttpStatusCode.OK : HttpStatusCode.NotFound);
                 return new ResponseBody<AlgorithmSolution>() { Data = result };
             }
             catch (InvalidOperationException)

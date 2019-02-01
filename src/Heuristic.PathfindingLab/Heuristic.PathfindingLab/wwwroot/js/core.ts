@@ -98,6 +98,10 @@
 
     public assignDirections(solution: Array<Step>): ReadonlyArray<Step> {
         var assigned = new Array<Step>();
+
+        if (solution.length == 0) {
+            return assigned;
+        }
         for (let i = 0; i < solution.length - 1; i++) {
             let x1 = solution[i].x;
             let y1 = solution[i].y;
@@ -340,12 +344,13 @@ class PathfindingRequestBody implements Pathfinding {
 class Detail {
     public level: number;
     public step: Step;
+    public candidates: ReadonlyArray<Step>;
 }
 
 class PathfindingHistory implements Pathfinding {
-    public readonly steps: ReadonlyArray<Step>;
+    public readonly steps: ReadonlyArray<Step>; 
     public readonly path: ReadonlyArray<PathTile>;
-    public readonly details: ReadonlyArray<UnvisitedTile>;
+    public readonly unvisited: ReadonlyArray<UnvisitedTile>;
     public readonly heuristics: string[];
     public readonly algorithm: string;
     public readonly algorithmShortName: string;
@@ -357,11 +362,15 @@ class PathfindingHistory implements Pathfinding {
         this.color = PathfindingHistory.getAlgorithmPathColor(algorithm);
         this.steps = steps.map(step => new Step(step.x, step.y, step.direction, step.undo));
         this.path = steps.map((p, i) => new PathTile(p.x, p.y, i, this.color));
-        this.details = UnvisitedTile.merge(details.map(d => new UnvisitedTile(d.step.x, d.step.y, d.level, this.color)));
+        this.unvisited = UnvisitedTile.merge(details.map(d => new UnvisitedTile(d.step.x, d.step.y, d.level, this.color)));
         this.heuristics = heuristics;
         this.algorithm = algorithm;
         this.algorithmShortName = PathfindingHistory.getAlgorithmShortName(algorithm);
         this.isVisible = false;
+    }
+
+    public getSolutionTiles(): ReadonlyArray<SolutionTile> {
+        return (this.path as ReadonlyArray<SolutionTile>).concat(this.unvisited);
     }
 
     public toSelectManyExpression(mapWidth: number, mapHeight: number): string[] {

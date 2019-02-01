@@ -33,10 +33,10 @@
                 </button>
             </div>
             <div class="btn-group" role="group" data-toggle="buttons">
-                <label class="btn btn-default btn-sm active" style="min-width: 10ch"><input type="radio" name="algorithm" value="@nameof(HeuristicSearch.AStar)" checked /><span>A*</span></label>
-                <label class="btn btn-default btn-sm" style="min-width: 10ch" data-toggle="tooltip" title="Best-first Search"><input type="radio" name="algorithm" value="@nameof(HeuristicSearch.BestFirstSearch)" />BFS</label>
-                <label class="btn btn-default btn-sm" style="min-width: 10ch" data-toggle="tooltip" title="Iterative Deepening A*"><input type="radio" name="algorithm" value="@nameof(HeuristicSearch.IterativeDeepeningAStar)" />IDA*</label>
-                <label class="btn btn-default btn-sm" style="min-width: 10ch" data-toggle="tooltip" title="Recursive Best-first Search"><input type="radio" name="algorithm" value="@nameof(HeuristicSearch.RecursiveBestFirstSearch)" />RBFS</label>
+                <label class="btn btn-default btn-sm active algorithm"><input type="radio" name="algorithm" value="@nameof(HeuristicSearch.AStar)" checked /><span>A*</span></label>
+                <label class="btn btn-default btn-sm algorithm" data-toggle="tooltip" title="Best-first Search"><input type="radio" name="algorithm" value="@nameof(HeuristicSearch.BestFirstSearch)" />BFS</label>
+                <label class="btn btn-default btn-sm algorithm" data-toggle="tooltip" title="Iterative Deepening A*"><input type="radio" name="algorithm" value="@nameof(HeuristicSearch.IterativeDeepeningAStar)" />IDA*</label>
+                <label class="btn btn-default btn-sm algorithm" data-toggle="tooltip" title="Recursive Best-first Search"><input type="radio" name="algorithm" value="@nameof(HeuristicSearch.RecursiveBestFirstSearch)" />RBFS</label>
             </div>
             <div class="btn-group" role="group" data-toggle="buttons">
                 <label class="btn btn-default btn-sm"><input type="checkbox" name="heuristic" value="@nameof(PointExtensions.GetChebyshevDistance)">Chebyshev</label>
@@ -65,10 +65,7 @@
     </div>
 </div>
 <div class="row">
-    <div class="col-lg-3">
-        <div id="chart"></div>
-    </div>
-    <div class="col-lg-9">
+    <div class="col-lg-7">
         <label>LINQ Expression</label>
         <a href="javascript:void();" role="button" class="btn btn-link" data-toggle="popover" data-trigger="focus" data-placement="right" data-container="body" data-content="A code snippet using LINQ to A* to set conditions and fetch the path will be displayed here.">
             <span class="glyphicon glyphicon-question-sign"></span>
@@ -112,6 +109,9 @@
         </div>
         <small>Tip: you can change the map size by attaching <b>w</b> and <b>h</b> parameters to the query string. The default size is @(MapSettings.DefaultMapWidth)x@(MapSettings.DefaultMapHeight) and the minimum size is @(MapSettings.MinMapWidth)x@(MapSettings.MinMapHeight).</small>
     </div>
+    <div class="col-lg-5">
+        <div id="chart"></div>
+    </div>
 </div>
 <!-- Modal -->
 <div id="modalInfo" class="modal fade" role="dialog">
@@ -142,18 +142,20 @@
 </div>
 @section Scripts {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
-    <script src="https://d3js.org/d3.v5.min.js" defer></script>
     <script>
         var mapSettings = @Json.Serialize(Model);
     </script>
     <environment include="Development">
+        <script src="https://d3js.org/d3.v5.min.js"></script>
         <script src="js/tile.js"></script>
         <script src="js/layer.js"></script>
         <script src="js/core.js"></script>
-        <script src="js/site.js" defer></script>
+        <script src="js/chart.js"></script>
+        <script src="js/site.js"></script>
     </environment>
     <environment exclude="Development">
-        <script src="js/core.min.js" asp-append-version="true"></script>
+        <script src="https://d3js.org/d3.v5.min.js" defer></script>
+        <script src="js/core.min.js" asp-append-version="true" defer></script>
         <script src="js/site.min.js" asp-append-version="true" defer></script>
     </environment>
     <script>hljs.initHighlightingOnLoad();</script>
