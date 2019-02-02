@@ -19,7 +19,7 @@
         this.sub = d3.line<Detail>();
     }
 
-    public updateStatistics(history: PathfindingHistory) {
+    public updateStatistics(history: PathfindingHistory, showDetail: (d: Detail, h: PathfindingHistory) => void, hideDetail: () => void) {
         let parent = d3.select("#" + this.elementId);
         let svg = parent.select("svg");
 
@@ -46,7 +46,7 @@
         let xAxis = d3.axisBottom(xScale);
         let yAxis = d3.axisLeft(yScale);
 
-        this.main.x(function (d, i) { return xScale(i); }).y(d => d.candidates.length);
+        this.main.x(function (d, i) { return xScale(i); }).y(d => yScale(d.candidates.length));
         this.sub.x(function (d, i) { return xScale(i); }).y(d => yScale(d.candidates.filter(c => !history.checkIfStepExists(c)).length));
 
         g.append('g')
@@ -99,11 +99,7 @@
             .attr('class', 'focusLine');
         var focusLineY = focus.append('line')
             .attr('id', 'focusLineY')
-            .attr('class', 'focusLine');/*
-        var focusCircle = focus.append('circle')
-            .attr('id', 'focusCircle')
-            .attr('r', 5)
-            .attr('class', 'circle');*/
+            .attr('class', 'focusLine');
 
         g.append<SVGRectElement>('rect')
             .attr('class', 'overlay')
@@ -112,11 +108,15 @@
             .on('mouseover', function () { focus.style('display', null); })
             .on('mouseout', function () {
                 if (history.isVisible) {
-                    for (let tile of history.getSolutionTiles()) {
+                    for (let tile of history.path) {
+                        tile.show();
+                    }
+                    for (let tile of history.unvisited) {
                         tile.show();
                     }
                 }
                 focus.style('display', 'none');
+                hideDetail();
             })
             .on('mousemove', function () {
                 var mouse = d3.mouse(this);
@@ -126,20 +126,28 @@
                 var x = xScale(i);
                 var y = yScale(d.candidates.length);
 
-                // focusCircle.attr('cx', x).attr('cy', y).style('fill', history.color);
                 focusLineX.attr('x1', x).attr('y1', yScale(yDomain[0])).attr('x2', x).attr('y2', yScale(yDomain[1]));
                 focusLineY.attr('x1', xScale(xDomain[0])).attr('y1', y).attr('x2', xScale(xDomain[1])).attr('y2', y);
                   
                 if (history.isVisible) {
-                    for (let tile of history.getSolutionTiles()) {
+                    for (let tile of history.path) {
                         if ((d.step.x === tile.x && d.step.y === tile.y) || d.candidates.some(c => c.x === tile.x && c.y === tile.y)) {
                             tile.show();
                         }
                         else {
                             tile.hide();
                         } 
-                    } 
+                    }
+                    for (let tile of history.unvisited) {
+                        if ((d.step.x === tile.x && d.step.y === tile.y) || d.candidates.some(c => c.x === tile.x && c.y === tile.y)) {
+                            tile.show();
+                        }
+                        else {
+                            tile.hide();
+                        } 
+                    }
                 }
+                showDetail(d, history);
             });
     }
 }

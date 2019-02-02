@@ -6,6 +6,16 @@ label.algorithm {
     min-width: 10ch
 }
 
+span.position {
+    display: inline-block;
+    min-width: 8ch;
+}
+
+span.number {
+    display: inline-block;
+    min-width: 4ch;
+}
+
 .axis path, .axis line {
     fill: none;
     stroke: #000;

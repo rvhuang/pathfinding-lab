@@ -33,10 +33,10 @@ $(document).ready(function () {
             foregroundLayer.obstacle = o.value;
             foregroundLayer.placeObject(o.x, o.y);
         });
-    }
+    }/*
     cursorLayer.showDetailDescription = function(step) {
         $("#description").text(step.describes());
-    };
+    };*/
     foregroundLayer.objectPracingPredicate = (i, j, obstacle) => core.placeObstacle(i, j, obstacle);
     foregroundLayer.pathPlacingCallback = function(i, j) {
         if (core.isObstacle(i, j)) {
@@ -58,7 +58,7 @@ $(document).ready(function () {
                         var assigned = core.assignDirections(solution);
                         var history = new PathfindingHistory(solution, heuristics, algorithm, response.data.details);
                         
-                        chart.updateStatistics(history);
+                        chart.updateStatistics(history, showDetail, hideDetail);
                         foregroundLayer.placePath(assigned, step => step.getDirectionShortName());
 
                         if (cursorLayer.histories.length > 5) {
@@ -86,14 +86,14 @@ $(document).ready(function () {
 
                                 updateOptions(toggled);
                                 updateExpressions(toggled);
-                                chart.updateStatistics(toggled);
+                                chart.updateStatistics(toggled, showDetail, hideDetail);
                             }
                             else { // Restore to latest state.                                
                                 let latest = cursorLayer.histories[cursorLayer.histories.length - 1];
 
                                 updateOptions(latest);
                                 updateExpressions(latest);
-                                chart.updateStatistics(latest);
+                                chart.updateStatistics(latest, showDetail, hideDetail);
                             }
                         });
                         if (solution.length === 0) { // Path not found
@@ -121,7 +121,7 @@ $(document).ready(function () {
                         $("#exampleWhere").find("code").text(msg);
                     },
                     complete: function () {
-                        $("#description").text("");
+                        // TODO:
                     }
                 });
                 break;
@@ -153,7 +153,7 @@ $(document).ready(function () {
         foregroundLayer.clearMap();
         cursorLayer.clearTiles();
 
-        $("#description").text("");
+        hideDetail();
     });
     $('#btnFindPath').click(function (event) { 
         foregroundLayer.isPathfindingOnly = !foregroundLayer.isPathfindingOnly; 
@@ -216,4 +216,18 @@ function updateExpressions(pathfinding) {
     $("pre code").each(function(i, block) {
         hljs.highlightBlock(block);
     });
+}
+
+function showDetail(d, history) {
+    var spans = $("#description").children("span");
+    
+    spans.eq(0).text("{" + d.step.x + ", " + d.step.y + "}"); 
+    spans.eq(1).text(history.steps.some(s => s.x === d.step.x && s.y === d.step.y) ? "Yes" : "No"); 
+    spans.eq(2).text(d.candidates.length); 
+    spans.eq(3).text(d.candidates.filter(c => !history.checkIfStepExists(c)).length); 
+    spans.eq(4).text(history.findTileWithStep(d.step).describes()); 
+}
+
+function hideDetail() {
+    $("#description").children("span").text(""); 
 }

@@ -371,8 +371,16 @@ class PathfindingHistory implements Pathfinding {
         this.isVisible = false;
     }
 
-    public getSolutionTiles(): ReadonlyArray<SolutionTile> {
-        return (this.path as ReadonlyArray<SolutionTile>).concat(this.unvisited);
+    public findTileWithStep(s: Step): SolutionTile { 
+        var index = this.path.findIndex(p => p.x === s.x && p.y === s.y);
+        if (index > -1) { 
+            return this.path[index];
+        }
+        index = this.unvisited.findIndex(u => u.x === s.x && u.y === s.y);
+        if (index > -1) { 
+            return this.unvisited[index];
+        }
+        return null;
     }
 
     public checkIfStepExists(s: Step): boolean {

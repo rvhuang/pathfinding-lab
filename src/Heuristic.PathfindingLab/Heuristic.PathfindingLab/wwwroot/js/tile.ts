@@ -72,11 +72,11 @@ abstract class SolutionTile extends Tile<SVGElement> {
         var description = "";
 
         if (this.levels.length > 1) {
-            description += "The node {" + this.x + ", " + this.y + "} has been explored for " + this.levels.length + " times. ";
+            description += "The node has been explored for " + this.levels.length + " times. ";
             description += "The depths (levels) of the node are " + this.levels.join(", ") + " respectively.";
         }
         else {
-            description += "The node {" + this.x + ", " + this.y + "} has been explored for 1 time. ";
+            description += "The node has been explored for 1 time. ";
             description += "The depth (level) of the node is " + this.levels.join(", ") + ".";
         }
         return description;

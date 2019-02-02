@@ -68,13 +68,13 @@
         </a>
         <div class="btn-group" role="group" id="histories"></div>
         <!-- Nav tabs -->
-        <ul class="nav nav-tabs" role="tablist" style="max-width: 720px; margin-top: 10px">
+        <ul class="nav nav-tabs" role="tablist" style="margin-top: 10px">
             <li role="presentation" class="active"><a href="#exampleSelectMany" aria-controls="exampleSelectMany" role="tab" data-toggle="tab">SelectMany</a></li>
             <li role="presentation"><a href="#exampleExcept" aria-controls="exampleExcept" role="tab" data-toggle="tab">Except</a></li>
             <li role="presentation"><a href="#exampleWhere" aria-controls="exampleWhere" role="tab" data-toggle="tab">Where only</a></li>
         </ul>
         <!-- Tab panes -->
-        <div class="tab-content" style="max-width: 720px">
+        <div class="tab-content">
             <div role="tabpanel" class="tab-pane active" id="exampleSelectMany">
                 <pre><code class="cs">// Equivalent LINQ expression using SelectMany() will be shown here.
 
@@ -106,11 +106,15 @@
         <small>Tip: you can change the map size by attaching <b>w</b> and <b>h</b> parameters to the query string. The default size is @(MapSettings.DefaultMapWidth)x@(MapSettings.DefaultMapHeight) and the minimum size is @(MapSettings.MinMapWidth)x@(MapSettings.MinMapHeight).</small>
     </div>
     <div class="col-lg-6">
-        <label>Open List</label>
-        <a href="javascript:void();" role="button" class="btn btn-link" data-toggle="popover" data-trigger="focus" data-placement="right" data-container="body" data-content="The chart shows the variation of the length of open list.">
+        <label>Open List Analysis</label>
+        <a href="javascript:void();" role="button" class="btn btn-link" data-toggle="popover" data-trigger="focus" data-placement="right" data-container="body" data-content="The chart shows the retrospective analysis of open list.">
             <span class="glyphicon glyphicon-question-sign"></span>
         </a>
-        <span id="description" class="small"></span>
+        <p class="small" id="description">
+            Current node:&nbsp;<span class="position"></span>&nbsp;Is a part of final solution?&nbsp;<span></span><br/>
+            Number of nodes on open list:&nbsp;<span class="number"></span>Number of stale nodes on open list:&nbsp;<span class="number"></span><br/>
+            <span></span>&nbsp;
+        </p>
         <div id="chart"></div>
     </div>
 </div>
