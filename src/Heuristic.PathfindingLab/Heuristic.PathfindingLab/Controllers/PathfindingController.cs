@@ -7,7 +7,7 @@ namespace Heuristic.PathfindingLab.Controllers
 {
     using Linq;
     using PathfindingLab.Models;
-    using PathfindingLab.Observers;
+    using PathfindingLab.Helpers;
 
     [Produces("application/json")]
     [Route("api/[controller]")]
@@ -27,7 +27,6 @@ namespace Heuristic.PathfindingLab.Controllers
             {
                 var result = AlgorithmCore.Find(settings, body.Map);
 
-                Response.StatusCode = result.Solution.Any() ? (int)HttpStatusCode.OK : (int)HttpStatusCode.NotFound;
                 return new ResponseBody<AlgorithmSolution>() { Data = result };
             }
             catch (InvalidOperationException)

@@ -27,6 +27,18 @@
         return this._element = this.initialize(tileWidth, tileHeight);
     }
 
+    public hide() {
+        if (this._element != null) {
+            this._element.style.display = "none";
+        }
+    }
+
+    public show() {
+        if (this._element != null) {
+            this._element.style.display = "";
+        }
+    }
+    
     public remove() {
         if (this._element != null) {
             this._element.remove();
@@ -56,16 +68,16 @@ abstract class SolutionTile extends Tile<SVGElement> {
         }
     }
 
-    public describes() : string {
-        var description = "";
+    public describes() : string[] {
+        var description = new Array<string>(2);
 
         if (this.levels.length > 1) {
-            description += "The node {" + this.x + ", " + this.y + "} has been explored for " + this.levels.length + " times. ";
-            description += "The depths (levels) of the node are " + this.levels.join(", ") + " respectively.";
+            description[0] = "The node has been expanded for " + this.levels.length + " times.\r\n";
+            description[1] = "The depths (levels) of the node are " + this.levels.join(", ") + " respectively.";
         }
         else {
-            description += "The node {" + this.x + ", " + this.y + "} has been explored for 1 time. ";
-            description += "The depth (level) of the node is " + this.levels.join(", ") + ".";
+            description[0] = "The node has been expanded for 1 time.\r\n";
+            description[1] = "The depth (level) of the node is " + this.levels.join(", ") + ".";
         }
         return description;
     }

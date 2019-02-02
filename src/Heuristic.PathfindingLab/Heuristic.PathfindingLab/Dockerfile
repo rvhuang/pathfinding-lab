@@ -2,6 +2,8 @@ FROM node:alpine AS typescript
 WORKDIR /app
 COPY . ./
 RUN npm install typescript -g
+RUN npm i -s d3
+RUN npm i -s @types/d3
 RUN tsc -p tsconfig.json
 
 FROM microsoft/dotnet:sdk AS build-env

@@ -26,16 +26,17 @@ $(document).ready(function () {
         "obstacle-18",
         "obstacle-19"
     ]);
+    var chart = new Chart("chart");
     if (typeof mapSettings !== "undefined") {
         mapSettings.obstacles.forEach(function (o) {
             core.placeObstacle(o.x, o.y, o.value);
             foregroundLayer.obstacle = o.value;
             foregroundLayer.placeObject(o.x, o.y);
         });
-    }
+    }/*
     cursorLayer.showDetailDescription = function(step) {
         $("#description").text(step.describes());
-    };
+    };*/
     foregroundLayer.objectPracingPredicate = (i, j, obstacle) => core.placeObstacle(i, j, obstacle);
     foregroundLayer.pathPlacingCallback = function(i, j) {
         if (core.isObstacle(i, j)) {
@@ -54,44 +55,51 @@ $(document).ready(function () {
                     contentType: "application/json",
                     success: function (response) {
                         var solution = response.data.solution;
+                        var assigned = core.assignDirections(solution);
+                        var history = new PathfindingHistory(current, solution, response.data.details);
+                        
+                        chart.updateStatistics(history, showDetail, hideDetail);
+                        foregroundLayer.placePath(assigned, step => step.getDirectionShortName());
 
-                        if (solution.length > 0) {
-                            var assigned = core.assignDirections(solution);
-                            var history = new PathfindingHistory(solution, heuristics, algorithm, response.data.details);
-
-                            foregroundLayer.placePath(assigned, step => step.getDirectionShortName());
-                            if (cursorLayer.histories.length > 5) {
-                                $("#histories button:first-child").fadeOut(500, function () {
-                                    $(this).remove();
-                                    if (cursorLayer.histories[0].isVisible) {
-                                        cursorLayer.togglePath(0);
-                                    }
-                                    cursorLayer.histories.shift();
-                                });
-                            }
-                            cursorLayer.histories.push(history);
-                            cursorLayer.clearAnchors();
-
-                            var btn = $("#historyTemplate button:first-child").clone();
-
-                            btn.children('[data-field="PathColor"]').css("color", history.color);
-                            btn.children('[data-field="AlgorithmShortName"]').text(history.algorithmShortName);
-                            btn.children('[data-field="Path"]').text("(" + history.path.length + ")");
-                            btn.appendTo("#histories");
-                            btn.click(function (e) {
-                                var index = $(this).index();
-
-                                if (cursorLayer.togglePath(index)) {
-                                    updateOptions(cursorLayer.histories[index]);
-                                    updateExpressions(cursorLayer.histories[index]);
+                        if (cursorLayer.histories.length > 5) {
+                            $("#histories button:first-child").fadeOut(500, function () {
+                                $(this).remove();
+                                if (cursorLayer.histories[0].isVisible) {
+                                    cursorLayer.togglePath(0);
                                 }
-                                else { // Restore to current state.
-                                    updateOptions(current);
-                                    updateExpressions(current);
-                                }
+                                cursorLayer.histories.shift();
                             });
-                        } else { // Path not found
-                            cursorLayer.clearAnchors();
+                        }
+                        cursorLayer.histories.push(history);
+                        cursorLayer.clearAnchors();
+
+                        var btn = $("#historyTemplate button:first-child").clone();
+
+                        btn.children('[data-field="PathColor"]').css("color", history.color);
+                        btn.children('[data-field="AlgorithmShortName"]').text(history.algorithmShortName);
+                        btn.children('[data-field="Path"]').text("(" + history.path.length + ")");
+                        btn.appendTo("#histories");
+                        btn.click(function (e) {
+                            var index = $(this).index();
+                            if (cursorLayer.togglePath(index)) {
+                                let toggled = cursorLayer.histories[index];
+
+                                updateOptions(toggled);
+                                updateExpressions(toggled);
+                                chart.updateStatistics(toggled, showDetail, hideDetail);
+                            }
+                            else { // Restore to latest state.                                
+                                let latest = cursorLayer.histories[cursorLayer.histories.length - 1];
+
+                                updateOptions(latest);
+                                updateExpressions(latest);
+                                chart.updateStatistics(latest, showDetail, hideDetail);
+                            }
+                        });
+                        if (solution.length === 0) { // Path not found
+                            $("#exampleSelectMany").find("code").text("// No solution is found.");
+                            $("#exampleExcept").find("code").text("// No solution is found.");
+                            $("#exampleWhere").find("code").text("// No solution is found.");
                         }
                         updateExpressions(current);
                     },
@@ -102,10 +110,6 @@ $(document).ready(function () {
                                 msg = "// The selected algorithm needs at least one Heuristic function.";
                                 $(':input[name="heuristic"]').parent().css("color", "red");
                                 break;
-                            case 404:
-                                 msg = "// No solution is found.";
-                                 cursorLayer.clearAnchors();
-                                break;
                             case 500:
                                 msg = "// Something went wrong. Please try again later or report an issue at GitHub.";
                                 break;
@@ -115,7 +119,7 @@ $(document).ready(function () {
                         $("#exampleWhere").find("code").text(msg);
                     },
                     complete: function () {
-                        $("#description").text("");
+                        // TODO:
                     }
                 });
                 break;
@@ -129,15 +133,29 @@ $(document).ready(function () {
         }
     };
     $('#btnUndo').click(function (event) {
-        if (cursorLayer.histories[cursorLayer.histories.length - 1].isVisible) {
-            cursorLayer.togglePath(cursorLayer.histories.length - 1);
+        var index = cursorLayer.histories.length - 1;
+
+        if (cursorLayer.histories[index].isVisible) {
+            cursorLayer.togglePath(index);
         }
 
         var history = cursorLayer.histories.pop();
+        var toggled = cursorLayer.histories.filter(h => h.isVisible);
         var steps = core.removeDirections(history.steps);
 
         foregroundLayer.removePath(steps, step => step.getDirectionShortName());
 
+        if (toggled.length === 0) {
+            updateOptions(null);
+            updateExpressions(null);
+            hideDetail();
+            chart.removeStatistics(); 
+        }
+        else {        
+            updateOptions(toggled[0]);
+            updateExpressions(toggled[0]);
+            chart.updateStatistics(toggled[0], showDetail, hideDetail);
+        }
         $("#histories button:last-child").fadeOut(300, function () {
             $(this).remove();
         });
@@ -146,8 +164,9 @@ $(document).ready(function () {
         core.clearObstacles();
         foregroundLayer.clearMap();
         cursorLayer.clearTiles();
+        chart.removeStatistics();
 
-        $("#description").text("");
+        hideDetail();
     });
     $('#btnFindPath').click(function (event) { 
         foregroundLayer.isPathfindingOnly = !foregroundLayer.isPathfindingOnly; 
@@ -197,17 +216,44 @@ $(document).ready(function () {
 });
 
 function updateOptions(pathfinding) {
-    $(':input[name="heuristic"]').each(function (i, element) {
-        $(element).prop("checked", pathfinding.heuristics.indexOf($(element).val()) >= 0);
-    }); 
-    $(':input[name="algorithm"][value="' + pathfinding.algorithm + '"]').prop("checked", true);
+    if (pathfinding != null) {
+        $(':input[name="heuristic"]').each(function (i, element) {
+            $(element).prop("checked", pathfinding.heuristics.indexOf($(element).val()) >= 0);
+        }); 
+        $(':input[name="algorithm"][value="' + pathfinding.algorithm + '"]').prop("checked", true);
+    }
 }
 
 function updateExpressions(pathfinding) {
-    $("#exampleSelectMany").find("code").text(pathfinding.toSelectManyExpression(40, 20).join('\r\n'));
-    $("#exampleExcept").find("code").text(pathfinding.toExceptExpression(40, 20).join('\r\n'));
-    $("#exampleWhere").find("code").text(pathfinding.toWhereOnlyExpression(40, 20).join('\r\n'));
+    if (pathfinding != null) {
+        $("#exampleSelectMany").find("code").text(pathfinding.toSelectManyExpression(core.mapWidth, core.mapHeight).join('\r\n'));
+        $("#exampleExcept").find("code").text(pathfinding.toExceptExpression(core.mapWidth, core.mapHeight).join('\r\n'));
+        $("#exampleWhere").find("code").text(pathfinding.toWhereOnlyExpression(core.mapWidth, core.mapHeight).join('\r\n'));
+    }
+    else {
+        $("#exampleSelectMany").find("code").text("\r\n\r\n\r\n\r\n\r\n\r\n");
+        $("#exampleExcept").find("code").text("\r\n\r\n\r\n\r\n\r\n\r\n");
+        $("#exampleWhere").find("code").text("\r\n\r\n\r\n\r\n\r\n\r\n");
+    }
     $("pre code").each(function(i, block) {
         hljs.highlightBlock(block);
     });
+}
+
+function showDetail(d, history) {
+    var texts = $("#description").children("b");
+    var spans = $("#description").children("span");
+    var descrption = history.findTileWithStep(d.step).describes();
+    
+    texts.eq(0).text("{" + d.step.x + ", " + d.step.y + "}"); 
+    texts.eq(1).text(history.steps.some(s => s.x === d.step.x && s.y === d.step.y) ? "Yes" : "No"); 
+    texts.eq(2).text(d.candidates.length); 
+    texts.eq(3).text(d.candidates.filter(c => !history.checkIfStepExists(c)).length); 
+    spans.eq(0).text(descrption[0]); 
+    spans.eq(1).text(descrption[1]); 
+}
+
+function hideDetail() {
+    $("#description").children("span").text(""); 
+    $("#description").children("b").text(""); 
 }

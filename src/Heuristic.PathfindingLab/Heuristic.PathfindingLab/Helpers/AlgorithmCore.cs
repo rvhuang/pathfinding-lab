@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 
-namespace Heuristic.PathfindingLab.Observers
+namespace Heuristic.PathfindingLab.Helpers
 {
     using Linq;
     using PathfindingLab.Models;
+    using PathfindingLab.Observers;
 
     public static class AlgorithmCore
     {
@@ -29,6 +30,7 @@ namespace Heuristic.PathfindingLab.Observers
             {
                 Details = observer.Details,
                 Solution = solution.ToArray(),
+                NumberOfEstimatedNodes = observer.Estimated.Count,
             };
         }
 

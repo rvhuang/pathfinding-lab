@@ -98,6 +98,10 @@
 
     public assignDirections(solution: Array<Step>): ReadonlyArray<Step> {
         var assigned = new Array<Step>();
+
+        if (solution.length == 0) {
+            return assigned;
+        }
         for (let i = 0; i < solution.length - 1; i++) {
             let x1 = solution[i].x;
             let y1 = solution[i].y;
@@ -202,6 +206,10 @@ enum Direction {
 interface Pathfinding {
     heuristics: string[];
     algorithm: string;
+    fromX: number;
+    fromY: number;
+    goalX: number;
+    goalY: number;
 
     toSelectManyExpression(mapWidth: number, mapHeight: number): string[];
     toExceptExpression(mapWidth: number, mapHeight: number): string[];
@@ -340,12 +348,18 @@ class PathfindingRequestBody implements Pathfinding {
 class Detail {
     public level: number;
     public step: Step;
+    public candidates: ReadonlyArray<Step>;
 }
 
 class PathfindingHistory implements Pathfinding {
-    public readonly steps: ReadonlyArray<Step>;
+    public readonly fromX: number;
+    public readonly fromY: number;
+    public readonly goalX: number;
+    public readonly goalY: number;
+    public readonly steps: ReadonlyArray<Step>; 
+    public readonly details: Array<Detail>;
     public readonly path: ReadonlyArray<PathTile>;
-    public readonly details: ReadonlyArray<UnvisitedTile>;
+    public readonly unvisited: ReadonlyArray<UnvisitedTile>;
     public readonly heuristics: string[];
     public readonly algorithm: string;
     public readonly algorithmShortName: string;
@@ -353,21 +367,42 @@ class PathfindingHistory implements Pathfinding {
 
     public isVisible: boolean;
 
-    constructor(steps: Array<Step>, heuristics: Array<string>, algorithm: string, details: ReadonlyArray<Detail>) {        
-        this.color = PathfindingHistory.getAlgorithmPathColor(algorithm);
+    constructor(request: PathfindingRequestBody, steps: Array<Step>, details: Array<Detail>) {   
+        this.fromX = request.fromX;
+        this.fromY = request.fromY;
+        this.goalX = request.goalX;
+        this.goalY = request.goalY;     
+        this.color = PathfindingHistory.getAlgorithmPathColor(request.algorithm);
         this.steps = steps.map(step => new Step(step.x, step.y, step.direction, step.undo));
+        this.details = details;
         this.path = steps.map((p, i) => new PathTile(p.x, p.y, i, this.color));
-        this.details = UnvisitedTile.merge(details.map(d => new UnvisitedTile(d.step.x, d.step.y, d.level, this.color)));
-        this.heuristics = heuristics;
-        this.algorithm = algorithm;
-        this.algorithmShortName = PathfindingHistory.getAlgorithmShortName(algorithm);
+        this.unvisited = UnvisitedTile.merge(details.map(d => new UnvisitedTile(d.step.x, d.step.y, d.level, this.color)));
+        this.heuristics = request.heuristics;
+        this.algorithm = request.algorithm;
+        this.algorithmShortName = PathfindingHistory.getAlgorithmShortName(request.algorithm);
         this.isVisible = false;
+    }
+
+    public findTileWithStep(s: Step): SolutionTile { 
+        var index = this.path.findIndex(p => p.x === s.x && p.y === s.y);
+        if (index > -1) { 
+            return this.path[index];
+        }
+        index = this.unvisited.findIndex(u => u.x === s.x && u.y === s.y);
+        if (index > -1) { 
+            return this.unvisited[index];
+        }
+        return null;
+    }
+
+    public checkIfStepExists(s: Step): boolean {
+        return this.path.some(p => p.x === s.x && p.y === s.y) || this.unvisited.some(u => u.x === s.x && u.y === s.y);
     }
 
     public toSelectManyExpression(mapWidth: number, mapHeight: number): string[] {
         var linq = [
-            PathfindingRequestBody.getStartStatement(this.path[0].x, this.path[0].y),
-            PathfindingRequestBody.getGoalStatement(this.path[this.path.length - 1].x, this.path[this.path.length - 1].y),
+            PathfindingRequestBody.getStartStatement(this.fromX, this.fromY),
+            PathfindingRequestBody.getGoalStatement(this.goalX, this.goalY),
             PathfindingRequestBody.getBoundaryStatement(mapWidth, mapHeight),
             PathfindingRequestBody.getInitializationStatement(this.algorithm)
         ];
@@ -383,8 +418,8 @@ class PathfindingHistory implements Pathfinding {
 
     public toExceptExpression(mapWidth: number, mapHeight: number): string[] {
         var linq = [
-            PathfindingRequestBody.getStartStatement(this.path[0].x, this.path[0].y),
-            PathfindingRequestBody.getGoalStatement(this.path[this.path.length - 1].x, this.path[this.path.length - 1].y),
+            PathfindingRequestBody.getStartStatement(this.fromX, this.fromY),
+            PathfindingRequestBody.getGoalStatement(this.goalX, this.goalY),
             PathfindingRequestBody.getBoundaryStatement(mapWidth, mapHeight),
             PathfindingRequestBody.getInitializationStatement(this.algorithm)
         ];
@@ -400,8 +435,8 @@ class PathfindingHistory implements Pathfinding {
 
     public toWhereOnlyExpression(mapWidth: number, mapHeight: number): string[] {
         var linq = [
-            PathfindingRequestBody.getStartStatement(this.path[0].x, this.path[0].y),
-            PathfindingRequestBody.getGoalStatement(this.path[this.path.length - 1].x, this.path[this.path.length - 1].y),
+            PathfindingRequestBody.getStartStatement(this.fromX, this.fromY),
+            PathfindingRequestBody.getGoalStatement(this.goalX, this.goalY),
             PathfindingRequestBody.getBoundaryStatement(mapWidth, mapHeight),
             PathfindingRequestBody.getInitializationStatement(this.algorithm)
         ];

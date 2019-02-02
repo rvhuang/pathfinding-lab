@@ -21,7 +21,8 @@
     "inputFiles": [
       "wwwroot/js/tile.js",
       "wwwroot/js/layer.js",
-      "wwwroot/js/core.js"
+      "wwwroot/js/core.js",
+      "wwwroot/js/chart.js"
     ],
     "minify": {
       "enabled": true,
