@@ -9,14 +9,20 @@
     private readonly main: d3.Line<Detail>; 
     private readonly sub: d3.Line<Detail>;
 
-    constructor(elementId: string, containerWidth: number, containerHeight: number) {
-        this.elementId = elementId;
-        this.containerWidth = containerWidth;
-        this.containerHeight = containerHeight;
-        this.width = containerWidth - Chart.margin.left - Chart.margin.right;
-        this.height = containerHeight - Chart.margin.top - Chart.margin.bottom;
+    constructor(elementId: string) {
+        var element = document.getElementById(elementId);
+
+        this.elementId = element.id;
+        this.containerWidth = element.clientWidth;
+        this.containerHeight = Math.round(element.clientWidth / 3); 
+        this.width = this.containerWidth - Chart.margin.left - Chart.margin.right;
+        this.height = this.containerHeight - Chart.margin.top - Chart.margin.bottom;
         this.main = d3.line<Detail>();     
         this.sub = d3.line<Detail>();
+    }
+
+    public removeStatistics() {
+        d3.select("#" + this.elementId).select("svg").remove(); 
     }
 
     public updateStatistics(history: PathfindingHistory, showDetail: (d: Detail, h: PathfindingHistory) => void, hideDetail: () => void) {

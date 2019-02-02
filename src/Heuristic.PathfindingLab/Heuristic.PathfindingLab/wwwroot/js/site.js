@@ -26,7 +26,7 @@ $(document).ready(function () {
         "obstacle-18",
         "obstacle-19"
     ]);
-    var chart = new Chart("chart", 600, 300);
+    var chart = new Chart("chart");
     if (typeof mapSettings !== "undefined") {
         mapSettings.obstacles.forEach(function (o) {
             core.placeObstacle(o.x, o.y, o.value);
@@ -143,6 +143,7 @@ $(document).ready(function () {
         var steps = core.removeDirections(history.steps);
 
         foregroundLayer.removePath(steps, step => step.getDirectionShortName());
+        chart.removeStatistics();
 
         $("#histories button:last-child").fadeOut(300, function () {
             $(this).remove();
@@ -152,6 +153,7 @@ $(document).ready(function () {
         core.clearObstacles();
         foregroundLayer.clearMap();
         cursorLayer.clearTiles();
+        chart.removeStatistics();
 
         hideDetail();
     });
@@ -219,13 +221,16 @@ function updateExpressions(pathfinding) {
 }
 
 function showDetail(d, history) {
+    var texts = $("#description").children("b");
     var spans = $("#description").children("span");
+    var descrption = history.findTileWithStep(d.step).describes();
     
-    spans.eq(0).text("{" + d.step.x + ", " + d.step.y + "}"); 
-    spans.eq(1).text(history.steps.some(s => s.x === d.step.x && s.y === d.step.y) ? "Yes" : "No"); 
-    spans.eq(2).text(d.candidates.length); 
-    spans.eq(3).text(d.candidates.filter(c => !history.checkIfStepExists(c)).length); 
-    spans.eq(4).text(history.findTileWithStep(d.step).describes()); 
+    texts.eq(0).text("{" + d.step.x + ", " + d.step.y + "}"); 
+    texts.eq(1).text(history.steps.some(s => s.x === d.step.x && s.y === d.step.y) ? "Yes" : "No"); 
+    texts.eq(2).text(d.candidates.length); 
+    texts.eq(3).text(d.candidates.filter(c => !history.checkIfStepExists(c)).length); 
+    spans.eq(0).text(descrption[0]); 
+    spans.eq(1).text(descrption[1]); 
 }
 
 function hideDetail() {

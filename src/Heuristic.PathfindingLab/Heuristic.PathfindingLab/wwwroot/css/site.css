@@ -8,12 +8,12 @@ label.algorithm {
 
 span.position {
     display: inline-block;
-    min-width: 8ch;
+    min-width: 8ch; 
 }
 
 span.number {
     display: inline-block;
-    min-width: 4ch;
+    min-width: 4ch; 
 }
 
 .axis path, .axis line {
