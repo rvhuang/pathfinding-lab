@@ -375,6 +375,10 @@ class PathfindingHistory implements Pathfinding {
         return (this.path as ReadonlyArray<SolutionTile>).concat(this.unvisited);
     }
 
+    public checkIfStepExists(s: Step): boolean {
+        return this.path.some(p => p.x === s.x && p.y === s.y) || this.unvisited.some(u => u.x === s.x && u.y === s.y);
+    }
+
     public toSelectManyExpression(mapWidth: number, mapHeight: number): string[] {
         var linq = [
             PathfindingRequestBody.getStartStatement(this.path[0].x, this.path[0].y),

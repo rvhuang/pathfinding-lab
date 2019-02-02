@@ -6,6 +6,8 @@
     private readonly containerHeight: number;
     private readonly width: number;
     private readonly height: number;
+    private readonly main: d3.Line<Detail>; 
+    private readonly sub: d3.Line<Detail>;
 
     constructor(elementId: string, containerWidth: number, containerHeight: number) {
         this.elementId = elementId;
@@ -13,6 +15,8 @@
         this.containerHeight = containerHeight;
         this.width = containerWidth - Chart.margin.left - Chart.margin.right;
         this.height = containerHeight - Chart.margin.top - Chart.margin.bottom;
+        this.main = d3.line<Detail>();     
+        this.sub = d3.line<Detail>();
     }
 
     public updateStatistics(history: PathfindingHistory) {
@@ -34,15 +38,16 @@
         let xDomain = d3.extent(history.details, function (d, i) { return i; })
         let yDomain = d3.extent(history.details, function (d) { return d.candidates.length; });
 
+        yDomain[0] = 0;
+
         let xScale = d3.scaleLinear().range([0, this.width]).domain(xDomain);
         let yScale = d3.scaleLinear().range([this.height, 0]).domain(yDomain);
 
         let xAxis = d3.axisBottom(xScale);
         let yAxis = d3.axisLeft(yScale);
 
-        var line = d3.line<Detail>()
-            .x(function (d, i) { return xScale(i); })
-            .y(function (d) { return yScale(d.candidates.length); });
+        this.main.x(function (d, i) { return xScale(i); }).y(d => d.candidates.length);
+        this.sub.x(function (d, i) { return xScale(i); }).y(d => yScale(d.candidates.filter(c => !history.checkIfStepExists(c)).length));
 
         g.append('g')
             .attr('class', 'x axis')
@@ -70,15 +75,22 @@
         g.append<SVGPathElement>('path')
             .datum(history.details)
             .attr('class', 'line')
-            .attr('d', line(history.details))
+            .attr('d', this.main(history.details))
             .style('stroke', history.color);
+
+        g.append<SVGPathElement>('path')
+            .datum(history.details)
+            .attr('class', 'line')
+            .attr('d', this.sub(history.details))
+            .style('stroke', "silver");
 
         g.selectAll<SVGCircleElement, Detail>('circle').data(history.details).enter().append('circle')
             .attr('cx', function (d, i) { return xScale(i); })
             .attr('cy', function (d) { return yScale(d.candidates.length); })
             .attr('r', 4)
             .attr('class', 'circle')
-            .style('stroke', history.color);
+            .style('fill', function (d) { return history.steps.some(s => s.x === d.step.x && s.y === d.step.y) ? history.color : "white"; })
+            .style('stroke', history.color)
 
         // focus tracking
         var focus = g.append('g').style('display', 'none');
@@ -87,11 +99,11 @@
             .attr('class', 'focusLine');
         var focusLineY = focus.append('line')
             .attr('id', 'focusLineY')
-            .attr('class', 'focusLine');
+            .attr('class', 'focusLine');/*
         var focusCircle = focus.append('circle')
             .attr('id', 'focusCircle')
             .attr('r', 5)
-            .attr('class', 'circle');
+            .attr('class', 'circle');*/
 
         g.append<SVGRectElement>('rect')
             .attr('class', 'overlay')
@@ -110,16 +122,17 @@
                 var mouse = d3.mouse(this);
                 var mouseX = xScale.invert(mouse[0]);
                 var i = Math.round(mouseX);
+                var d = history.details[i];
                 var x = xScale(i);
-                var y = yScale(history.details[i].candidates.length);
+                var y = yScale(d.candidates.length);
 
-                focusCircle.attr('cx', x).attr('cy', y).style('fill', history.color);
+                // focusCircle.attr('cx', x).attr('cy', y).style('fill', history.color);
                 focusLineX.attr('x1', x).attr('y1', yScale(yDomain[0])).attr('x2', x).attr('y2', yScale(yDomain[1]));
                 focusLineY.attr('x1', xScale(xDomain[0])).attr('y1', y).attr('x2', xScale(xDomain[1])).attr('y2', y);
                   
                 if (history.isVisible) {
                     for (let tile of history.getSolutionTiles()) {
-                        if (history.details[i].candidates.some(c => c.x === tile.x && c.y === tile.y)) {
+                        if ((d.step.x === tile.x && d.step.y === tile.y) || d.candidates.some(c => c.x === tile.x && c.y === tile.y)) {
                             tile.show();
                         }
                         else {
