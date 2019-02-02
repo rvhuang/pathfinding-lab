@@ -56,7 +56,7 @@ $(document).ready(function () {
                     success: function (response) {
                         var solution = response.data.solution;
                         var assigned = core.assignDirections(solution);
-                        var history = new PathfindingHistory(solution, heuristics, algorithm, response.data.details);
+                        var history = new PathfindingHistory(current, solution, response.data.details);
                         
                         chart.updateStatistics(history, showDetail, hideDetail);
                         foregroundLayer.placePath(assigned, step => step.getDirectionShortName());
@@ -97,11 +97,9 @@ $(document).ready(function () {
                             }
                         });
                         if (solution.length === 0) { // Path not found
-                            let msg = "// No solution is found.";
-
-                            $("#exampleSelectMany").find("code").text(msg);
-                            $("#exampleExcept").find("code").text(msg);
-                            $("#exampleWhere").find("code").text(msg);
+                            $("#exampleSelectMany").find("code").text("// No solution is found.");
+                            $("#exampleExcept").find("code").text("// No solution is found.");
+                            $("#exampleWhere").find("code").text("// No solution is found.");
                         }
                         updateExpressions(current);
                     },
@@ -135,16 +133,29 @@ $(document).ready(function () {
         }
     };
     $('#btnUndo').click(function (event) {
-        if (cursorLayer.histories[cursorLayer.histories.length - 1].isVisible) {
-            cursorLayer.togglePath(cursorLayer.histories.length - 1);
+        var index = cursorLayer.histories.length - 1;
+
+        if (cursorLayer.histories[index].isVisible) {
+            cursorLayer.togglePath(index);
         }
 
         var history = cursorLayer.histories.pop();
+        var toggled = cursorLayer.histories.filter(h => h.isVisible);
         var steps = core.removeDirections(history.steps);
 
         foregroundLayer.removePath(steps, step => step.getDirectionShortName());
-        chart.removeStatistics();
 
+        if (toggled.length === 0) {
+            updateOptions(null);
+            updateExpressions(null);
+            hideDetail();
+            chart.removeStatistics(); 
+        }
+        else {        
+            updateOptions(toggled[0]);
+            updateExpressions(toggled[0]);
+            chart.updateStatistics(toggled[0], showDetail, hideDetail);
+        }
         $("#histories button:last-child").fadeOut(300, function () {
             $(this).remove();
         });
@@ -205,16 +216,25 @@ $(document).ready(function () {
 });
 
 function updateOptions(pathfinding) {
-    $(':input[name="heuristic"]').each(function (i, element) {
-        $(element).prop("checked", pathfinding.heuristics.indexOf($(element).val()) >= 0);
-    }); 
-    $(':input[name="algorithm"][value="' + pathfinding.algorithm + '"]').prop("checked", true);
+    if (pathfinding != null) {
+        $(':input[name="heuristic"]').each(function (i, element) {
+            $(element).prop("checked", pathfinding.heuristics.indexOf($(element).val()) >= 0);
+        }); 
+        $(':input[name="algorithm"][value="' + pathfinding.algorithm + '"]').prop("checked", true);
+    }
 }
 
 function updateExpressions(pathfinding) {
-    $("#exampleSelectMany").find("code").text(pathfinding.toSelectManyExpression(40, 20).join('\r\n'));
-    $("#exampleExcept").find("code").text(pathfinding.toExceptExpression(40, 20).join('\r\n'));
-    $("#exampleWhere").find("code").text(pathfinding.toWhereOnlyExpression(40, 20).join('\r\n'));
+    if (pathfinding != null) {
+        $("#exampleSelectMany").find("code").text(pathfinding.toSelectManyExpression(core.mapWidth, core.mapHeight).join('\r\n'));
+        $("#exampleExcept").find("code").text(pathfinding.toExceptExpression(core.mapWidth, core.mapHeight).join('\r\n'));
+        $("#exampleWhere").find("code").text(pathfinding.toWhereOnlyExpression(core.mapWidth, core.mapHeight).join('\r\n'));
+    }
+    else {
+        $("#exampleSelectMany").find("code").text("\r\n\r\n\r\n\r\n\r\n\r\n");
+        $("#exampleExcept").find("code").text("\r\n\r\n\r\n\r\n\r\n\r\n");
+        $("#exampleWhere").find("code").text("\r\n\r\n\r\n\r\n\r\n\r\n");
+    }
     $("pre code").each(function(i, block) {
         hljs.highlightBlock(block);
     });
@@ -235,4 +255,5 @@ function showDetail(d, history) {
 
 function hideDetail() {
     $("#description").children("span").text(""); 
+    $("#description").children("b").text(""); 
 }

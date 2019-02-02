@@ -206,6 +206,10 @@ enum Direction {
 interface Pathfinding {
     heuristics: string[];
     algorithm: string;
+    fromX: number;
+    fromY: number;
+    goalX: number;
+    goalY: number;
 
     toSelectManyExpression(mapWidth: number, mapHeight: number): string[];
     toExceptExpression(mapWidth: number, mapHeight: number): string[];
@@ -348,6 +352,10 @@ class Detail {
 }
 
 class PathfindingHistory implements Pathfinding {
+    public readonly fromX: number;
+    public readonly fromY: number;
+    public readonly goalX: number;
+    public readonly goalY: number;
     public readonly steps: ReadonlyArray<Step>; 
     public readonly details: Array<Detail>;
     public readonly path: ReadonlyArray<PathTile>;
@@ -359,15 +367,19 @@ class PathfindingHistory implements Pathfinding {
 
     public isVisible: boolean;
 
-    constructor(steps: Array<Step>, heuristics: Array<string>, algorithm: string, details: Array<Detail>) {        
-        this.color = PathfindingHistory.getAlgorithmPathColor(algorithm);
+    constructor(request: PathfindingRequestBody, steps: Array<Step>, details: Array<Detail>) {   
+        this.fromX = request.fromX;
+        this.fromY = request.fromY;
+        this.goalX = request.goalX;
+        this.goalY = request.goalY;     
+        this.color = PathfindingHistory.getAlgorithmPathColor(request.algorithm);
         this.steps = steps.map(step => new Step(step.x, step.y, step.direction, step.undo));
         this.details = details;
         this.path = steps.map((p, i) => new PathTile(p.x, p.y, i, this.color));
         this.unvisited = UnvisitedTile.merge(details.map(d => new UnvisitedTile(d.step.x, d.step.y, d.level, this.color)));
-        this.heuristics = heuristics;
-        this.algorithm = algorithm;
-        this.algorithmShortName = PathfindingHistory.getAlgorithmShortName(algorithm);
+        this.heuristics = request.heuristics;
+        this.algorithm = request.algorithm;
+        this.algorithmShortName = PathfindingHistory.getAlgorithmShortName(request.algorithm);
         this.isVisible = false;
     }
 
@@ -389,8 +401,8 @@ class PathfindingHistory implements Pathfinding {
 
     public toSelectManyExpression(mapWidth: number, mapHeight: number): string[] {
         var linq = [
-            PathfindingRequestBody.getStartStatement(this.path[0].x, this.path[0].y),
-            PathfindingRequestBody.getGoalStatement(this.path[this.path.length - 1].x, this.path[this.path.length - 1].y),
+            PathfindingRequestBody.getStartStatement(this.fromX, this.fromY),
+            PathfindingRequestBody.getGoalStatement(this.goalX, this.goalY),
             PathfindingRequestBody.getBoundaryStatement(mapWidth, mapHeight),
             PathfindingRequestBody.getInitializationStatement(this.algorithm)
         ];
@@ -406,8 +418,8 @@ class PathfindingHistory implements Pathfinding {
 
     public toExceptExpression(mapWidth: number, mapHeight: number): string[] {
         var linq = [
-            PathfindingRequestBody.getStartStatement(this.path[0].x, this.path[0].y),
-            PathfindingRequestBody.getGoalStatement(this.path[this.path.length - 1].x, this.path[this.path.length - 1].y),
+            PathfindingRequestBody.getStartStatement(this.fromX, this.fromY),
+            PathfindingRequestBody.getGoalStatement(this.goalX, this.goalY),
             PathfindingRequestBody.getBoundaryStatement(mapWidth, mapHeight),
             PathfindingRequestBody.getInitializationStatement(this.algorithm)
         ];
@@ -423,8 +435,8 @@ class PathfindingHistory implements Pathfinding {
 
     public toWhereOnlyExpression(mapWidth: number, mapHeight: number): string[] {
         var linq = [
-            PathfindingRequestBody.getStartStatement(this.path[0].x, this.path[0].y),
-            PathfindingRequestBody.getGoalStatement(this.path[this.path.length - 1].x, this.path[this.path.length - 1].y),
+            PathfindingRequestBody.getStartStatement(this.fromX, this.fromY),
+            PathfindingRequestBody.getGoalStatement(this.goalX, this.goalY),
             PathfindingRequestBody.getBoundaryStatement(mapWidth, mapHeight),
             PathfindingRequestBody.getInitializationStatement(this.algorithm)
         ];
