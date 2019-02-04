@@ -1,5 +1,6 @@
 ﻿code {
     font-size: x-small;
+    white-space: nowrap;
 }
 
 label.algorithm {

@@ -54,9 +54,9 @@
             <a href="javascript:void();" role="button" class="btn btn-link" data-toggle="popover" data-trigger="focus" data-placement="right" data-container="body" data-content="A heuristic function is used to evaluate the cost of every step. For some of algorithms, at least one heuristic function needs to be selected. If more than one functions are selected, the subsequent one will be used when previous one evaluates two steps as equal.">
                 <span class="glyphicon glyphicon-question-sign"></span>
             </a> 
-            <span>&nbsp;</span>
             @if (!Model.IsSmartDevice)
-            {
+            {       
+                <span>&nbsp;</span>         
                 <span class="small">Left click to place barriers, right click on two positions to get a path.</span>
             }
         </form>
