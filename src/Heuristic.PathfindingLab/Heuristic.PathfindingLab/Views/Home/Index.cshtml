@@ -11,10 +11,8 @@
     </environment>
 }
 <div class="row">
-    <div class="col-lg-9">
+    <div class="col-lg-12">
         <div>@await Html.PartialAsync("_Map", Model)</div>
-    </div>
-    <div class="col-lg-3">
     </div>
 </div>
 <div class="row">
@@ -29,6 +27,9 @@
                 </button>
                 <button type="button" class="btn btn-default btn-sm" data-toggle="tooltip" title="Remove all obstacles" id="btnDelObstacles">
                     <span class="glyphicon glyphicon-remove"></span>
+                </button>
+                <button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#modalEmbed">
+                    <span class="glyphicon glyphicon-share"></span>
                 </button>
                 <button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#modalInfo">
                     <span class="glyphicon glyphicon-info-sign"></span>
@@ -57,7 +58,7 @@
             @if (!Model.IsSmartDevice)
             {       
                 <span>&nbsp;</span>         
-                <span class="small">Left click to place barriers, right click on two positions to get a path.</span>
+                <span class="small">Left click to place obstacles, right click on two positions to get a path.</span>
             }
         </form>
     </div>
@@ -123,6 +124,36 @@
 
 
                                 </code></pre>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal -->
+<div id="modalEmbed" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Embed the map to your website</h4>
+            </div>
+            <div class="modal-body">
+                <form role="form">
+                    <div class="form-group">
+                        <div class="input-group">
+                            <input id="embeddedUrl" type="url" class="form-control input-sm" value="@Url.Action("index", "mini", new { w = Model.Width, h = Model.Height}, Context.Request.Scheme)" />
+                            <span class="input-group-btn">
+                                <button class="btn btn-default btn-sm" type="button" onclick="document.getElementById('embeddedUrl').select(); document.execCommand('copy');"><span class="glyphicon glyphicon-copy"></span></button>
+                            </span>
+                        </div>
+                    </div>
+                </form>
+                <p class="small">
+                    You can change the map size by modifying <b>w</b> and <b>h</b> parameters. The default size is @(MapSettings.DefaultMapWidth)x@(MapSettings.DefaultMapHeight) and the minimum size is @(MapSettings.MinMapWidth)x@(MapSettings.MinMapHeight).
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>

@@ -10,7 +10,7 @@
     private readonly sub: d3.Line<Detail>;
 
     constructor(elementId: string) {
-        if (this.elementId == null) {
+        if (elementId == null) {
             return;
         }
         var element = document.getElementById(elementId);
@@ -76,7 +76,7 @@
             .attr('dx', '.71em')
             .attr('dy', '.71em')
             .style("fill", "darkgreen")
-            .text("Index of explored node");
+            .text("Index of expanded node");
 
         g.append('g')
             .attr('class', 'y axis')
@@ -87,7 +87,7 @@
             .attr('dy', '.71em')
             .attr('text-anchor', 'end')
             .style("fill", "darkgreen")
-            .text("Nodes on open list");
+            .text("Nodes in open list");
 
         g.append<SVGPathElement>('path')
             .datum(history.details)

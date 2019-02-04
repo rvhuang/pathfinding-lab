@@ -244,13 +244,13 @@ function showDetail(d, history) {
     var texts = $("#description").children("b");
     var spans = $("#description").children("span");
 
-    if (texts.size() > 0) {
+    if (texts.length > 0) {
         texts.eq(0).text("{" + d.step.x + ", " + d.step.y + "}"); 
         texts.eq(1).text(history.steps.some(s => s.x === d.step.x && s.y === d.step.y) ? "Yes" : "No"); 
         texts.eq(2).text(d.candidates.length); 
         texts.eq(3).text(d.candidates.filter(c => !history.checkIfStepExists(c)).length); 
     }
-    if (spans.size() > 0) {
+    if (spans.length > 0) {
         var descrption = history.findTileWithStep(d.step).describes();
     
         spans.eq(0).text(descrption[0]); 
