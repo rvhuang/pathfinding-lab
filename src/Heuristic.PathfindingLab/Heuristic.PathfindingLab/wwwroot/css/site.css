@@ -1,6 +1,7 @@
-﻿code {
+﻿pre, code {
     font-size: x-small;
-    white-space: nowrap;
+    white-space: pre !important;
+    overflow-x: scroll !important;
 }
 
 label.algorithm {
