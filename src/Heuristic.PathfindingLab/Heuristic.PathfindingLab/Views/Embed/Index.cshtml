@@ -9,7 +9,7 @@
         <link rel="stylesheet" href="/css/site.css" />
     </environment>
     <environment exclude="Development">
-        <link rel="stylesheet" href="/css/site.min.css" />
+        <link rel="stylesheet" href="/css/site.min.css" asp-append-version="true"/>
     </environment>
 }
 <div class="row">
@@ -51,9 +51,6 @@
                 <label class="btn btn-default btn-sm"><input type="checkbox" name="heuristic" value="@nameof(PointExtensions.GetEuclideanDistance)">Euclidean</label>
                 <label class="btn btn-default btn-sm active"><input type="checkbox" name="heuristic" value="@nameof(PointExtensions.GetManhattanDistance)" checked>Manhattan</label>
             </div>
-            <a href="javascript:void();" role="button" class="btn btn-link" data-toggle="popover" data-trigger="focus" data-placement="right" data-container="body" data-content="A heuristic function is used to evaluate the cost of every step. For some of algorithms, at least one heuristic function needs to be selected. If more than one functions are selected, the subsequent one will be used when previous one evaluates two steps as equal.">
-                <span class="glyphicon glyphicon-question-sign"></span>
-            </a>  
             <div class="btn-group" role="group" id="histories"></div> 
         </form>
     </div>

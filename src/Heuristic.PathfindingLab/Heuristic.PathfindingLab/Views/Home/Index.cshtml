@@ -1,4 +1,5 @@
 ﻿@using Heuristic.Linq
+@using Heuristic.PathfindingLab.Controllers
 @using Heuristic.PathfindingLab.Models
 @model MapSettings
 @section Styles {
@@ -7,7 +8,7 @@
         <link rel="stylesheet" href="/css/site.css" />
     </environment>
     <environment exclude="Development">
-        <link rel="stylesheet" href="/css/site.min.css" />
+        <link rel="stylesheet" href="/css/site.min.css" asp-append-version="true" />
     </environment>
 }
 <div class="row">
@@ -141,7 +142,7 @@
                 <form role="form">
                     <div class="form-group">
                         <div class="input-group">
-                            <input id="embeddedUrl" type="url" class="form-control input-sm" value="@Url.Action("index", "mini", new { w = Model.Width, h = Model.Height}, Context.Request.Scheme)" />
+                            <input id="embeddedUrl" type="url" class="form-control input-sm" value="@Url.Action("Index", nameof(EmbedController).Replace("Controller", string.Empty).ToLower(), new { w = Model.Width, h = Model.Height}, Context.Request.Scheme)" />
                             <span class="input-group-btn">
                                 <button class="btn btn-default btn-sm" type="button" onclick="document.getElementById('embeddedUrl').select(); document.execCommand('copy');"><span class="glyphicon glyphicon-copy"></span></button>
                             </span>
@@ -191,7 +192,7 @@
         var mapSettings = @Json.Serialize(Model);
     </script>
     <environment include="Development">
-        <script src="https://d3js.org/d3.v5.min.js"></script>
+        <script src="https://d3js.org/d3.v5.js"></script>
         <script src="js/tile.js"></script>
         <script src="js/layer.js"></script>
         <script src="js/core.js"></script>

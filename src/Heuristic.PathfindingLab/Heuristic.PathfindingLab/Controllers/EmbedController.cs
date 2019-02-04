@@ -4,7 +4,7 @@ using Microsoft.Extensions.Primitives;
 
 namespace Heuristic.PathfindingLab.Controllers
 {
-    public class MiniController : Controller
+    public class EmbedController : Controller
     { 
         private readonly static StringValues iframe = new StringValues(new [] 
         { 
