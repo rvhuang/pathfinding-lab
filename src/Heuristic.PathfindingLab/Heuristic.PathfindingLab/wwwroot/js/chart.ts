@@ -10,22 +10,33 @@
     private readonly sub: d3.Line<Detail>;
 
     constructor(elementId: string) {
+        if (elementId == null) {
+            return;
+        }
         var element = document.getElementById(elementId);
-
-        this.elementId = element.id;
-        this.containerWidth = element.clientWidth;
-        this.containerHeight = Math.round(element.clientWidth / 3); 
-        this.width = this.containerWidth - Chart.margin.left - Chart.margin.right;
-        this.height = this.containerHeight - Chart.margin.top - Chart.margin.bottom;
-        this.main = d3.line<Detail>();     
-        this.sub = d3.line<Detail>();
+        if (element != null) {
+            this.elementId = element.id;
+            this.containerWidth = element.clientWidth;
+            this.containerHeight = Math.round(element.clientWidth / 3); 
+            this.width = this.containerWidth - Chart.margin.left - Chart.margin.right;
+            this.height = this.containerHeight - Chart.margin.top - Chart.margin.bottom;
+            this.main = d3.line<Detail>();     
+            this.sub = d3.line<Detail>();
+        }
     }
 
     public removeStatistics() {
+        if (this.elementId == null) {
+            return;
+        }
         d3.select("#" + this.elementId).select("svg").remove(); 
     }
 
     public updateStatistics(history: PathfindingHistory, showDetail: (d: Detail, h: PathfindingHistory) => void, hideDetail: () => void) {
+        if (this.elementId == null) {
+            return;
+        }
+
         let parent = d3.select("#" + this.elementId);
         let svg = parent.select("svg");
 
@@ -65,7 +76,7 @@
             .attr('dx', '.71em')
             .attr('dy', '.71em')
             .style("fill", "darkgreen")
-            .text("Index of explored node");
+            .text("Index of expanded node");
 
         g.append('g')
             .attr('class', 'y axis')
@@ -76,7 +87,7 @@
             .attr('dy', '.71em')
             .attr('text-anchor', 'end')
             .style("fill", "darkgreen")
-            .text("Nodes on open list");
+            .text("Nodes in open list");
 
         g.append<SVGPathElement>('path')
             .datum(history.details)

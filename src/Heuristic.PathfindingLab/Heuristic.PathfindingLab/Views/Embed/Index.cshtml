@@ -1,0 +1,80 @@
+@using Heuristic.Linq
+@using Heuristic.PathfindingLab.Models
+@using Microsoft.AspNetCore.Http
+@using Microsoft.AspNetCore.Http.Extensions
+@model MapSettings
+@section Styles {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" />
+    <environment include="Development">
+        <link rel="stylesheet" href="/css/site.css" />
+    </environment>
+    <environment exclude="Development">
+        <link rel="stylesheet" href="/css/site.min.css" asp-append-version="true"/>
+    </environment>
+}
+<div class="row">
+    <div class="col-lg-12">
+        <div>@await Html.PartialAsync("../Home/_Map", Model)</div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <form id="options" role="form" class="form-inline">
+            <div class="btn-group" role="group">
+                <button type="button" class="btn btn-default btn-sm" data-toggle="tooltip" title="Start over" id="btnClear">
+                    <span class="glyphicon glyphicon-refresh"></span>
+                </button>
+                <button type="button" class="btn btn-default btn-sm" data-toggle="tooltip" title="Undo the last pathfinding result" id="btnUndo">
+                    <span class="glyphicon glyphicon-triangle-left"></span>
+                </button>
+                <button type="button" class="btn btn-default btn-sm" data-toggle="tooltip" title="Remove all obstacles" id="btnDelObstacles">
+                    <span class="glyphicon glyphicon-remove"></span>
+                </button>
+                <a class="btn btn-default btn-sm" href="@UriHelper.BuildAbsolute(Context.Request.Scheme, Context.Request.Host)" target="_blank" data-toggle="tooltip" title="Visit complete website">
+                    <span class="glyphicon glyphicon-globe"></span>
+                </a>
+            </div>
+            @if (Model.IsSmartDevice)
+            {
+                <button type="button" class="btn btn-primary btn-sm" data-toggle="button" id="btnFindPath">
+                    <span class="glyphicon glyphicon-search"></span>
+                </button>
+            } 
+            <div class="btn-group" role="group" data-toggle="buttons">
+                <label class="btn btn-default btn-sm active algorithm"><input type="radio" name="algorithm" value="@nameof(HeuristicSearch.AStar)" checked /><span>A*</span></label>
+                <label class="btn btn-default btn-sm algorithm" data-toggle="tooltip" title="Best-first Search"><input type="radio" name="algorithm" value="@nameof(HeuristicSearch.BestFirstSearch)" />BFS</label>
+                <label class="btn btn-default btn-sm algorithm" data-toggle="tooltip" title="Iterative Deepening A*"><input type="radio" name="algorithm" value="@nameof(HeuristicSearch.IterativeDeepeningAStar)" />IDA*</label>
+                <label class="btn btn-default btn-sm algorithm" data-toggle="tooltip" title="Recursive Best-first Search"><input type="radio" name="algorithm" value="@nameof(HeuristicSearch.RecursiveBestFirstSearch)" />RBFS</label>
+            </div> 
+            <div class="btn-group" role="group" data-toggle="buttons">
+                <label class="btn btn-default btn-sm"><input type="checkbox" name="heuristic" value="@nameof(PointExtensions.GetChebyshevDistance)">Chebyshev</label>
+                <label class="btn btn-default btn-sm"><input type="checkbox" name="heuristic" value="@nameof(PointExtensions.GetEuclideanDistance)">Euclidean</label>
+                <label class="btn btn-default btn-sm active"><input type="checkbox" name="heuristic" value="@nameof(PointExtensions.GetManhattanDistance)" checked>Manhattan</label>
+            </div>
+            <div class="btn-group" role="group" id="histories"></div> 
+        </form>
+    </div>
+</div>
+<div id="historyTemplate" style="display: none">
+    <button type="button" class="btn btn-default btn-sm" data-toggle="button">
+        <span data-field="PathColor" class="glyphicon glyphicon-stop"></span>
+        <span data-field="AlgorithmShortName"></span>
+        <span data-field="Path"></span>
+    </button>
+</div>
+@section Scripts {
+    <script>
+        var mapSettings = @Json.Serialize(Model);
+    </script>
+    <environment include="Development">
+        <script src="js/tile.js"></script>
+        <script src="js/layer.js"></script>
+        <script src="js/core.js"></script>
+        <script src="js/chart.js"></script>
+        <script src="js/site.js"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="js/core.min.js" asp-append-version="true" defer></script>
+        <script src="js/site.min.js" asp-append-version="true" defer></script>
+    </environment>
+}

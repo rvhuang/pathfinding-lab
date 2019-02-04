@@ -1,6 +1,8 @@
 # Pathfinding Laboratory
 
-A playground where you can run, test and compare different algorithms and heuristic functions.
+[![Docker Hub Status](https://images.microbadger.com/badges/image/rvhuang/pathfinding-lab.svg)](https://microbadger.com/images/rvhuang/pathfinding-lab "Get your own image badge on microbadger.com")
+
+A playground where you can run, test and compare pathfinding algorithms and heuristic functions.
 
 Visit [the website](https://pathfinding-lab.codedwith.fun/) running on DigitalOcean and try it out.
 
@@ -10,6 +12,8 @@ Read the article at [CodeProject](https://www.codeproject.com/Articles/1250578/A
 
 ```sh
 cd src/Heuristic.PathfindingLab/Heuristic.PathfindingLab/
+npm i -s d3
+npm i -s @types/d3
 tsc -p tsconfig.json
 dotnet build Heuristic.PathfindingLab.csproj
 ```
