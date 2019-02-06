@@ -137,9 +137,11 @@
     <g id="foreground"></g>
     <!--Cursor-->
     <g id="cursor"></g>
-    <g>
-        <rect id="mouse-cursor" width="@(assetSize * 2)" height="@(assetSize * 2)" x="0" y="0" fill="cadetblue" fill-opacity="0.6" />
-    </g>
+    <svg id="mouse-cursor">
+        <text x="@(assetSize * 2 - 3)" y="14" class="cursor-x" text-anchor="end" style="font-size: 0.8em"></text>
+        <text x="@(assetSize * 2 - 3)" y="27" class="cursor-y" text-anchor="end" style="font-size: 0.8em"></text>
+        <rect width="@(assetSize * 2)" height="@(assetSize * 2)" x="0" y="0" fill="cadetblue" fill-opacity="0.6" />
+    </svg>
     <g id="obstacle-list">
         @for (var i = 0; i < 20; i++)
         {
