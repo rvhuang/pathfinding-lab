@@ -41,14 +41,23 @@ class CursorLayer extends Layer {
         var rect = this.element.parentElement.getBoundingClientRect();
         var mouseX = Math.floor((event.clientX - rect.left) / this.tileWidth);
         var mouseY = Math.floor((event.clientY - rect.top) / this.tileHeight);
-    
+        var changed = false;
+
         if (this.cursorX != mouseX) {
             this.cursor.x.baseVal.value = mouseX * this.tileWidth;
             this.cursorX = mouseX;
+       
+            changed = true;
         }
         if (this.cursorY != mouseY) {
             this.cursor.y.baseVal.value = mouseY * this.tileHeight;
             this.cursorY = mouseY;
+       
+            changed = true;
+        }
+        if (changed) {
+            this.cursor.getElementsByClassName("cursor-x")[0].textContent = `${this.cursorX}`;
+            this.cursor.getElementsByClassName("cursor-y")[0].textContent = `${this.cursorY}`;
         }
     }
 
@@ -202,7 +211,7 @@ class ForegroundLayer extends Layer {
 
     public placePath(path: ReadonlyArray<Step>, assetIdSelector: (step: Step) => string) {
         for (let step of path) {
-            var id = "step-x-" + step.x.toString() + "-y-" + step.y.toString();
+            var id = `step-x-${step.x}-y-${step.y}`; // "step-x-" + step.x.toString() + "-y-" + step.y.toString();
             var existing = this.element.querySelector("#" + id);
             var assetId = assetIdSelector(step);
 
@@ -227,7 +236,7 @@ class ForegroundLayer extends Layer {
     }
 
     public removeStep(x: number, y: number): string {
-        var id = "step-x-" + x.toString() + "-y-" + y.toString();
+        var id = `step-x-${x}-y-${y}` // "step-x-" + x.toString() + "-y-" + y.toString();
 
         if (x < 0 || y < 0 || x >= this.mapWidth || y >= this.mapHeight) {
             return id;
@@ -253,7 +262,7 @@ class ForegroundLayer extends Layer {
         img.x.baseVal.value = x * this.tileWidth;
         img.y.baseVal.value = y * this.tileHeight;
         img.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", "#" + assertId);
-        img.classList.add("image-x-" + x.toString() + "-y-" + y.toString());
+        img.classList.add(`image-x-${x}-y-${y}`/*"image-x-" + x.toString() + "-y-" + y.toString()*/);
 
         this.element.appendChild(img);
         return img;
@@ -263,7 +272,7 @@ class ForegroundLayer extends Layer {
         if (x < 0 || y < 0 || x >= this.mapWidth || y >= this.mapHeight) {
             return;
         }
-        var id = "object-x-" + x.toString() + "-y-" + y.toString();
+        var id = `object-x-${x}-y-${y}`;// "object-x-" + x.toString() + "-y-" + y.toString();
         var existing = this.element.querySelector("#" + id);
 
         if (existing != null) {
@@ -279,7 +288,7 @@ class ForegroundLayer extends Layer {
         if (x < 0 || y < 0 || x >= this.mapWidth || y >= this.mapHeight) {
             return;
         }
-        var id = "object-x-" + x.toString() + "-y-" + y.toString();
+        var id = `object-x-${x}-y-${y}`;// "object-x-" + x.toString() + "-y-" + y.toString();
         var existing = this.element.querySelector("#" + id);
 
         if (existing != null) {
