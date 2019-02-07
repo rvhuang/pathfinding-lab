@@ -127,9 +127,11 @@
                 if (history.isVisible) {
                     for (let tile of history.path) {
                         tile.show();
+                        tile.unhighlight();
                     }
                     for (let tile of history.unvisited) {
                         tile.show();
+                        tile.unhighlight();
                     }
                 }
                 focus.style('display', 'none');
@@ -151,17 +153,29 @@
                         if ((d.step.x === tile.x && d.step.y === tile.y) || d.candidates.some(c => c.x === tile.x && c.y === tile.y)) {
                             tile.show();
                         }
-                        else {
-                            tile.hide();
+                        else { 
+                            tile.hide();  
                         } 
+                        if (d.step.x === tile.x && d.step.y === tile.y) {
+                            tile.highlight();
+                        }
+                        else {
+                            tile.unhighlight();
+                        }
                     }
                     for (let tile of history.unvisited) {
                         if ((d.step.x === tile.x && d.step.y === tile.y) || d.candidates.some(c => c.x === tile.x && c.y === tile.y)) {
                             tile.show();
                         }
+                        else { 
+                            tile.hide();  
+                        }  
+                        if (d.step.x === tile.x && d.step.y === tile.y) {
+                            tile.highlight();
+                        }
                         else {
-                            tile.hide();
-                        } 
+                            tile.unhighlight();
+                        }
                     }
                 }
                 showDetail(d, history);

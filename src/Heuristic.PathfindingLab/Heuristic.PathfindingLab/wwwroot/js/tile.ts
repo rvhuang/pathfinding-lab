@@ -68,6 +68,17 @@ abstract class SolutionTile extends Tile<SVGElement> {
         }
     }
 
+    public highlight() {
+        if (this.element != null) {
+            this.element.getElementsByTagName("circle")[0].setAttribute("stroke", this.color);
+        }
+    }
+
+    public unhighlight() {    
+        if (this.element != null) {
+            this.element.getElementsByTagName("circle")[0].setAttribute("stroke", "transparent");
+        }
+    }
     public describes() : string[] {
         var description = new Array<string>(2);
 
@@ -96,8 +107,8 @@ class PathTile extends SolutionTile {
     } 
 
     protected initialize(tileWidth: number, tileHeight: number): SVGElement {
-        let rect = document.getElementById("detail-tile").cloneNode(true) as SVGElement;
-        let label = rect.querySelector("text") as SVGTextElement;
+        let rect = document.getElementById("detail-tile").cloneNode(true) as SVGElement;        
+        let label = rect.getElementsByTagName("text")[0] as SVGTextElement;
 
         rect.setAttribute("x", (this.x * tileWidth).toString());
         rect.setAttribute("y", (this.y * tileHeight).toString());
@@ -117,8 +128,8 @@ class UnvisitedTile extends SolutionTile {
     }
  
     protected initialize(tileWidth: number, tileHeight: number): SVGElement {
-        let rect = document.getElementById("detail-tile").cloneNode(true) as SVGElement;
-        let label = rect.querySelector("text") as SVGTextElement;
+        let rect = document.getElementById("detail-tile").cloneNode(true) as SVGElement;    
+        let label = rect.getElementsByTagName("text")[0] as SVGTextElement;
 
         rect.setAttribute("x", (this.x * tileWidth).toString());
         rect.setAttribute("y", (this.y * tileHeight).toString());
