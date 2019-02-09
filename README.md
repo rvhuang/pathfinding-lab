@@ -1,12 +1,21 @@
 # Pathfinding Laboratory
 
-[![Docker Hub Status](https://images.microbadger.com/badges/image/rvhuang/pathfinding-lab.svg)](https://microbadger.com/images/rvhuang/pathfinding-lab "Get your own image badge on microbadger.com")
+[![Docker Image Size](https://images.microbadger.com/badges/image/rvhuang/pathfinding-lab.svg)](https://microbadger.com/images/rvhuang/pathfinding-lab "Get your own image badge on microbadger.com") [![Docker Image Version](https://images.microbadger.com/badges/version/rvhuang/pathfinding-lab.svg)](https://microbadger.com/images/rvhuang/pathfinding-lab "Get your own version badge on microbadger.com")
 
-A playground where you can run, test and compare pathfinding algorithms and heuristic functions.
+A playground where you can run, test and compare pathfinding algorithms and heuristic functions. 
 
 Visit [the website](https://pathfinding-lab.codedwith.fun/) running on DigitalOcean and try it out.
 
-Read the article at [CodeProject](https://www.codeproject.com/Articles/1250578/A-Simple-Pathfinding-Laboratory) for detailed information.
+The project is written in ASP.NET Core MVC/Web API and TypeScript. The algorithm part of the project is based on [LINQ to A\*](https://github.com/rvhuang/linq-to-astar): a POC about pathfinding algorithms written in C# and used with LINQ expressions.
+
+## Features
+
+* An editable, retro RPG-style map where you can place various obstacles, creating whatever maze you want.
+* Five algorithms and three heuristic functions available for playing with (more to be added).
+* Right-clicking on two positions to find a path (can be undone).
+* An overlay grid with animation to show expanded nodes and depths(levels).
+* A line chart that fully illustrates the evolution of Open List during the process.
+* A code snippet that demonstrates LINQ statement using LINQ to A*.
 
 ## Build the project
 
