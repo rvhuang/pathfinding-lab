@@ -40,6 +40,17 @@
                     <span class="glyphicon glyphicon-search"></span>
                 </button>
             } 
+            <div class="dropup">
+                <button class="btn btn-default dropdown-toggle" type="button" value="AStar" id="algorithm" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <span>A*</span><span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
+                    <li><a href="javascript:$('#algorithm').val(@nameof(HeuristicSearch.AStar))">A*</a></li>
+                    <li><a href="javascript:$('#algorithm').val(@nameof(HeuristicSearch.BestFirstSearch))">Best-first Search</a></li>
+                    <li><a href="javascript:$('#algorithm').val(@nameof(HeuristicSearch.IterativeDeepeningAStar))">Iterative Deepening A*</a></li> 
+                    <li><a href="javascript:$('#algorithm').val(@nameof(HeuristicSearch.RecursiveBestFirstSearch))">Recursive Best-first Search</a></li>
+                </ul>
+            </div>
             <div class="btn-group" role="group" data-toggle="buttons">
                 <label class="btn btn-default btn-sm active algorithm"><input type="radio" name="algorithm" value="@nameof(HeuristicSearch.AStar)" checked /><span>A*</span></label>
                 <label class="btn btn-default btn-sm algorithm" data-toggle="tooltip" title="Best-first Search"><input type="radio" name="algorithm" value="@nameof(HeuristicSearch.BestFirstSearch)" />BFS</label>
