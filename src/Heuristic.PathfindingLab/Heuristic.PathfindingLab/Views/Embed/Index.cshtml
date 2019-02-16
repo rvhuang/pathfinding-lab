@@ -34,23 +34,13 @@
                     <span class="glyphicon glyphicon-globe"></span>
                 </a>
             </div>
+            @await Html.PartialAsync("../Home/_Algorithm")
             @if (Model.IsSmartDevice)
             {
                 <button type="button" class="btn btn-primary btn-sm" data-toggle="button" id="btnFindPath">
                     <span class="glyphicon glyphicon-search"></span>
                 </button>
             } 
-            <div class="btn-group" role="group" data-toggle="buttons">
-                <label class="btn btn-default btn-sm active algorithm"><input type="radio" name="algorithm" value="@nameof(HeuristicSearch.AStar)" checked /><span>A*</span></label>
-                <label class="btn btn-default btn-sm algorithm" data-toggle="tooltip" title="Best-first Search"><input type="radio" name="algorithm" value="@nameof(HeuristicSearch.BestFirstSearch)" />BFS</label>
-                <label class="btn btn-default btn-sm algorithm" data-toggle="tooltip" title="Iterative Deepening A*"><input type="radio" name="algorithm" value="@nameof(HeuristicSearch.IterativeDeepeningAStar)" />IDA*</label>
-                <label class="btn btn-default btn-sm algorithm" data-toggle="tooltip" title="Recursive Best-first Search"><input type="radio" name="algorithm" value="@nameof(HeuristicSearch.RecursiveBestFirstSearch)" />RBFS</label>
-            </div> 
-            <div class="btn-group" role="group" data-toggle="buttons">
-                <label class="btn btn-default btn-sm"><input type="checkbox" name="heuristic" value="@nameof(PointExtensions.GetChebyshevDistance)">Chebyshev</label>
-                <label class="btn btn-default btn-sm"><input type="checkbox" name="heuristic" value="@nameof(PointExtensions.GetEuclideanDistance)">Euclidean</label>
-                <label class="btn btn-default btn-sm active"><input type="checkbox" name="heuristic" value="@nameof(PointExtensions.GetManhattanDistance)" checked>Manhattan</label>
-            </div>
             <div class="btn-group" role="group" id="histories"></div> 
         </form>
     </div>

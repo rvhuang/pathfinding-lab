@@ -11,7 +11,7 @@ namespace Heuristic.PathfindingLab.Models
         public const int DefaultMapWidth = 40;
         public const int DefaultMapHeight = 20;
         public const int MinMapWidth = 10;
-        public const int MinMapHeight = 20;
+        public const int MinMapHeight = 10;
 
         private int _width;
         private int _height;

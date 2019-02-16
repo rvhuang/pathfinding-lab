@@ -36,29 +36,15 @@
                     <span class="glyphicon glyphicon-info-sign"></span>
                 </button>
             </div>
+            @await Html.PartialAsync("_Algorithm")
             @if (Model.IsSmartDevice)
             {
                 <button type="button" class="btn btn-primary btn-sm" data-toggle="button" id="btnFindPath">
                     <span class="glyphicon glyphicon-search"></span>
                 </button>
             } 
-            <div class="btn-group" role="group" data-toggle="buttons">
-                <label class="btn btn-default btn-sm active algorithm"><input type="radio" name="algorithm" value="@nameof(HeuristicSearch.AStar)" checked /><span>A*</span></label>
-                <label class="btn btn-default btn-sm algorithm" data-toggle="tooltip" title="Best-first Search"><input type="radio" name="algorithm" value="@nameof(HeuristicSearch.BestFirstSearch)" />BFS</label>
-                <label class="btn btn-default btn-sm algorithm" data-toggle="tooltip" title="Iterative Deepening A*"><input type="radio" name="algorithm" value="@nameof(HeuristicSearch.IterativeDeepeningAStar)" />IDA*</label>
-                <label class="btn btn-default btn-sm algorithm" data-toggle="tooltip" title="Recursive Best-first Search"><input type="radio" name="algorithm" value="@nameof(HeuristicSearch.RecursiveBestFirstSearch)" />RBFS</label>
-            </div> 
-            <div class="btn-group" role="group" data-toggle="buttons">
-                <label class="btn btn-default btn-sm"><input type="checkbox" name="heuristic" value="@nameof(PointExtensions.GetChebyshevDistance)">Chebyshev</label>
-                <label class="btn btn-default btn-sm"><input type="checkbox" name="heuristic" value="@nameof(PointExtensions.GetEuclideanDistance)">Euclidean</label>
-                <label class="btn btn-default btn-sm active"><input type="checkbox" name="heuristic" value="@nameof(PointExtensions.GetManhattanDistance)" checked>Manhattan</label>
-            </div>
-            <a href="javascript:void();" role="button" class="btn btn-link" data-toggle="popover" data-trigger="focus" data-placement="right" data-container="body" data-content="A heuristic function is used to evaluate the cost of every step. For some of algorithms, at least one heuristic function needs to be selected. If more than one functions are selected, the subsequent one will be used when previous one evaluates two steps as equal.">
-                <span class="glyphicon glyphicon-question-sign"></span>
-            </a> 
-            @if (!Model.IsSmartDevice)
-            {       
-                <span>&nbsp;</span>         
+            else
+            {        
                 <span class="small">Left click to place obstacles, right click on two positions to get a path.</span>
             }
         </form>
@@ -67,7 +53,7 @@
 <div class="row" style="margin-top: 8px">
     <div class="col-lg-2">
         <label>Open List Analysis</label>
-        <a href="javascript:void();" role="button" class="btn btn-link" data-toggle="popover" data-trigger="focus" data-placement="right" data-container="body" data-content="The chart shows the retrospective analysis of open list. A stale node is the node that has not expanded because of low priority estimated by heuristic functions.">
+        <a href="javascript:void(0)" role="button" class="btn btn-link" data-toggle="popover" data-trigger="focus" data-placement="right" data-container="body" data-content="The chart shows the retrospective analysis of open list. A stale node is the node that has not expanded because of low priority estimated by heuristic functions.">
             <span class="glyphicon glyphicon-question-sign"></span>
         </a>
         <p class="small" id="description">
@@ -88,7 +74,7 @@
     </div>
     <div class="col-lg-5">
         <label>LINQ Expression</label>
-        <a href="javascript:void();" role="button" class="btn btn-link" data-toggle="popover" data-trigger="focus" data-placement="right" data-container="body" data-content="A code snippet using LINQ to A* to set conditions and fetch the path will be displayed here.">
+        <a href="javascript:void(0)" role="button" class="btn btn-link" data-toggle="popover" data-trigger="focus" data-placement="right" data-container="body" data-content="A code snippet using LINQ to A* to set conditions and fetch the path will be displayed here.">
             <span class="glyphicon glyphicon-question-sign"></span>
         </a>
         <!-- Nav tabs -->
@@ -170,7 +156,7 @@
             </div>
             <div class="modal-body">
                 <p>Copyright © <a href="https://rvhuang.github.io/" target="_blank">Robert Vandenberg Huang</a></p>
-                <p>Copyright © <a href="https://kenney.nl/" target="_blank">Kenney Vleugels</a> (assets)</p>
+                <p>Copyright © <a href="https://kenney.nl/" target="_blank">Kenney Vleugels</a> (asset design)</p>
                 <p>The project is licensed under the MIT license. Feel free to copy, modify and use in your computer science homework (grades not guaranteed).</p>
             </div>
             <div class="modal-footer">

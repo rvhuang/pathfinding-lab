@@ -26,7 +26,7 @@ $(document).ready(function () {
         "obstacle-18",
         "obstacle-19"
     ]);
-    var chart = new Chart("chart");
+    var chart = new Chart(document.getElementById('chart'));
     if (typeof mapSettings !== "undefined") {
         mapSettings.obstacles.forEach(function (o) {
             core.placeObstacle(o.x, o.y, o.value);
@@ -43,10 +43,7 @@ $(document).ready(function () {
             return;
         }
         switch (core.createPathfindingRequestBody(current, i, j)) {
-            case PathfindingRequestStatus.Ready:
-                var heuristics = current.heuristics.slice();
-                var algorithm = current.algorithm;
-
+            case PathfindingRequestStatus.Ready: 
                 cursorLayer.placeTile(i, j, PathfindingHistory.getAlgorithmPathColor(current.algorithm));
                 $.ajax({
                     type: "POST",
@@ -71,31 +68,8 @@ $(document).ready(function () {
                             });
                         }
                         cursorLayer.histories.push(history);
-                        cursorLayer.clearAnchors();
-
-                        var btn = $("#historyTemplate button:first-child").clone();
-
-                        btn.children('[data-field="PathColor"]').css("color", history.color);
-                        btn.children('[data-field="AlgorithmShortName"]').text(history.algorithmShortName);
-                        btn.children('[data-field="Path"]').text("(" + history.path.length + ")");
-                        btn.appendTo("#histories");
-                        btn.click(function (e) {
-                            var index = $(this).index();
-                            if (cursorLayer.togglePath(index)) {
-                                let toggled = cursorLayer.histories[index];
-
-                                updateOptions(toggled);
-                                updateExpressions(toggled);
-                                chart.updateStatistics(toggled, showDetail, hideDetail);
-                            }
-                            else { // Restore to latest state.                                
-                                let latest = cursorLayer.histories[cursorLayer.histories.length - 1];
-
-                                updateOptions(latest);
-                                updateExpressions(latest);
-                                chart.updateStatistics(latest, showDetail, hideDetail);
-                            }
-                        });
+                        cursorLayer.clearAnchors();                    
+                        addReplayButton(history, cursorLayer, chart);
                         if (solution.length === 0) { // Path not found
                             $("#exampleSelectMany").find("code").text("// No solution is found.");
                             $("#exampleExcept").find("code").text("// No solution is found.");
@@ -172,18 +146,17 @@ $(document).ready(function () {
         foregroundLayer.isPathfindingOnly = !foregroundLayer.isPathfindingOnly; 
     });
     $('#btnDelObstacles').click(function (event) {
-        var obstacles = core.clearObstacles();
-
-        for (let obstacle of obstacles) {
+        for (let obstacle of core.clearObstacles()) {
             foregroundLayer.removeObject(obstacle.x, obstacle.y);
         }
     });
-    $(':input[name="algorithm"]').change(function (event) {
-        current.algorithm = this.value;
+    $('a[data-algorithm]').click(function (event) {
+        current.algorithm = $(this).data('algorithm');
         if (current.fromX !== current.goalX && current.FromY !== current.goalY) {
             updateExpressions(current);
         }
-        $("#mouse-cursor").attr("fill", PathfindingHistory.getAlgorithmPathColor(this.value));
+        $("#mouse-cursor rect").attr("fill", PathfindingHistory.getAlgorithmPathColor(current.algorithm));
+        $('#algorithm').val(current.algorithm).text($(this).text());
     });
     $(':input[name="heuristic"]').change(function (event) {
         if (this.checked) {
@@ -196,10 +169,12 @@ $(document).ready(function () {
             }
         }
         if (current.heuristics.length === 0) {
-            $('input[name="algorithm"][value="AStar"]').parent().children("span").text("Dijkstra");
+            $('a[data-algorithm="AStar"]').text("Dijkstra");
+            $('#algorithm[value="AStar"]').text("Dijkstra");
         }
         else {
-            $('input[name="algorithm"][value="AStar"]').parent().children("span").text("A*");
+            $('a[data-algorithm="AStar"]').text("A*");
+            $('#algorithm[value="AStar"]').text("A*");
         }
         if (current.fromX !== current.goalX && current.FromY !== current.goalY) {
             updateExpressions(current);
@@ -214,6 +189,32 @@ $(document).ready(function () {
         placement: "bottom"
     });
 });
+
+function addReplayButton(history, cursorLayer, chart) {
+    var btn = $("#historyTemplate button:first-child").clone();
+
+    btn.children('[data-field="PathColor"]').css("color", history.color);
+    btn.children('[data-field="AlgorithmShortName"]').text(history.algorithmShortName);
+    btn.children('[data-field="Path"]').text("(" + history.path.length + ")");
+    btn.appendTo("#histories");
+    btn.click(function (e) {
+        var index = $(this).index();
+        if (cursorLayer.togglePath(index)) {
+            let toggled = cursorLayer.histories[index];
+
+            updateOptions(toggled);
+            updateExpressions(toggled);
+            chart.updateStatistics(toggled, showDetail, hideDetail);
+        }
+        else { // Restore to latest state.                                
+            let latest = cursorLayer.histories[cursorLayer.histories.length - 1];
+
+            updateOptions(latest);
+            updateExpressions(latest);
+            chart.updateStatistics(latest, showDetail, hideDetail);
+        }
+    });
+}
 
 function updateOptions(pathfinding) {
     if (pathfinding != null) {

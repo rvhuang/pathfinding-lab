@@ -172,7 +172,7 @@ class ForegroundLayer extends Layer {
         this.obstacle = 1;
         this.isPathfindingOnly = false;
 
-        for (let obj of this.element.parentElement.querySelectorAll("#obstacle-list > svg")) {
+        for (let obj of document.querySelectorAll("#obstacle-list > svg")) {
             obj.addEventListener("click", e => this.onChangeObstacle(e));
         }
     }

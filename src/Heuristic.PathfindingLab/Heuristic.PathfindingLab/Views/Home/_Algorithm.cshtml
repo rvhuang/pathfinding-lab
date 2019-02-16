@@ -1,0 +1,110 @@
+@using Heuristic.Linq
+@using Microsoft.AspNetCore.Http
+@using Microsoft.AspNetCore.Http.Extensions
+@{
+    const int assetSize = 16;
+}
+<div class="btn-group" role="group" data-toggle="buttons">
+    <div class="dropup">
+        <button class="btn btn-success btn-sm dropdown-toggle" type="button" id="obstacle-selection" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <span class="glyphicon glyphicon-tree-conifer"></span>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="obstacle-selection">
+            <li style="padding: 2px">
+                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="@(assetSize * 2 * 5)" height="@(assetSize * 2 * 4)">
+                    <defs>
+                        <image id="obstacle-tile-assets" x="0" y="0" width="968" height="526" xlink:href="@UriHelper.BuildAbsolute(Context.Request.Scheme, Context.Request.Host, new PathString("/images/assets.png"))" />
+                        <!---->   
+                        <svg id="obstacle-tile-0" preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 13 + 13) @(assetSize * 9 + 9) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
+                            <use xlink:href="#obstacle-tile-assets" />
+                        </svg>
+                        <svg id="obstacle-tile-1" preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 14 + 14) @(assetSize * 9 + 9) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
+                            <use xlink:href="#obstacle-tile-assets" />
+                        </svg>
+                        <svg id="obstacle-tile-2" preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 15 + 15) @(assetSize * 9 + 9) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
+                            <use xlink:href="#obstacle-tile-assets" />
+                        </svg>
+                        <svg id="obstacle-tile-3" preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 16 + 16) @(assetSize * 9 + 9) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
+                            <use xlink:href="#obstacle-tile-assets" />
+                        </svg>
+                        <svg id="obstacle-tile-4" preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 17 + 17) @(assetSize * 9 + 9) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
+                            <use xlink:href="#obstacle-tile-assets" />
+                        </svg>
+                        <svg id="obstacle-tile-5" preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 18 + 18) @(assetSize * 9 + 9) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
+                            <use xlink:href="#obstacle-tile-assets" />
+                        </svg>
+                        <svg id="obstacle-tile-6" preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 19 + 19) @(assetSize * 9 + 9) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
+                            <use xlink:href="#obstacle-tile-assets" />
+                        </svg>
+                        <svg id="obstacle-tile-7" preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 20 + 20) @(assetSize * 9 + 9) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
+                            <use xlink:href="#obstacle-tile-assets" />
+                        </svg>
+                        <svg id="obstacle-tile-8" preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 21 + 21) @(assetSize * 9 + 9) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
+                            <use xlink:href="#obstacle-tile-assets" />
+                        </svg>
+                        <svg id="obstacle-tile-9" preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 22 + 22) @(assetSize * 9 + 9) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
+                            <use xlink:href="#obstacle-tile-assets" />
+                        </svg>
+                        <svg id="obstacle-tile-10" preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 23 + 23) @(assetSize * 9 + 9) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
+                            <use xlink:href="#obstacle-tile-assets" />
+                        </svg>
+                        <svg id="obstacle-tile-11" preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 24 + 24) @(assetSize * 9 + 9) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
+                            <use xlink:href="#obstacle-tile-assets" />
+                        </svg>
+                        <svg id="obstacle-tile-12" preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 25 + 25) @(assetSize * 9 + 9) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
+                            <use xlink:href="#obstacle-tile-assets" />
+                        </svg>
+                        <svg id="obstacle-tile-13" preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 26 + 26) @(assetSize * 9 + 9) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
+                            <use xlink:href="#obstacle-tile-assets" />
+                        </svg>
+                        <svg id="obstacle-tile-14" preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 24 + 24) @(assetSize * 10 + 10) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
+                            <use xlink:href="#obstacle-tile-assets" />
+                        </svg>
+                        <svg id="obstacle-tile-15" preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 25 + 25) @(assetSize * 10 + 10) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
+                            <use xlink:href="#obstacle-tile-assets" />
+                        </svg>
+                        <svg id="obstacle-tile-16" preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 26 + 26) @(assetSize * 10 + 10) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
+                            <use xlink:href="#obstacle-tile-assets" />
+                        </svg>
+                        <svg id="obstacle-tile-17" preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 24 + 24) @(assetSize * 11 + 11) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
+                            <use xlink:href="#obstacle-tile-assets" />
+                        </svg>
+                        <svg id="obstacle-tile-18" preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 26 + 26) @(assetSize * 11 + 11) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
+                            <use xlink:href="#obstacle-tile-assets" />
+                        </svg>
+                        <svg id="obstacle-tile-19" preserveAspectRatio="xMidYMid slice" viewBox="@(assetSize * 27 + 27) @(assetSize * 11 + 11) @(assetSize) @(assetSize )" width="@(assetSize * 2)" height="@(assetSize * 2)">
+                            <use xlink:href="#obstacle-tile-assets" />
+                        </svg>       
+                    </defs>    
+                    <g id="obstacle-list">   
+                        @for (var i = 0; i < 20; i++) 
+                        {
+                            <svg x="@(assetSize * 2 * (i % 5))" y="@(assetSize * 2 * (i / 5))">
+                                <use xlink:href="#obstacle-tile-@(i)" data-obstacle-value="@(i + 1)" />
+                            </svg>
+                        }
+                    </g>
+                </svg>
+            </li>
+        </ul>
+    </div>
+</div>
+<div class="btn-group" role="group" data-toggle="buttons">
+    <div class="dropup">
+        <button class="btn btn-default btn-sm dropdown-toggle algorithm" type="button" value="@nameof(HeuristicSearch.AStar)" id="algorithm" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">A*</button>
+        <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="algorithm">
+            <li><a data-algorithm="@nameof(HeuristicSearch.AStar)" href="#algorithm">A*</a></li>
+            <li><a data-algorithm="@nameof(HeuristicSearch.BestFirstSearch)" href="#algorithm">BFS</a></li>
+            <li><a data-algorithm="@nameof(HeuristicSearch.IterativeDeepeningAStar)" href="#algorithm">IDA*</a></li> 
+            <li><a data-algorithm="@nameof(HeuristicSearch.RecursiveBestFirstSearch)" href="#algorithm">RBFS</a></li>
+        </ul>
+    </div>
+</div>
+<div class="btn-group" role="group" data-toggle="buttons">
+    <label class="btn btn-default btn-sm"><input type="checkbox" name="heuristic" value="@nameof(PointExtensions.GetChebyshevDistance)">Chebyshev</label>
+    <label class="btn btn-default btn-sm"><input type="checkbox" name="heuristic" value="@nameof(PointExtensions.GetEuclideanDistance)">Euclidean</label>
+    <label class="btn btn-default btn-sm active"><input type="checkbox" name="heuristic" value="@nameof(PointExtensions.GetManhattanDistance)" checked>Manhattan</label>
+</div>
+<a href="javascript:void(0)" role="button" class="btn btn-link" data-toggle="popover" data-trigger="focus" data-placement="top" data-container="body" data-content="A heuristic function is used to evaluate the cost of every step. For some of algorithms, at least one heuristic function needs to be selected. If more than one functions are selected, the subsequent one will be used when previous one evaluates two steps as equal.">
+    <span class="glyphicon glyphicon-question-sign"></span>
+</a> 

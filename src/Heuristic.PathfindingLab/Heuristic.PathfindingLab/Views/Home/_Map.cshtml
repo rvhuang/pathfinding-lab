@@ -7,7 +7,7 @@
     const int baseOffsetX = 5 * assetSize + 5;
     const int baseOffsetY = 19 * assetSize + 19;
 }
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="@(assetSize * 2 * (Model.Width + 1))" height="@(assetSize * 2 * Model.Height)" id="map">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="@(assetSize * 2 * Model.Width)" height="@(assetSize * 2 * Model.Height)" id="map">
     <defs>
         <image id="tile-assets" x="0" y="0" width="968" height="526" xlink:href="@UriHelper.BuildAbsolute(Context.Request.Scheme, Context.Request.Host, new PathString("/images/assets.png"))" />
         <!---->
@@ -143,12 +143,4 @@
         <text x="@(assetSize * 2 - 3)" y="27" class="cursor-y" text-anchor="end" style="font-size: 0.8em"></text>
         <rect width="@(assetSize * 2)" height="@(assetSize * 2)" x="0" y="0" fill="cadetblue" fill-opacity="0.6" />
     </svg>
-    <g id="obstacle-list">
-        @for (var i = 0; i < 20; i++)
-        {
-            <svg x="@(assetSize * 2 * Model.Width)" y="@(assetSize * 2 * i)" width="@(assetSize * 2)" height="@(assetSize * 2)">
-                <use xlink:href="#obstacle-@(i)" data-obstacle-value="@(i + 1)" />
-            </svg>
-        }
-    </g>
 </svg>
