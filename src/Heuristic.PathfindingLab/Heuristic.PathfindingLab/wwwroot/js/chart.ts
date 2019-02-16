@@ -9,12 +9,11 @@
     private readonly main: d3.Line<Detail>; 
     private readonly sub: d3.Line<Detail>;
 
-    constructor(elementId: string) {
-        if (elementId == null) {
+    constructor(element: HTMLElement) {
+        if (element == null) {
             return;
         }
-        var element = document.getElementById(elementId);
-        if (element != null) {
+        else {
             this.elementId = element.id;
             this.containerWidth = element.clientWidth;
             this.containerHeight = Math.round(element.clientWidth / 3); 

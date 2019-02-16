@@ -4,7 +4,7 @@
     overflow-x: scroll !important;
 }
 
-label.algorithm {
+button.algorithm {
     min-width: 10ch
 }
 
