@@ -217,7 +217,7 @@ function addReplayButton(history, cursorLayer, chart) {
 }
 
 function updateOptions(pathfinding) {
-    if (pathfinding != null) {
+    if (pathfinding !== null) {
         $(':input[name="heuristic"]').each(function (i, element) {
             $(element).prop("checked", pathfinding.heuristics.indexOf($(element).val()) >= 0);
         }); 
@@ -226,7 +226,7 @@ function updateOptions(pathfinding) {
 }
 
 function updateExpressions(pathfinding) {
-    if (pathfinding != null) {
+    if (pathfinding !== null) {
         $("#exampleSelectMany").find("code").text(pathfinding.toSelectManyExpression(core.mapWidth, core.mapHeight).join('\r\n'));
         $("#exampleExcept").find("code").text(pathfinding.toExceptExpression(core.mapWidth, core.mapHeight).join('\r\n'));
         $("#exampleWhere").find("code").text(pathfinding.toWhereOnlyExpression(core.mapWidth, core.mapHeight).join('\r\n'));
